@@ -416,6 +416,9 @@
     </div>
 
     <script>
+        // Jouw Google Apps Script Web App URL
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwXzMMEUA38UlX4lekV64Gp1jTW8qY1mlsri1eRHGeiK88oshNkkp__xMYiDJdPFndxLw/exec';
+
         let drinkRecords = [];
         let totalDrankMl = 0;
         const maxLimit = 1000;
@@ -471,7 +474,7 @@
             }
         }
 
-        function handleDrinkSubmit(event) {
+        async function handleDrinkSubmit(event) {
             event.preventDefault();
 
             const datumTijd = document.getElementById('datumInput').value;
@@ -479,21 +482,44 @@
             const omschrijving = document.getElementById('omschrijving').value || '-';
             const hoeveelheid = parseInt(document.getElementById('hoeveelheidInput').value);
 
-            drinkRecords.push({
-                tijd: datumTijd.split(' ')[1],
+            const formData = {
+                categorie: 'Drinken',
+                tijdstip: datumTijd,
                 soort: soort,
                 omschrijving: omschrijving,
                 hoeveelheid: hoeveel
-            });
+            };
 
-            totalDrankMl += hoeveel;
-            updateProgressBar();
-            updateOverviewTable();
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
 
-            document.getElementById('drinkForm').reset();
-            updateDateTime();
+                drinkRecords.push({
+                    tijd: datumTijd.split(' ')[1],
+                    soort: soort,
+                    omschrijving: omschrijving,
+                    hoeveelheid: hoeveel
+                });
 
-            alert('Drank succesvol opgeslagen!');
+                totalDrankMl += hoeveel;
+                updateProgressBar();
+                updateOverviewTable();
+
+                document.getElementById('drinkForm').reset();
+                updateDateTime();
+
+                alert('Drank succesvol opgeslagen in Google Sheets!');
+
+            } catch (error) {
+                console.error('Fout bij opslaan:', error);
+                alert('Er ging iets mis bij het opslaan naar Google Sheets.');
+            }
         }
 
         function updateOverviewTable() {
