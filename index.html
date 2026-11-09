@@ -402,7 +402,7 @@
                                 <th>Details</th>
                                 <th>Hoeveelheid</th>
                             </tr>
-                        كنولوجي
+                        </thead>
                         <tbody id="overviewTableBody">
                             <tr>
                                 <td colspan="4" style="text-align: center; color: #757575;">Nog geen gegevens ingevoerd.</td>
@@ -416,12 +416,10 @@
     </div>
 
     <script>
-        // Opslag voor de ingevoerde drankjes en totaal
         let drinkRecords = [];
         let totalDrankMl = 0;
         const maxLimit = 1000;
 
-        // Datum en Tijd dynamisch bijwerken
         function updateDateTime() {
             const now = new Date();
             const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -432,7 +430,6 @@
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
-        // Hoofdmenu wisselen
         function switchMainTab(category, event) {
             event.preventDefault();
             document.querySelectorAll('nav a').forEach(el => el.classList.remove('active'));
@@ -440,7 +437,6 @@
             document.getElementById('main-form-title').innerText = 'Formulier: ' + category;
         }
 
-        // Sub-tabs wisselen (Invoer / Overzicht)
         function switchSubTab(tabNumber) {
             document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
@@ -454,12 +450,10 @@
             }
         }
 
-        // Snelkeuze knop functionaliteit
         function setAmount(val) {
             document.getElementById('hoeveelheidInput').value = val;
         }
 
-        // Voortgangsbalk bijwerken (Groen tot/met 100ml, daarboven rood)
         function updateProgressBar() {
             const bar = document.getElementById('progressBar');
             const text = document.getElementById('progressText');
@@ -470,15 +464,13 @@
             bar.style.width = percentage + '%';
             text.innerText = totalDrankMl + ' ml / ' + maxLimit + ' ml';
 
-            // Kleurregeling: tot en met 100 groen, daarboven rood
             if (totalDrankMl <= 100) {
-                bar.style.backgroundColor = '#4CAF50'; // Groen
+                bar.style.backgroundColor = '#4CAF50';
             } else {
-                bar.style.backgroundColor = '#f44336'; // Rood
+                bar.style.backgroundColor = '#f44336';
             }
         }
 
-        // Formulier verzenden en opslaan
         function handleDrinkSubmit(event) {
             event.preventDefault();
 
@@ -487,29 +479,23 @@
             const omschrijving = document.getElementById('omschrijving').value || '-';
             const hoeveelheid = parseInt(document.getElementById('hoeveelheidInput').value);
 
-            // Voeg toe aan array
             drinkRecords.push({
-                tijd: datumTijd.split(' ')[1], // Alleen tijd tonen in overzicht
+                tijd: datumTijd.split(' ')[1],
                 soort: soort,
                 omschrijving: omschrijving,
                 hoeveelheid: hoeveel
             });
 
-            // Update totaal
             totalDrankMl += hoeveel;
             updateProgressBar();
-
-            // Vernieuw overzicht tabel
             updateOverviewTable();
 
-            // Reset formulier velden behalve datum
-            document.getElementById('drankForm').reset();
+            document.getElementById('drinkForm').reset();
             updateDateTime();
 
             alert('Drank succesvol opgeslagen!');
         }
 
-        // Overzichtstabel updaten
         function updateOverviewTable() {
             const tbody = document.getElementById('overviewTableBody');
             if (drinkRecords.length === 0) {
