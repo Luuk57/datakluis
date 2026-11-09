@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DataKluis</title>
+    <title>DataKluis - Drinken</title>
     <style>
         * {
             box-sizing: border-box;
@@ -45,7 +45,7 @@
             overflow: hidden;
         }
 
-        /* Android-stijl Zijmenu (Navigation Drawer) */
+        /* Android-stijl Zijmenu */
         nav {
             width: 280px;
             background-color: #ffffff;
@@ -112,6 +112,69 @@
             font-size: 1.4rem;
         }
 
+        /* Sub-tabs binnen het Drinken gedeelte */
+        .sub-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .sub-tab-btn {
+            background: #f1f3f4;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #5f6368;
+            box-shadow: none;
+        }
+
+        .sub-tab-btn.active {
+            background-color: #1976D2;
+            color: white;
+        }
+
+        .sub-tab-content {
+            display: none;
+        }
+
+        .sub-tab-content.active {
+            display: block;
+        }
+
+        /* Voortgangsbalk voor drinken */
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 8px;
+            height: 24px;
+            width: 100%;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #4CAF50; /* Groen tot en met 100ml */
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 3px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Formulier stijlen */
         .form-group {
             margin-bottom: 18px;
         }
@@ -137,10 +200,36 @@
         .form-group input:focus, .form-group select:focus {
             border-color: #1976D2;
             border-width: 2px;
-            padding: 11px; /* Compenseer voor dikkere rand */
+            padding: 11px;
         }
 
-        button {
+        /* Snelkeuze knoppen */
+        .quick-amounts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quick-btn {
+            background-color: #f1f3f4;
+            color: #333;
+            border: 1px solid #dadce0;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            box-shadow: none;
+        }
+
+        .quick-btn:hover {
+            background-color: #e8eaed;
+            color: #1976D2;
+            border-color: #1976D2;
+        }
+
+        .submit-btn {
             background-color: #1976D2;
             color: white;
             border: none;
@@ -150,14 +239,33 @@
             font-size: 1rem;
             font-weight: 500;
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            transition: background 0.2s;
+            width: 100%;
         }
 
-        button:hover {
+        .submit-btn:hover {
             background-color: #115293;
         }
 
-        /* Mobiele aanpassing: Zijmenu wordt een Android Bottom Navigation Bar */
+        /* Overzicht tabel */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.95rem;
+        }
+
+        table th {
+            color: #5f6368;
+            font-weight: 500;
+        }
+
+        /* Mobiele aanpassing */
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
@@ -172,7 +280,7 @@
                 border-right: none;
                 border-top: 1px solid #e0e0e0;
                 background-color: #ffffff;
-                order: 2; /* Zet de balk onderaan */
+                order: 2;
             }
             nav h3 {
                 display: none;
@@ -203,7 +311,7 @@
 </head>
 <body>
 
-    <!-- Bovenbalk (Top App Bar) -->
+    <!-- Bovenbalk -->
     <header>
         <div>DataKluis</div>
         <div id="datetime">Laden...</div>
@@ -211,35 +319,108 @@
 
     <!-- Inhoud -->
     <div class="main-container">
-        <!-- Zijmenu / Navigatie -->
+        <!-- Zijmenu -->
         <nav>
             <h3>Menu</h3>
-            <a href="#" class="active" onclick="switchTab('Eten', event)"><span class="icon">🍎</span>Eten</a>
-            <a href="#" onclick="switchTab('Drinken', event)"><span class="icon">💧</span>Drinken</a>
-            <a href="#" onclick="switchTab('Vervoer', event)"><span class="icon">🚗</span>Vervoer</a>
-            <a href="#" onclick="switchTab('Dialyse', event)"><span class="icon">🩺</span>Dialyse</a>
+            <a href="#" onclick="switchMainTab('Eten', event)"><span class="icon">🍎</span>Eten</a>
+            <a href="#" class="active" onclick="switchMainTab('Drinken', event)"><span class="icon">💧</span>Drinken</a>
+            <a href="#" onclick="switchMainTab('Vervoer', event)"><span class="icon">🚗</span>Vervoer</a>
+            <a href="#" onclick="switchMainTab('Dialyse', event)"><span class="icon">🩺</span>Dialyse</a>
         </nav>
 
-        <!-- Middenvlak (Formulieren) -->
+        <!-- Middenvlak -->
         <main>
             <div class="form-card">
-                <h2 id="form-title">Formulier: Eten</h2>
-                <form id="dataForm" onsubmit="handleSubmit(event)">
-                    <div class="form-group">
-                        <label for="datumInput">Datum & Tijd</label>
-                        <input type="text" id="datumInput" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="omschrijving">Omschrijving / Details</label>
-                        <input type="text" id="omschrijving" placeholder="Typ hier de gegevens...">
-                    </div>
-                    <button type="submit">Opslaan naar Google Sheet</button>
-                </form>
+                <h2 id="main-form-title">Formulier: Drinken</h2>
+
+                <!-- Sub-tabbladen voor Drinken (2 tabbladen: Invoer & Overzicht) -->
+                <div class="sub-tabs">
+                    <button class="sub-tab-btn active" onclick="switchSubTab(1)">1. Invoer</button>
+                    <button class="sub-tab-btn" onclick="switchSubTab(2)">2. Overzicht</button>
+                </div>
+
+                <!-- Voortgangsbalk (Limiet 1000ml, tot 100ml groen, daarboven rood) -->
+                <div class="progress-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                    <div id="progressText" class="progress-text">0 ml / 1000 ml</div>
+                </div>
+
+                <!-- TAB 1: INVOER -->
+                <div id="subTab1" class="sub-tab-content active">
+                    <form id="drinkForm" onsubmit="handleDrinkSubmit(event)">
+                        <div class="form-group">
+                            <label for="datumInput">Datum & Tijd</label>
+                            <input type="text" id="datumInput" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="drankSoort">Soort Drank</label>
+                            <select id="drankSoort" required>
+                                <option value="" disabled selected>Selecteer drankje...</option>
+                                <option value="Koffie">Koffie</option>
+                                <option value="Thee">Thee</option>
+                                <option value="Water">Water</option>
+                                <option value="Ranja">Ranja</option>
+                                <option value="Fris">Fris</option>
+                                <option value="Overige">Overige</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="omschrijving">Omschrijving / Details</label>
+                            <input type="text" id="omschrijving" placeholder="Bijv. merk of extra toevoeging...">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Snelkeuze hoeveelheid (ml)</label>
+                            <div class="quick-amounts">
+                                <button type="button" class="quick-btn" onclick="setAmount(75)">75</button>
+                                <button type="button" class="quick-btn" onclick="setAmount(100)">100</button>
+                                <button type="button" class="quick-btn" onclick="setAmount(150)">150</button>
+                                <button type="button" class="quick-btn" onclick="setAmount(200)">200</button>
+                                <button type="button" class="quick-btn" onclick="setAmount(330)">330</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hoeveelheidInput">Custom Hoeveelheid (ml)</label>
+                            <input type="number" id="hoeveelheidInput" placeholder="Voer aantal ml in..." min="1" required>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Opslaan</button>
+                    </form>
+                </div>
+
+                <!-- TAB 2: OVERZICHT -->
+                <div id="subTab2" class="sub-tab-content">
+                    <h3 style="margin-bottom: 15px; color: #333; font-size: 1.1rem;">Ingevoerde Drinken Gegevens</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tijd</th>
+                                <th>Drank</th>
+                                <th>Details</th>
+                                <th>Hoeveelheid</th>
+                            </tr>
+                        كنولوجي
+                        <tbody id="overviewTableBody">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: #757575;">Nog geen gegevens ingevoerd.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
         </main>
     </div>
 
     <script>
+        // Opslag voor de ingevoerde drankjes en totaal
+        let drinkRecords = [];
+        let totalDrankMl = 0;
+        const maxLimit = 1000;
+
         // Datum en Tijd dynamisch bijwerken
         function updateDateTime() {
             const now = new Date();
@@ -251,18 +432,103 @@
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
-        // Wisselen van tabblad in het menu
-        function switchTab(category, event) {
+        // Hoofdmenu wisselen
+        function switchMainTab(category, event) {
             event.preventDefault();
             document.querySelectorAll('nav a').forEach(el => el.classList.remove('active'));
             event.currentTarget.classList.add('active');
-            document.getElementById('form-title').innerText = 'Formulier: ' + category;
+            document.getElementById('main-form-title').innerText = 'Formulier: ' + category;
         }
 
-        // Simulatie van opslaan
-        function handleSubmit(event) {
+        // Sub-tabs wisselen (Invoer / Overzicht)
+        function switchSubTab(tabNumber) {
+            document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
+
+            if (tabNumber === 1) {
+                document.querySelectorAll('.sub-tab-btn')[0].classList.add('active');
+                document.getElementById('subTab1').classList.add('active');
+            } else {
+                document.querySelectorAll('.sub-tab-btn')[1].classList.add('active');
+                document.getElementById('subTab2').classList.add('active');
+            }
+        }
+
+        // Snelkeuze knop functionaliteit
+        function setAmount(val) {
+            document.getElementById('hoeveelheidInput').value = val;
+        }
+
+        // Voortgangsbalk bijwerken (Groen tot/met 100ml, daarboven rood)
+        function updateProgressBar() {
+            const bar = document.getElementById('progressBar');
+            const text = document.getElementById('progressText');
+
+            let percentage = (totalDrankMl / maxLimit) * 100;
+            if (percentage > 100) percentage = 100;
+
+            bar.style.width = percentage + '%';
+            text.innerText = totalDrankMl + ' ml / ' + maxLimit + ' ml';
+
+            // Kleurregeling: tot en met 100 groen, daarboven rood
+            if (totalDrankMl <= 100) {
+                bar.style.backgroundColor = '#4CAF50'; // Groen
+            } else {
+                bar.style.backgroundColor = '#f44336'; // Rood
+            }
+        }
+
+        // Formulier verzenden en opslaan
+        function handleDrinkSubmit(event) {
             event.preventDefault();
-            alert('Gegevens verzonden!');
+
+            const datumTijd = document.getElementById('datumInput').value;
+            const soort = document.getElementById('drankSoort').value;
+            const omschrijving = document.getElementById('omschrijving').value || '-';
+            const hoeveelheid = parseInt(document.getElementById('hoeveelheidInput').value);
+
+            // Voeg toe aan array
+            drinkRecords.push({
+                tijd: datumTijd.split(' ')[1], // Alleen tijd tonen in overzicht
+                soort: soort,
+                omschrijving: omschrijving,
+                hoeveelheid: hoeveel
+            });
+
+            // Update totaal
+            totalDrankMl += hoeveel;
+            updateProgressBar();
+
+            // Vernieuw overzicht tabel
+            updateOverviewTable();
+
+            // Reset formulier velden behalve datum
+            document.getElementById('drankForm').reset();
+            updateDateTime();
+
+            alert('Drank succesvol opgeslagen!');
+        }
+
+        // Overzichtstabel updaten
+        function updateOverviewTable() {
+            const tbody = document.getElementById('overviewTableBody');
+            if (drinkRecords.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #757575;">Nog geen gegevens ingevoerd.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            drinkRecords.forEach(record => {
+                html += `
+                    <tr>
+                        <td>${record.tijd}</td>
+                        <td>${record.soort}</td>
+                        <td>${record.omschrijving}</td>
+                        <td>${record.hoeveelheid} ml</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
         }
     </script>
 </body>
