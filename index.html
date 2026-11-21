@@ -364,15 +364,21 @@
       color: var(--success);
     }
 
-    /* Hoofdmenu & Tegels */
+    /* Hoofdmenu & Tegels (4 modules) */
     .nav-tiles {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
       margin-bottom: 18px;
     }
 
-    @media (max-width: 820px) {
+    @media (max-width: 960px) {
+      .nav-tiles {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 560px) {
       .nav-tiles {
         grid-template-columns: 1fr;
       }
@@ -382,7 +388,7 @@
       background: var(--surface);
       border: 2px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px 18px;
+      padding: 14px 16px;
       text-align: left;
       box-shadow: var(--shadow);
       display: flex;
@@ -401,11 +407,11 @@
       align-items: center;
       gap: 8px;
       font-weight: 700;
-      font-size: 1.05rem;
+      font-size: 1rem;
     }
 
     .nav-tile-sub {
-      font-size: 0.88rem;
+      font-size: 0.84rem;
       color: var(--muted);
     }
 
@@ -623,6 +629,59 @@
       margin-bottom: 4px;
     }
 
+    .badge.taxi {
+      background: var(--warning-soft);
+      color: var(--warning);
+    }
+
+    /* Ritten module */
+    .ritten-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    @media (max-width: 880px) {
+      .ritten-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pattern-tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .pattern-tile {
+      background: var(--surface-alt);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 8px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .pattern-tile.selected {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .two-col-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 520px) {
+      .two-col-fields {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* Instellingen module */
     .settings-grid {
       display: grid;
@@ -709,7 +768,7 @@
       <div class="card">
         <h2>Persoonlijke datakluis</h2>
         <p class="muted">
-          Log in om uw vochtinname, uw eigen app-agenda en uw instellingen te openen.
+          Log in om uw vochtinname, uw rittenplanning, uw eigen app-agenda en uw instellingen te openen.
         </p>
         <div class="limit-box">
           <strong>Vochtinname</strong>
@@ -718,15 +777,15 @@
           </p>
         </div>
         <div class="limit-box">
-          <strong>Eigen app-agenda</strong>
+          <strong>Ritten</strong>
           <p class="muted" style="margin: 4px 0 0;">
-            Een eigen agenda binnen de app, los van Google Agenda, met live vochtinname-indicatie.
+            Plan ritten voor Nu, Elke dag, Om de dag, Ma wo vrij of Di do za met einddatum of voor de geldende maand.
           </p>
         </div>
         <div class="limit-box" style="margin-bottom: 0;">
-          <strong>Instellingen</strong>
+          <strong>Eigen app-agenda &amp; Instellingen</strong>
           <p class="muted" style="margin: 4px 0 0;">
-            Beheer zelf uw dranksoort-tegels en hoeveelheid-tegels.
+            Zelfstandige app-agenda met live vochtinname-status en beheer van dranksoort- en hoeveelheidtegels.
           </p>
         </div>
       </div>
@@ -783,6 +842,14 @@
           <span class="nav-tile-sub">Dranksoort- en hoeveelheidtegels</span>
         </button>
 
+        <button id="navRittenTile" type="button" class="nav-tile">
+          <div class="nav-tile-top">
+            <span>Ritten</span>
+            <span id="tileRittenCount">0 ritten</span>
+          </div>
+          <span class="nav-tile-sub">Planning &amp; herhaling naar agenda</span>
+        </button>
+
         <button id="navAgendaTile" type="button" class="nav-tile">
           <div class="nav-tile-top">
             <span>Eigen app-agenda</span>
@@ -796,7 +863,7 @@
             <span>Instellingen</span>
             <span id="tileSettingsSummary">Tegels</span>
           </div>
-          <span class="nav-tile-sub">Dranksoort- en hoeveelheidtegels maken of verwijderen</span>
+          <span class="nav-tile-sub">Dranksoort- en hoeveelheidtegels</span>
         </button>
       </div>
 
@@ -861,6 +928,94 @@
         </div>
       </section>
 
+      <!-- Module: Ritten -->
+      <section id="rittenModule" class="ritten-grid hidden">
+        <div class="card">
+          <h2 style="margin-top: 0;">Rit inplannen</h2>
+          <p class="muted">Kies het schema en de looptijd; geplande ritten verschijnen ook direct in uw Eigen app-agenda.</p>
+
+          <form id="rittenForm">
+            <div class="field">
+              <label for="ritTitle">Omschrijving rit</label>
+              <input id="ritTitle" type="text" required placeholder="Bijv. Taxi heen of Taxi terug" />
+            </div>
+
+            <div class="two-col-fields">
+              <div class="field">
+                <label for="ritFrom">Vertrekadres (optioneel)</label>
+                <input id="ritFrom" type="text" placeholder="Bijv. Thuis" />
+              </div>
+              <div class="field">
+                <label for="ritTo">Bestemming (optioneel)</label>
+                <input id="ritTo" type="text" placeholder="Bijv. Dialysecentrum" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Planning</label>
+              <div id="ritPatternTiles" class="pattern-tiles">
+                <button type="button" class="pattern-tile selected" data-pattern="nu">Nu</button>
+                <button type="button" class="pattern-tile" data-pattern="elke_dag">Elke dag</button>
+                <button type="button" class="pattern-tile" data-pattern="om_de_dag">Om de dag</button>
+                <button type="button" class="pattern-tile" data-pattern="ma_wo_vr">Ma wo vrij</button>
+                <button type="button" class="pattern-tile" data-pattern="di_do_za">Di do za</button>
+              </div>
+            </div>
+
+            <div class="two-col-fields">
+              <div class="field">
+                <label for="ritStartDate">Startdatum</label>
+                <input id="ritStartDate" type="date" required />
+              </div>
+              <div class="field">
+                <label for="ritTime">Tijdstip</label>
+                <input id="ritTime" type="time" required />
+              </div>
+            </div>
+
+            <div id="ritEndModeBox" class="hidden">
+              <div class="field">
+                <label for="ritEndType">Looptijd herhaling</label>
+                <select id="ritEndType">
+                  <option value="month">Voor geldende maand (t/m laatste dag van de maand)</option>
+                  <option value="date">Met einddatum</option>
+                </select>
+              </div>
+
+              <div id="ritEndDateField" class="field hidden">
+                <label for="ritEndDate">Einddatum</label>
+                <input id="ritEndDate" type="date" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="ritNotes">Notitie (optioneel)</label>
+              <input id="ritNotes" type="text" placeholder="Bijv. Rolstoeltaxi of 10 min van tevoren klaarstaan" />
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%;">
+              Rit(ten) inplannen
+            </button>
+          </form>
+
+          <div id="rittenFeedback" class="status-banner" role="status"></div>
+        </div>
+
+        <div class="card">
+          <div class="auth-row-header">
+            <div>
+              <h2 style="margin: 0;">Geplande ritten</h2>
+              <span class="muted">Overzicht van ingeplande ritten</span>
+            </div>
+            <button id="clearRittenBtn" type="button" class="btn-danger hidden">Alles wissen</button>
+          </div>
+
+          <div id="rittenList" class="log-list" style="max-height: 520px;">
+            <p class="muted">Er zijn nog geen ritten ingepland.</p>
+          </div>
+        </div>
+      </section>
+
       <!-- Module: Eigen app-agenda -->
       <section id="agendaModule" class="agenda-grid hidden">
         <div class="card">
@@ -873,7 +1028,7 @@
 
           <div id="agendaIntakeBanner" class="agenda-intake-banner ok" role="status">
             <span id="agendaIntakeText">Totale vochtinname: 0 / 1000 ml (0%)</span>
-            <span id="agendaIntakeBadge">Binnen limiet</span>
+            <span id="agendaIntakeBadge">100% of minder — OK</span>
           </div>
 
           <div id="agendaList">
@@ -895,7 +1050,7 @@
               <label for="agendaCategory">Categorie</label>
               <select id="agendaCategory">
                 <option value="Algemeen">Algemeen</option>
-                <option value="Taxirit (voorbereid)">Taxirit (voorbereid)</option>
+                <option value="Taxirit">Taxirit</option>
                 <option value="Dialyse-item (voorbereid)">Dialyse-item (voorbereid)</option>
               </select>
             </div>
@@ -933,7 +1088,7 @@
               <label for="newDrinkHint">Toelichting</label>
               <input id="newDrinkHint" type="text" placeholder="Optioneel" />
             </div>
-            <button type="submit" class="btn-primary">Tegels toevoegen</button>
+            <button type="submit" class="btn-primary">Tegel toevoegen</button>
           </form>
 
           <div id="settingsDrinkList" class="manage-list"></div>
@@ -992,7 +1147,7 @@
     const db = getDatabase(app);
     const googleProvider = new GoogleAuthProvider();
 
-    const STORAGE_KEY = "datakluis_state_v2";
+    const STORAGE_KEY = "datakluis_state_v3";
     const DEFAULT_DRINKS = [
       { id: "water", name: "Water", hint: "Standaard vocht" },
       { id: "koffie", name: "Koffie", hint: "Warme drank" },
@@ -1006,14 +1161,36 @@
     ];
     const DEFAULT_MLS = [75, 130, 150, 200, 330];
 
+    const PATTERN_LABELS = {
+      nu: "Nu",
+      elke_dag: "Elke dag",
+      om_de_dag: "Om de dag",
+      ma_wo_vr: "Ma wo vrij",
+      di_do_za: "Di do za"
+    };
+
     let authMode = "login";
     let selectedDrinkId = "water";
     let selectedMl = 150;
+    let selectedRitPattern = "nu";
     let activeDbUnsubscribe = null;
+
+    function toLocalDateStr(dateObj) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function toLocalTimeStr(dateObj) {
+      const h = String(dateObj.getHours()).padStart(2, "0");
+      const min = String(dateObj.getMinutes()).padStart(2, "0");
+      return `${h}:${min}`;
+    }
 
     function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("datakluis_state_v2");
         if (!raw) {
           return {
             night: false,
@@ -1025,7 +1202,7 @@
         const parsed = JSON.parse(raw);
         return {
           night: Boolean(parsed.night),
-          activeModule: ["intake", "agenda", "settings"].includes(parsed.activeModule)
+          activeModule: ["intake", "ritten", "agenda", "settings"].includes(parsed.activeModule)
             ? parsed.activeModule
             : "intake",
           session: parsed.session || null,
@@ -1065,7 +1242,8 @@
         drinkTiles: DEFAULT_DRINKS.map((d) => ({ ...d })),
         mlTiles: [...DEFAULT_MLS],
         intakeLogs: [],
-        agendaItems: []
+        agendaItems: [],
+        rittenItems: []
       };
     }
 
@@ -1082,6 +1260,7 @@
           : [...DEFAULT_MLS];
         d.intakeLogs = Array.isArray(d.intakeLogs) ? d.intakeLogs : [];
         d.agendaItems = Array.isArray(d.agendaItems) ? d.agendaItems : [];
+        d.rittenItems = Array.isArray(d.rittenItems) ? d.rittenItems : [];
       }
       return state.dataByUser[key];
     }
@@ -1096,6 +1275,7 @@
         mlTiles: userData.mlTiles || [],
         intakeLogs: userData.intakeLogs || [],
         agendaItems: userData.agendaItems || [],
+        rittenItems: userData.rittenItems || [],
         updatedAt: Date.now()
       }).catch(() => {});
     }
@@ -1127,12 +1307,14 @@
             ? val.mlTiles.map(Number).filter((n) => n > 0)
             : [...DEFAULT_MLS],
           intakeLogs: Array.isArray(val.intakeLogs) ? val.intakeLogs : [],
-          agendaItems: Array.isArray(val.agendaItems) ? val.agendaItems : []
+          agendaItems: Array.isArray(val.agendaItems) ? val.agendaItems : [],
+          rittenItems: Array.isArray(val.rittenItems) ? val.rittenItems : []
         };
         saveState();
         if (state.session && getUserKey(state.session) === key) {
           renderDrinkAndMlTiles();
           renderIntakeOverview();
+          renderRitten();
           renderAgenda();
           renderSettings();
         }
@@ -1328,7 +1510,7 @@
 
     /* Navigatie */
     function switchModule(mod) {
-      state.activeModule = ["intake", "agenda", "settings"].includes(mod) ? mod : "intake";
+      state.activeModule = ["intake", "ritten", "agenda", "settings"].includes(mod) ? mod : "intake";
       saveState();
       renderModules();
     }
@@ -1336,10 +1518,12 @@
     function renderModules() {
       const mod = state.activeModule;
       document.getElementById("navIntakeTile").classList.toggle("active", mod === "intake");
+      document.getElementById("navRittenTile").classList.toggle("active", mod === "ritten");
       document.getElementById("navAgendaTile").classList.toggle("active", mod === "agenda");
       document.getElementById("navSettingsTile").classList.toggle("active", mod === "settings");
 
       document.getElementById("intakeModule").classList.toggle("hidden", mod !== "intake");
+      document.getElementById("rittenModule").classList.toggle("hidden", mod !== "ritten");
       document.getElementById("agendaModule").classList.toggle("hidden", mod !== "agenda");
       document.getElementById("settingsModule").classList.toggle("hidden", mod !== "settings");
     }
@@ -1542,6 +1726,145 @@
       });
     }
 
+    /* Ritten module */
+    function initRittenDefaults() {
+      const now = new Date();
+      document.getElementById("ritStartDate").value = toLocalDateStr(now);
+      document.getElementById("ritTime").value = toLocalTimeStr(now);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      document.getElementById("ritEndDate").value = toLocalDateStr(endOfMonth);
+      updateRittenVisibility();
+    }
+
+    function updateRittenVisibility() {
+      document.querySelectorAll("#ritPatternTiles .pattern-tile").forEach((btn) => {
+        btn.classList.toggle("selected", btn.dataset.pattern === selectedRitPattern);
+      });
+
+      const isSingle = selectedRitPattern === "nu";
+      document.getElementById("ritEndModeBox").classList.toggle("hidden", isSingle);
+
+      const endType = document.getElementById("ritEndType").value;
+      document.getElementById("ritEndDateField").classList.toggle("hidden", isSingle || endType !== "date");
+    }
+
+    function generateRitDates(startDateStr, pattern, endType, endDateStr) {
+      const parts = startDateStr.split("-").map(Number);
+      if (parts.length !== 3) return [];
+      const start = new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0);
+
+      if (pattern === "nu") {
+        return [toLocalDateStr(start)];
+      }
+
+      let end;
+      if (endType === "date" && endDateStr) {
+        const eParts = endDateStr.split("-").map(Number);
+        end = new Date(eParts[0], eParts[1] - 1, eParts[2], 12, 0, 0);
+      } else {
+        // Laatste dag van de geldende maand (vanaf startdatum)
+        end = new Date(start.getFullYear(), start.getMonth() + 1, 0, 12, 0, 0);
+      }
+
+      if (end < start) return [];
+
+      const dates = [];
+      let cursor = new Date(start);
+      let safetyCounter = 0;
+
+      while (cursor <= end && safetyCounter < 400) {
+        const day = cursor.getDay(); // 0=zo, 1=ma, 2=di, 3=wo, 4=do, 5=vr, 6=za
+        let include = false;
+
+        if (pattern === "elke_dag") {
+          include = true;
+        } else if (pattern === "om_de_dag") {
+          const diffDays = Math.round((cursor - start) / (24 * 3600 * 1000));
+          include = diffDays % 2 === 0;
+        } else if (pattern === "ma_wo_vr") {
+          include = day === 1 || day === 3 || day === 5;
+        } else if (pattern === "di_do_za") {
+          include = day === 2 || day === 4 || day === 6;
+        }
+
+        if (include) {
+          dates.push(toLocalDateStr(cursor));
+        }
+
+        cursor.setDate(cursor.getDate() + 1);
+        safetyCounter += 1;
+      }
+
+      return dates;
+    }
+
+    function renderRitten() {
+      const key = getUserKey(state.session);
+      if (!key) return;
+      const userData = ensureUserData(key);
+      const listEl = document.getElementById("rittenList");
+      const clearBtn = document.getElementById("clearRittenBtn");
+
+      document.getElementById("tileRittenCount").textContent = `${userData.rittenItems.length} ritten`;
+      clearBtn.classList.toggle("hidden", userData.rittenItems.length === 0);
+
+      if (!userData.rittenItems.length) {
+        listEl.innerHTML = `<p class="muted">Er zijn nog geen ritten ingepland.</p>`;
+        return;
+      }
+
+      const sorted = [...userData.rittenItems].sort((a, b) =>
+        String(a.start || "").localeCompare(String(b.start || ""))
+      );
+
+      listEl.innerHTML = "";
+      sorted.forEach((rit) => {
+        const row = document.createElement("div");
+        row.className = "log-item";
+
+        const dt = new Date(rit.start);
+        const dateLabel = Number.isNaN(dt.getTime())
+          ? rit.start
+          : dt.toLocaleString("nl-NL", {
+              weekday: "short",
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit"
+            });
+
+        const routeText = [rit.from, rit.to].filter(Boolean).join(" → ");
+        const metaParts = [dateLabel, rit.patternLabel || ""];
+        if (routeText) metaParts.push(routeText);
+        if (rit.notes) metaParts.push(rit.notes);
+
+        const info = document.createElement("div");
+        info.innerHTML = `
+          <div class="log-title">${rit.title}</div>
+          <div class="log-meta">${metaParts.filter(Boolean).join(" · ")}</div>
+        `;
+
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "btn-danger";
+        delBtn.textContent = "Verwijder";
+        delBtn.addEventListener("click", () => {
+          userData.rittenItems = userData.rittenItems.filter((x) => x.id !== rit.id);
+          if (rit.agendaId) {
+            userData.agendaItems = userData.agendaItems.filter((a) => a.id !== rit.agendaId);
+          }
+          persistCurrentUserData();
+          renderRitten();
+          renderAgenda();
+        });
+
+        row.appendChild(info);
+        row.appendChild(delBtn);
+        listEl.appendChild(row);
+      });
+    }
+
     /* Eigen app-agenda */
     function resetAgendaForm() {
       document.getElementById("agendaEditId").value = "";
@@ -1598,9 +1921,10 @@
             })
           : "";
 
+        const isTaxi = (item.category || "").toLowerCase().includes("taxi");
         const content = document.createElement("div");
         content.innerHTML = `
-          <span class="badge">${item.category || "Algemeen"}</span>
+          <span class="badge${isTaxi ? " taxi" : ""}">${item.category || "Algemeen"}</span>
           <div class="log-title">${item.title}</div>
           <div class="log-meta">${dateLabel}</div>
           ${item.notes ? `<p class="muted" style="margin: 6px 0 0;">${item.notes}</p>` : ""}
@@ -1621,8 +1945,10 @@
         delBtn.textContent = "Verwijder";
         delBtn.addEventListener("click", () => {
           userData.agendaItems = userData.agendaItems.filter((x) => x.id !== item.id);
+          userData.rittenItems = userData.rittenItems.filter((r) => r.agendaId !== item.id);
           persistCurrentUserData();
           renderAgenda();
+          renderRitten();
         });
 
         actions.appendChild(editBtn);
@@ -1715,6 +2041,7 @@
         renderModules();
         renderDrinkAndMlTiles();
         renderIntakeOverview();
+        renderRitten();
         renderAgenda();
         renderSettings();
       }
@@ -1735,6 +2062,7 @@
     document.getElementById("logoutBtn").addEventListener("click", handleLogout);
 
     document.getElementById("navIntakeTile").addEventListener("click", () => switchModule("intake"));
+    document.getElementById("navRittenTile").addEventListener("click", () => switchModule("ritten"));
     document.getElementById("navAgendaTile").addEventListener("click", () => switchModule("agenda"));
     document.getElementById("navSettingsTile").addEventListener("click", () => switchModule("settings"));
 
@@ -1778,6 +2106,110 @@
       addIntakeEntry(selectedMl);
     });
 
+    /* Ritten events */
+    document.querySelectorAll("#ritPatternTiles .pattern-tile").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        selectedRitPattern = btn.dataset.pattern;
+        if (selectedRitPattern === "nu") {
+          const now = new Date();
+          document.getElementById("ritStartDate").value = toLocalDateStr(now);
+          document.getElementById("ritTime").value = toLocalTimeStr(now);
+        }
+        updateRittenVisibility();
+      });
+    });
+
+    document.getElementById("ritEndType").addEventListener("change", updateRittenVisibility);
+
+    document.getElementById("rittenForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const key = getUserKey(state.session);
+      if (!key) return;
+      const userData = ensureUserData(key);
+      const feedbackEl = document.getElementById("rittenFeedback");
+
+      const title = document.getElementById("ritTitle").value.trim();
+      const from = document.getElementById("ritFrom").value.trim();
+      const to = document.getElementById("ritTo").value.trim();
+      const startDate = document.getElementById("ritStartDate").value;
+      const time = document.getElementById("ritTime").value;
+      const endType = document.getElementById("ritEndType").value;
+      const endDate = document.getElementById("ritEndDate").value;
+      const notes = document.getElementById("ritNotes").value.trim();
+
+      if (!title || !startDate || !time) {
+        showBanner(feedbackEl, "Vul een omschrijving, startdatum en tijdstip in.", "error");
+        return;
+      }
+
+      if (selectedRitPattern !== "nu" && endType === "date" && (!endDate || endDate < startDate)) {
+        showBanner(feedbackEl, "Kies een geldige einddatum op of na de startdatum.", "error");
+        return;
+      }
+
+      const dates = generateRitDates(startDate, selectedRitPattern, endType, endDate);
+      if (!dates.length) {
+        showBanner(feedbackEl, "Geen ritten gevonden binnen de gekozen periode.", "error");
+        return;
+      }
+
+      const routeNote = [
+        from && to ? `Van ${from} naar ${to}` : from ? `Vanaf ${from}` : to ? `Naar ${to}` : "",
+        notes
+      ].filter(Boolean).join(" — ");
+
+      const patternLabel = PATTERN_LABELS[selectedRitPattern] || selectedRitPattern;
+
+      dates.forEach((dateStr) => {
+        const startIso = `${dateStr}T${time}`;
+        const uidPart = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+        const agendaId = `agenda_rit_${uidPart}`;
+        const ritId = `rit_${uidPart}`;
+
+        userData.rittenItems.push({
+          id: ritId,
+          agendaId,
+          title,
+          from,
+          to,
+          start: startIso,
+          pattern: selectedRitPattern,
+          patternLabel,
+          notes
+        });
+
+        userData.agendaItems.push({
+          id: agendaId,
+          title,
+          category: "Taxirit",
+          start: startIso,
+          notes: routeNote
+        });
+      });
+
+      persistCurrentUserData();
+      renderRitten();
+      renderAgenda();
+      showBanner(
+        feedbackEl,
+        `${dates.length} rit${dates.length === 1 ? "" : "ten"} ingepland en toegevoegd aan uw Eigen app-agenda.`,
+        "success"
+      );
+    });
+
+    document.getElementById("clearRittenBtn").addEventListener("click", () => {
+      const key = getUserKey(state.session);
+      if (!key) return;
+      const userData = ensureUserData(key);
+      const linkedAgendaIds = new Set(userData.rittenItems.map((r) => r.agendaId).filter(Boolean));
+      userData.rittenItems = [];
+      userData.agendaItems = userData.agendaItems.filter((a) => !linkedAgendaIds.has(a.id));
+      persistCurrentUserData();
+      renderRitten();
+      renderAgenda();
+    });
+
+    /* Instellingen events */
     document.getElementById("addDrinkForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const key = getUserKey(state.session);
@@ -1821,6 +2253,7 @@
       renderSettings();
     });
 
+    /* Agenda events */
     document.getElementById("agendaForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const key = getUserKey(state.session);
@@ -1887,6 +2320,7 @@
     applyTheme();
     updateClock();
     setInterval(updateClock, 1000);
+    initRittenDefaults();
     resetAgendaForm();
     renderApp();
     if (state.session && state.session.provider !== "guest") {
