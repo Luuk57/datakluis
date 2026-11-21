@@ -80,9 +80,9 @@
   <div id="app-shell" class="hidden min-h-screen flex flex-col md:flex-row">
 
     <!-- Linker zijbalk -->
-    <aside class="w-full md:w-64 bg-slate-900 text-white p-6 flex flex-col justify-between shrink-0 border-b md:border-b-0 md:border-r border-slate-800">
+    <aside class="w-full md:w-60 bg-slate-900 text-white p-5 flex flex-col justify-between shrink-0 border-b md:border-b-0 md:border-r border-slate-800">
       <div>
-        <div class="pb-5 mb-6 border-b border-slate-800">
+        <div class="pb-4 mb-5 border-b border-slate-800">
           <span class="text-xs font-bold uppercase tracking-wider text-blue-400">DataPoortalen</span>
           <p id="user-email-label" class="text-sm text-slate-300 truncate mt-1"></p>
           <div class="mt-2 inline-flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
@@ -91,14 +91,14 @@
           </div>
         </div>
 
-        <nav class="space-y-1.5" id="nav-list">
-          <button data-tab="start" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold bg-blue-600 text-white cursor-pointer">Start</button>
-          <button data-tab="vochtintake" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Vochtintake</button>
-          <button data-tab="ritten" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Ritten</button>
-          <button data-tab="dialyse" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Dialyse</button>
-          <button data-tab="brieven" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Brieven</button>
-          <button data-tab="agenda" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Agenda</button>
-          <button data-tab="chat" class="nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between">
+        <nav class="space-y-1" id="nav-list">
+          <button data-tab="start" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white cursor-pointer">Start</button>
+          <button data-tab="vochtintake" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Vochtintake</button>
+          <button data-tab="ritten" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Ritten</button>
+          <button data-tab="dialyse" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Dialyse</button>
+          <button data-tab="brieven" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Brieven</button>
+          <button data-tab="agenda" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Agenda</button>
+          <button data-tab="chat" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between">
             <span>Chat</span>
             <span id="chat-unread-badge" class="hidden px-2 py-0.5 text-[11px] font-bold rounded-full bg-rose-600 text-white">0</span>
           </button>
@@ -106,7 +106,7 @@
       </div>
 
       <button id="logout-sidebar" type="button"
-        class="mt-8 w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-red-600 text-sm font-medium text-slate-200 hover:text-white transition cursor-pointer">
+        class="mt-6 w-full py-2 px-4 rounded-xl bg-slate-800 hover:bg-red-600 text-sm font-medium text-slate-200 hover:text-white transition cursor-pointer">
         Uitloggen
       </button>
     </aside>
@@ -115,235 +115,215 @@
     <div class="flex-1 flex flex-col min-w-0">
 
       <!-- Bovenbalk -->
-      <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
-        <div class="flex items-center gap-2.5">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-          <span id="clock-time" class="text-base font-bold text-slate-900 dark:text-white tabular-nums">--:--:--</span>
+      <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-5 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span id="clock-time" class="text-sm font-bold text-slate-900 dark:text-white tabular-nums">--:--:--</span>
           <span class="text-slate-300 dark:text-slate-700">•</span>
-          <span id="clock-date" class="text-sm font-medium text-slate-600 dark:text-slate-400 capitalize">Datum...</span>
+          <span id="clock-date" class="text-xs font-medium text-slate-600 dark:text-slate-400 capitalize">Datum...</span>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-wrap items-center gap-1.5">
           <button id="sound-toggle" type="button" title="Chat geluid aan of uit (dit toestel)"
-            class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
+            class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1 transition cursor-pointer">
             <span id="sound-label">Geluid: Aan</span>
           </button>
 
           <button id="theme-toggle" type="button" title="Dag / Nacht modus (alleen dit toestel)"
-            class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
+            class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1 transition cursor-pointer">
             <span class="theme-label">Nachtmodus</span>
           </button>
 
           <button id="fullscreen-toggle" type="button" title="Volledig beeld"
-            class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-            </svg>
+            class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1 transition cursor-pointer">
             <span id="fullscreen-text">Volledig beeld</span>
           </button>
 
           <button id="lock-trigger" type="button" title="Vergrendelen met pincode (dit toestel)"
-            class="px-3 py-2 rounded-xl border border-amber-200 dark:border-amber-800/70 bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+            class="px-2.5 py-1.5 rounded-xl border border-amber-200 dark:border-amber-800/70 bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 text-xs font-semibold flex items-center gap-1 transition cursor-pointer">
             <span>Vergrendel</span>
           </button>
 
           <button id="logout-header" type="button" title="Uitloggen"
-            class="px-3 py-2 rounded-xl border border-red-200 dark:border-red-900/70 bg-red-50 dark:bg-red-950/50 hover:bg-red-600 text-red-700 dark:text-red-300 hover:text-white text-xs font-semibold transition cursor-pointer">
+            class="px-2.5 py-1.5 rounded-xl border border-red-200 dark:border-red-900/70 bg-red-50 dark:bg-red-950/50 hover:bg-red-600 text-red-700 dark:text-red-300 hover:text-white text-xs font-semibold transition cursor-pointer">
             Uitloggen
           </button>
         </div>
       </header>
 
       <!-- Hoofdinhoud -->
-      <main class="flex-1 p-6 md:p-8">
-        <div class="max-w-6xl mx-auto space-y-6">
+      <main class="flex-1 p-4 md:p-6">
+        <div class="max-w-6xl mx-auto space-y-5">
 
           <!-- Kopregel -->
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">DataPoortalen</span>
-              <h2 id="active-tab-title" class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">Start</h2>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">DataPoortalen</span>
+              <h2 id="active-tab-title" class="text-xl font-bold text-slate-900 dark:text-white">Start</h2>
             </div>
             <div class="text-right">
-              <span class="text-xs text-slate-400 dark:text-slate-500 block">Laatste data-update</span>
+              <span class="text-[11px] text-slate-400 dark:text-slate-500 block">Laatste data-update</span>
               <span id="last-sync-time" class="text-xs font-bold text-slate-700 dark:text-slate-200 tabular-nums">Nog geen wijziging</span>
             </div>
           </div>
 
           <!-- ===================================================== -->
-          <!-- START-WEERGAVE: LIVE TEGELS                           -->
+          <!-- START-WEERGAVE: COMPACTE LIVE TEGELS                  -->
           <!-- ===================================================== -->
-          <div id="start-view" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div id="start-view" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
 
             <!-- TEGEL 1: VOCHTINTAKE -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between hover:border-sky-400 dark:hover:border-sky-500 transition">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 flex flex-col justify-between hover:border-sky-400 transition">
               <div>
-                <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">Vochtintake (24u)</span>
-                  <span class="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse"></span>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">Vocht (24u)</span>
+                  <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
                 </div>
-                <p id="tile-vocht-value" class="text-3xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 ml</p>
-                <p id="tile-vocht-48u" class="text-xs text-slate-500 dark:text-slate-400 mt-1 tabular-nums">48u: 0 ml</p>
+                <p id="tile-vocht-value" class="text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 ml</p>
+                <p id="tile-vocht-48u" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 tabular-nums">48u: 0 ml</p>
               </div>
-              <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
-                <div class="flex gap-1.5">
-                  <button id="tile-vocht-plus150" type="button"
-                    class="px-2.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold cursor-pointer">
-                    +150 ml
-                  </button>
-                  <button type="button" data-open-tab="vochtintake"
-                    class="open-tab-link px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold cursor-pointer">
-                    POS
-                  </button>
-                </div>
+              <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
+                <button id="tile-vocht-plus150" type="button"
+                  class="px-2 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold cursor-pointer">
+                  +150 ml
+                </button>
                 <button type="button" data-open-tab="vochtintake"
-                  class="open-tab-link text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
-                  Openen →
+                  class="open-tab-link text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                  POS →
                 </button>
               </div>
             </div>
 
             <!-- TEGEL 2: RITTEN -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between hover:border-emerald-400 dark:hover:border-emerald-500 transition">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 flex flex-col justify-between hover:border-emerald-400 transition">
               <div>
-                <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Ritten</span>
-                  <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold">→ Agenda</span>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Ritten</span>
+                  <span class="text-[10px] text-emerald-700 dark:text-emerald-300 font-semibold">→ Agenda</span>
                 </div>
-                <p id="tile-ritten-count" class="text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 ritten</p>
-                <p id="tile-ritten-last" class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Nog geen rit ingepland</p>
+                <p id="tile-ritten-count" class="text-xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 ritten</p>
+                <p id="tile-ritten-last" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Nog geen rit</p>
               </div>
-              <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+              <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
                 <button id="tile-rit-quick" type="button"
-                  class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer">
-                  + Snelle rit
+                  class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer">
+                  + Rit
                 </button>
                 <button type="button" data-open-tab="ritten"
-                  class="open-tab-link text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
-                  Openen →
+                  class="open-tab-link text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                  Open →
                 </button>
               </div>
             </div>
 
             <!-- TEGEL 3: DIALYSE -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-500 transition">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 flex flex-col justify-between hover:border-blue-400 transition">
               <div>
-                <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Dialyse</span>
-                  <span class="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-semibold">→ Agenda</span>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Dialyse</span>
+                  <span class="text-[10px] text-blue-700 dark:text-blue-300 font-semibold">→ Agenda</span>
                 </div>
-                <p id="tile-dialyse-status" class="text-2xl font-extrabold text-slate-900 dark:text-white truncate">Geen sessie</p>
-                <p id="tile-dialyse-sub" class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Klik om status te wisselen</p>
+                <p id="tile-dialyse-status" class="text-lg font-extrabold text-slate-900 dark:text-white truncate">Geen sessie</p>
+                <p id="tile-dialyse-sub" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Klik om status te wisselen</p>
               </div>
-              <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+              <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
                 <button id="tile-dialyse-cycle" type="button"
-                  class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer">
-                  Wissel status
+                  class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold cursor-pointer">
+                  Status
                 </button>
                 <button type="button" data-open-tab="dialyse"
-                  class="open-tab-link text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
-                  Openen →
+                  class="open-tab-link text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                  Open →
                 </button>
               </div>
             </div>
 
             <!-- TEGEL 4: BRIEVEN -->
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between hover:border-amber-400 dark:hover:border-amber-500 transition">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 flex flex-col justify-between hover:border-amber-400 transition">
               <div>
-                <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Brieven</span>
-                  <span class="text-[11px] text-slate-400 font-medium">Dossier</span>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Brieven</span>
+                  <span class="text-[10px] text-slate-400 font-medium">Dossier</span>
                 </div>
-                <p id="tile-brieven-count" class="text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 brieven</p>
-                <p id="tile-brieven-last" class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Geen recente brief</p>
+                <p id="tile-brieven-count" class="text-xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 brieven</p>
+                <p id="tile-brieven-last" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Geen brief</p>
               </div>
-              <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+              <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
                 <button id="tile-brief-quick" type="button"
-                  class="px-2.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer">
-                  + Brief noteren
+                  class="px-2 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold cursor-pointer">
+                  + Brief
                 </button>
                 <button type="button" data-open-tab="brieven"
-                  class="open-tab-link text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
-                  Openen →
+                  class="open-tab-link text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                  Open →
                 </button>
               </div>
             </div>
 
-            <!-- TEGEL 5: AGENDA -->
-            <div class="sm:col-span-2 lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between hover:border-indigo-400 dark:hover:border-indigo-500 transition">
-              <div>
-                <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Agenda (Ritten &amp; Dialyse)</span>
-                  <span id="tile-agenda-total" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300">0 items</span>
+            <!-- TEGEL 5: AGENDA (BREED) -->
+            <div class="sm:col-span-2 lg:col-span-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 flex flex-col justify-between hover:border-indigo-400 transition">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Agenda (Ritten &amp; Dialyse)</span>
+                  <span id="tile-agenda-total" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300">0 items</span>
                 </div>
-                <div id="tile-agenda-preview" class="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
-                  <p class="text-slate-400 dark:text-slate-500">Nog geen agenda-items uit Ritten of Dialyse.</p>
-                </div>
-              </div>
-              <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <span class="text-xs text-slate-500 dark:text-slate-400">Ritten en dialyses verschijnen hier automatisch</span>
                 <button type="button" data-open-tab="agenda"
                   class="open-tab-link text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
                   Open Agenda →
                 </button>
+              </div>
+              <div id="tile-agenda-preview" class="space-y-1 text-xs text-slate-600 dark:text-slate-300">
+                <p class="text-slate-400 dark:text-slate-500">Nog geen agenda-items uit Ritten of Dialyse.</p>
               </div>
             </div>
 
           </div>
 
           <!-- ===================================================== -->
-          <!-- VOCHTINTAKE POS + 24U & 48U PROGRESS BARS             -->
+          <!-- VOCHTINTAKE POS + 24U & 48U PROGRESS + TEGELBEHEER    -->
           <!-- ===================================================== -->
-          <div id="vocht-view" class="hidden space-y-6">
+          <div id="vocht-view" class="hidden space-y-5">
 
             <!-- 24U & 48U PROGRESS KAARTEN -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <!-- 24 UUR -->
-              <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-2.5">
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">24-uurs Voortgang</span>
-                  <span id="bar-24-pct" class="text-xs font-extrabold tabular-nums text-slate-700 dark:text-slate-200">0%</span>
+                  <span id="bar-24-pct" class="text-xs font-extrabold tabular-nums">0%</span>
                 </div>
                 <div class="flex items-baseline justify-between">
                   <span id="bar-24-label" class="text-2xl font-extrabold tabular-nums">0 ml</span>
                   <span id="bar-24-limit-label" class="text-xs text-slate-500 dark:text-slate-400 tabular-nums">van 1500 ml</span>
                 </div>
-                <div class="w-full h-4 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                <div class="w-full h-3.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                   <div id="bar-24-fill" class="h-full bg-sky-500 transition-all duration-300 rounded-full" style="width: 0%"></div>
                 </div>
               </div>
 
-              <!-- 48 UUR -->
-              <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-3">
+              <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-2.5">
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">48-uurs Voortgang</span>
-                  <span id="bar-48-pct" class="text-xs font-extrabold tabular-nums text-slate-700 dark:text-slate-200">0%</span>
+                  <span id="bar-48-pct" class="text-xs font-extrabold tabular-nums">0%</span>
                 </div>
                 <div class="flex items-baseline justify-between">
                   <span id="bar-48-label" class="text-2xl font-extrabold tabular-nums">0 ml</span>
                   <span id="bar-48-limit-label" class="text-xs text-slate-500 dark:text-slate-400 tabular-nums">van 3000 ml</span>
                 </div>
-                <div class="w-full h-4 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                <div class="w-full h-3.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                   <div id="bar-48-fill" class="h-full bg-indigo-500 transition-all duration-300 rounded-full" style="width: 0%"></div>
                 </div>
               </div>
             </div>
 
             <!-- POS KASSA + BON OVERZICHT -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-              <!-- Linker 2 kolommen: POS Tegels & Eigen invoer -->
-              <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-5">
+              <!-- Linker 2 kolommen: POS Tegels & Eigen tegels maken/verwijderen -->
+              <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-5">
                 <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
                   <div>
                     <span class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">POS Vocht-Kassa</span>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Snelle invoer</h3>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Product- en hoeveelheidtegels</h3>
                   </div>
                   <button type="button" data-open-tab="start"
                     class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
@@ -351,63 +331,54 @@
                   </button>
                 </div>
 
-                <!-- Drankkeuze -->
-                <div>
-                  <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Dranktype</label>
-                  <div id="pos-drink-buttons" class="flex flex-wrap gap-2">
-                    <button type="button" data-drink="Water" class="pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-sky-600 text-white cursor-pointer">Water</button>
-                    <button type="button" data-drink="Koffie" class="pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer">Koffie</button>
-                    <button type="button" data-drink="Thee" class="pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer">Thee</button>
-                    <button type="button" data-drink="Soep" class="pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer">Soep</button>
-                    <button type="button" data-drink="Frisdrank" class="pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer">Frisdrank</button>
-                  </div>
+                <!-- 1. PRODUCTTEGELS (KIEZEN & VERWIJDEREN) -->
+                <div class="space-y-2">
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Producttegels (klik om te kiezen, × om te verwijderen)</label>
+                  <div id="pos-drink-buttons" class="flex flex-wrap gap-2"></div>
+                  <form id="add-drink-tile-form" class="flex gap-2 pt-1">
+                    <input id="new-drink-tile-input" type="text" required placeholder="Nieuwe producttegel (bijv. Melk, Koffiebeker)"
+                      class="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
+                    <button type="submit"
+                      class="px-3.5 py-1.5 rounded-xl bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 text-white text-xs font-bold cursor-pointer shrink-0">
+                      + Producttegel
+                    </button>
+                  </form>
                 </div>
 
-                <!-- Grote POS ml-knoppen -->
-                <div>
-                  <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Tik op hoeveelheid (ml)</label>
-                  <div class="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
-                    <button type="button" data-ml="100" class="pos-ml-btn py-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-600 text-sky-900 dark:text-sky-200 hover:text-white border border-sky-200 dark:border-sky-800 font-extrabold text-sm tabular-nums transition cursor-pointer">+100 ml</button>
-                    <button type="button" data-ml="150" class="pos-ml-btn py-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-600 text-sky-900 dark:text-sky-200 hover:text-white border border-sky-200 dark:border-sky-800 font-extrabold text-sm tabular-nums transition cursor-pointer">+150 ml</button>
-                    <button type="button" data-ml="200" class="pos-ml-btn py-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-600 text-sky-900 dark:text-sky-200 hover:text-white border border-sky-200 dark:border-sky-800 font-extrabold text-sm tabular-nums transition cursor-pointer">+200 ml</button>
-                    <button type="button" data-ml="250" class="pos-ml-btn py-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-600 text-sky-900 dark:text-sky-200 hover:text-white border border-sky-200 dark:border-sky-800 font-extrabold text-sm tabular-nums transition cursor-pointer">+250 ml</button>
-                    <button type="button" data-ml="330" class="pos-ml-btn py-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-600 text-sky-900 dark:text-sky-200 hover:text-white border border-sky-200 dark:border-sky-800 font-extrabold text-sm tabular-nums transition cursor-pointer">+330 ml</button>
-                    <button type="button" data-ml="500" class="pos-ml-btn py-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-600 text-sky-900 dark:text-sky-200 hover:text-white border border-sky-200 dark:border-sky-800 font-extrabold text-sm tabular-nums transition cursor-pointer">+500 ml</button>
-                  </div>
+                <!-- 2. HOEVEELHEIDTEGELS (TIKKEN OM TOE TE VOEGEN & VERWIJDEREN) -->
+                <div class="space-y-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hoeveelheidtegels in ml (klik om direct toe te voegen, × om te verwijderen)</label>
+                  <div id="pos-ml-buttons" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+                  <form id="add-ml-tile-form" class="flex gap-2 pt-1">
+                    <input id="new-ml-tile-input" type="number" min="1" max="5000" required placeholder="Nieuwe ml-tegel (bijv. 125)"
+                      class="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs tabular-nums" />
+                    <button type="submit"
+                      class="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold cursor-pointer shrink-0">
+                      + ml Tegel
+                    </button>
+                  </form>
                 </div>
 
-                <!-- Eigen ml + drank toevoegen -->
-                <form id="pos-custom-form" class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <input id="pos-custom-drink" type="text" placeholder="Eigen drank (optioneel)"
-                    class="px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm" />
-                  <input id="pos-custom-ml" type="number" min="1" max="5000" required placeholder="Aantal ml"
-                    class="px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm tabular-nums" />
-                  <button type="submit"
-                    class="py-2 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold cursor-pointer">
-                    Toevoegen aan bon
-                  </button>
-                </form>
-
-                <!-- Limieten 24u / 48u instellen -->
+                <!-- 3. LIMIETEN 24U / 48U -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                   <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">24u Limiet (ml)</label>
                     <input id="limit-24-input" type="number" min="250" step="50" value="1500"
-                      class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
+                      class="w-full px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
                   </div>
                   <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">48u Limiet (ml)</label>
                     <input id="limit-48-input" type="number" min="500" step="50" value="3000"
-                      class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
+                      class="w-full px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
                   </div>
                 </div>
               </div>
 
               <!-- Rechter kolom: Live POS Bon / Logboek -->
-              <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between">
+              <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 flex flex-col justify-between">
                 <div>
                   <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
-                    <h4 class="font-bold text-sm uppercase tracking-wider text-slate-700 dark:text-slate-300">Intake Bon (48u)</h4>
+                    <h4 class="font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">Intake Bon (48u)</h4>
                     <button id="pos-clear-btn" type="button" class="text-xs text-red-600 dark:text-red-400 hover:underline cursor-pointer">
                       Wis alles
                     </button>
@@ -428,8 +399,8 @@
           <!-- ===================================================== -->
           <!-- CHAT-WEERGAVE (TEKST + SPRAAKBERICHT + DICTEREN)       -->
           <!-- ===================================================== -->
-          <div id="chat-view" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-5">
-            <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div id="chat-view" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-slate-100 dark:border-slate-800">
               <div>
                 <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Realtime Chat + Spraak</span>
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-0.5">Tekst- en spraakberichten</h3>
@@ -447,11 +418,11 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700">
               <div>
                 <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Versturen naar</label>
                 <select id="chat-target-mode"
-                  class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm font-semibold">
+                  class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm font-semibold">
                   <option value="self">Mijn eigen apparaten (zelf)</option>
                   <option value="user">Andere gebruiker (op e-mail / naam)</option>
                 </select>
@@ -460,7 +431,7 @@
               <div id="chat-recipient-wrapper" class="hidden">
                 <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">E-mailadres of gebruikersnaam ontvanger</label>
                 <input id="chat-recipient-input" type="text" placeholder="Bijv. jan@voorbeeld.nl of Jan"
-                  class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm" />
+                  class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm" />
               </div>
 
               <div id="chat-self-info" class="flex items-center text-xs text-slate-500 dark:text-slate-400">
@@ -484,23 +455,20 @@
 
             <form id="chat-send-form" class="flex flex-wrap gap-2">
               <input id="chat-message-input" type="text" placeholder="Typ een bericht of spreek in..."
-                class="flex-1 min-w-[200px] px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                class="flex-1 min-w-[200px] px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
 
               <button id="voice-record-btn" type="button" title="Spraakbericht opnemen en versturen"
-                class="px-3.5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-                </svg>
+                class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shrink-0">
                 <span id="voice-record-label">Spraakbericht</span>
               </button>
 
               <button id="dictate-btn" type="button" title="Spreek tekst in (dicteren)"
-                class="px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition cursor-pointer shrink-0">
+                class="px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition cursor-pointer shrink-0">
                 <span id="dictate-label">Dicteer</span>
               </button>
 
               <button type="submit"
-                class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition cursor-pointer shrink-0">
+                class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition cursor-pointer shrink-0">
                 Versturen
               </button>
             </form>
@@ -509,8 +477,8 @@
           <!-- ===================================================== -->
           <!-- OVERIGE MODULE-WEERGAVE                               -->
           <!-- ===================================================== -->
-          <div id="module-box" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
-            <div class="flex items-center justify-between gap-4 pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+          <div id="module-box" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
+            <div class="flex items-center justify-between gap-4 pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
               <div>
                 <h3 id="module-heading" class="text-lg font-bold text-slate-900 dark:text-white">Onderdeel</h3>
                 <p id="module-desc" class="text-sm text-slate-500 dark:text-slate-400 mt-0.5"></p>
@@ -619,15 +587,15 @@
     let initialChatLoaded = false;
     let unreadCount = 0;
 
-    // Lokale toestel-instellingen
     let localTheme = localStorage.getItem('dp_device_theme') || 'light';
     let localActiveTab = 'start';
     let soundEnabled = localStorage.getItem('dp_device_sound') !== '0';
     let selectedDrink = 'Water';
 
-    // Gedeelde account-data
     let sharedData = {
       vochtEntries: [],
+      vochtProducts: ['Water', 'Koffie', 'Thee', 'Soep', 'Frisdrank'],
+      vochtAmounts: [100, 150, 200, 250, 330, 500],
       vochtLimit24: 1500,
       vochtLimit48: 3000,
       ritten: [],
@@ -637,7 +605,6 @@
       updatedAt: ''
     };
 
-    // Dag / Nacht modus (alleen dit toestel)
     function applyTheme(theme) {
       localTheme = theme === 'dark' ? 'dark' : 'light';
       localStorage.setItem('dp_device_theme', localTheme);
@@ -656,7 +623,6 @@
     document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
     document.getElementById('login-theme-btn').addEventListener('click', toggleTheme);
 
-    // Geluid aan/uit (alleen dit toestel)
     document.getElementById('sound-label').textContent = soundEnabled ? 'Geluid: Aan' : 'Geluid: Uit';
     document.getElementById('sound-toggle').addEventListener('click', () => {
       soundEnabled = !soundEnabled;
@@ -700,7 +666,6 @@
 
     document.getElementById('test-sound-btn').addEventListener('click', playNotificationSound);
 
-    // Toast melding
     const toastEl = document.getElementById('incoming-toast');
     let toastTimer = null;
 
@@ -739,7 +704,7 @@
     }
 
     // ---------------------------------------------------------
-    // VOCHTINTAKE BEREKENINGEN (24U & 48U) + POS ACTIES
+    // VOCHTINTAKE BEREKENINGEN + PRODUCT- & HOEVEELHEIDTEGELS
     // ---------------------------------------------------------
     function computeVochtStats(entries, limit24, limit48) {
       const now = Date.now();
@@ -784,40 +749,72 @@
       await pushSharedData({ vochtEntries: current });
     }
 
-    // POS drankkeuze
-    document.querySelectorAll('.pos-drink-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        selectedDrink = btn.getAttribute('data-drink') || 'Water';
-        document.querySelectorAll('.pos-drink-btn').forEach((b) => {
-          const active = b.getAttribute('data-drink') === selectedDrink;
-          b.className = active
-            ? 'pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-sky-600 text-white cursor-pointer'
-            : 'pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer';
-        });
-      });
-    });
-
-    // POS snelle ml-knoppen
-    document.querySelectorAll('.pos-ml-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const ml = Number(btn.getAttribute('data-ml') || 0);
-        addVochtEntry(ml, selectedDrink);
-      });
-    });
-
-    // POS eigen invoer
-    document.getElementById('pos-custom-form').addEventListener('submit', (e) => {
+    // Producttegel toevoegen
+    document.getElementById('add-drink-tile-form').addEventListener('submit', (e) => {
       e.preventDefault();
-      const drinkInput = document.getElementById('pos-custom-drink');
-      const mlInput = document.getElementById('pos-custom-ml');
-      const ml = Number(mlInput.value || 0);
-      if (ml <= 0) return;
-      const drink = drinkInput.value.trim() || selectedDrink;
-      addVochtEntry(ml, drink);
-      mlInput.value = '';
+      const input = document.getElementById('new-drink-tile-input');
+      const name = input.value.trim();
+      if (!name) return;
+      const products = Array.isArray(sharedData.vochtProducts) ? [...sharedData.vochtProducts] : [];
+      if (!products.some((p) => p.toLowerCase() === name.toLowerCase())) {
+        products.push(name);
+      }
+      selectedDrink = name;
+      input.value = '';
+      pushSharedData({ vochtProducts: products });
     });
 
-    // 24u / 48u limieten aanpassen
+    // Producttegel kiezen of verwijderen
+    document.getElementById('pos-drink-buttons').addEventListener('click', (e) => {
+      const delBtn = e.target.closest('.del-drink-btn');
+      if (delBtn) {
+        const name = delBtn.getAttribute('data-drink');
+        const next = (sharedData.vochtProducts || []).filter((p) => p !== name);
+        const safeNext = next.length > 0 ? next : ['Water'];
+        if (selectedDrink === name) {
+          selectedDrink = safeNext[0];
+        }
+        pushSharedData({ vochtProducts: safeNext });
+        return;
+      }
+      const selBtn = e.target.closest('.select-drink-btn');
+      if (selBtn) {
+        selectedDrink = selBtn.getAttribute('data-drink') || 'Water';
+        renderAll();
+      }
+    });
+
+    // Hoeveelheidtegel toevoegen
+    document.getElementById('add-ml-tile-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('new-ml-tile-input');
+      const ml = Math.round(Number(input.value || 0));
+      if (ml <= 0) return;
+      const amounts = Array.isArray(sharedData.vochtAmounts) ? [...sharedData.vochtAmounts] : [];
+      if (!amounts.includes(ml)) {
+        amounts.push(ml);
+      }
+      input.value = '';
+      pushSharedData({ vochtAmounts: amounts });
+    });
+
+    // Hoeveelheidtegel tikken (toevoegen aan bon) of verwijderen
+    document.getElementById('pos-ml-buttons').addEventListener('click', (e) => {
+      const delBtn = e.target.closest('.del-ml-btn');
+      if (delBtn) {
+        const ml = Number(delBtn.getAttribute('data-ml'));
+        const next = (sharedData.vochtAmounts || []).filter((a) => Number(a) !== ml);
+        const safeNext = next.length > 0 ? next : [150];
+        pushSharedData({ vochtAmounts: safeNext });
+        return;
+      }
+      const addBtn = e.target.closest('.add-ml-btn');
+      if (addBtn) {
+        const ml = Number(addBtn.getAttribute('data-ml') || 0);
+        addVochtEntry(ml, selectedDrink);
+      }
+    });
+
     document.getElementById('limit-24-input').addEventListener('change', (e) => {
       pushSharedData({ vochtLimit24: Math.max(100, Number(e.target.value || 1500)) });
     });
@@ -825,12 +822,10 @@
       pushSharedData({ vochtLimit48: Math.max(200, Number(e.target.value || 3000)) });
     });
 
-    // Bon wissen
     document.getElementById('pos-clear-btn').addEventListener('click', () => {
       pushSharedData({ vochtEntries: [] });
     });
 
-    // Enkele bonregel verwijderen
     document.getElementById('pos-receipt-list').addEventListener('click', (e) => {
       const delBtn = e.target.closest('.del-vocht-btn');
       if (!delBtn) return;
@@ -1138,7 +1133,6 @@
       await sendChatPayload({ type: 'text', text });
     });
 
-    // Live tijd & datum
     function tickClock() {
       const now = new Date();
       document.getElementById('clock-time').textContent = now.toLocaleTimeString('nl-NL');
@@ -1149,7 +1143,6 @@
     tickClock();
     setInterval(tickClock, 1000);
 
-    // Volledig beeld
     const fsBtn = document.getElementById('fullscreen-toggle');
     const fsText = document.getElementById('fullscreen-text');
     fsBtn.addEventListener('click', () => {
@@ -1163,7 +1156,6 @@
       fsText.textContent = document.fullscreenElement ? 'Normaal beeld' : 'Volledig beeld';
     });
 
-    // Pincode vergrendeling
     const pinModal = document.getElementById('pin-modal');
     const pinHeading = document.getElementById('pin-heading');
     const pinSubtext = document.getElementById('pin-subtext');
@@ -1257,9 +1249,20 @@
       document.querySelectorAll('.nav-btn').forEach((btn) => {
         const active = btn.getAttribute('data-tab') === tab;
         btn.className = active
-          ? 'nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold bg-blue-600 text-white cursor-pointer flex items-center justify-between'
-          : 'nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between';
+          ? 'nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white cursor-pointer flex items-center justify-between'
+          : 'nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between';
       });
+
+      const products = Array.isArray(sharedData.vochtProducts) && sharedData.vochtProducts.length > 0
+        ? sharedData.vochtProducts
+        : ['Water'];
+      if (!products.includes(selectedDrink)) {
+        selectedDrink = products[0];
+      }
+
+      const amounts = Array.isArray(sharedData.vochtAmounts) && sharedData.vochtAmounts.length > 0
+        ? sharedData.vochtAmounts
+        : [150];
 
       const vochtStats = computeVochtStats(sharedData.vochtEntries, sharedData.vochtLimit24, sharedData.vochtLimit48);
       const ritten = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
@@ -1273,13 +1276,13 @@
       document.getElementById('tile-ritten-count').textContent = `${ritten.length} ${ritten.length === 1 ? 'rit' : 'ritten'}`;
       document.getElementById('tile-ritten-last').textContent = ritten.length > 0
         ? `Laatste: ${ritten[ritten.length - 1].titel}`
-        : 'Nog geen rit ingepland';
+        : 'Nog geen rit';
       document.getElementById('tile-dialyse-status').textContent = dialyseStatus;
       document.getElementById('tile-dialyse-sub').textContent = dialyseSub;
       document.getElementById('tile-brieven-count').textContent = `${brieven.length} ${brieven.length === 1 ? 'brief' : 'brieven'}`;
       document.getElementById('tile-brieven-last').textContent = brieven.length > 0
         ? `Laatste: ${brieven[brieven.length - 1].titel}`
-        : 'Geen recente brief';
+        : 'Geen brief';
 
       const agendaItems = [
         ...ritten.map((r) => ({ type: 'Rit', titel: r.titel, tijd: r.tijd || 'Vandaag' })),
@@ -1300,7 +1303,40 @@
         `).join('');
       }
 
-      // 24u en 48u progress bars updaten
+      // Render POS producttegels (met verwijderknop)
+      document.getElementById('pos-drink-buttons').innerHTML = products.map((prod) => {
+        const active = prod === selectedDrink;
+        return `
+          <div class="inline-flex items-center rounded-xl overflow-hidden border ${
+            active
+              ? 'border-sky-600 bg-sky-600 text-white'
+              : 'border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200'
+          }">
+            <button type="button" data-drink="${escapeHtml(prod)}" class="select-drink-btn px-3 py-1.5 text-xs font-bold cursor-pointer">
+              ${escapeHtml(prod)}
+            </button>
+            <button type="button" data-drink="${escapeHtml(prod)}" title="Verwijder producttegel"
+              class="del-drink-btn px-2 py-1.5 text-xs font-bold opacity-75 hover:opacity-100 hover:bg-black/15 cursor-pointer">
+              ×
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      // Render POS hoeveelheidtegels (met verwijderknop)
+      document.getElementById('pos-ml-buttons').innerHTML = amounts.map((ml) => `
+        <div class="flex items-center justify-between rounded-xl border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/50 text-sky-950 dark:text-sky-100 overflow-hidden">
+          <button type="button" data-ml="${Number(ml)}" class="add-ml-btn flex-1 py-2.5 px-2.5 text-left text-xs font-extrabold tabular-nums hover:bg-sky-600 hover:text-white transition cursor-pointer">
+            +${Number(ml)} ml
+          </button>
+          <button type="button" data-ml="${Number(ml)}" title="Verwijder hoeveelheidtegel"
+            class="del-ml-btn px-2 py-2.5 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-red-600 hover:bg-red-500/10 cursor-pointer">
+            ×
+          </button>
+        </div>
+      `).join('');
+
+      // 24u en 48u progress bars
       document.getElementById('bar-24-label').textContent = `${vochtStats.total24} ml`;
       document.getElementById('bar-24-limit-label').textContent = `van ${vochtStats.lim24} ml`;
       document.getElementById('bar-24-pct').textContent = `${vochtStats.pct24}%`;
@@ -1329,7 +1365,6 @@
       if (document.activeElement !== lim24El) lim24El.value = vochtStats.lim24;
       if (document.activeElement !== lim48El) lim48El.value = vochtStats.lim48;
 
-      // POS Bon / lijst
       const receiptEl = document.getElementById('pos-receipt-list');
       if (vochtStats.valid48.length === 0) {
         receiptEl.innerHTML = `<p class="text-slate-400 text-center py-6">Nog geen vocht geregistreerd.</p>`;
@@ -1353,7 +1388,6 @@
         }).join('');
       }
 
-      // Weergave schakelen
       const startView = document.getElementById('start-view');
       const vochtView = document.getElementById('vocht-view');
       const chatView = document.getElementById('chat-view');
@@ -1404,7 +1438,7 @@
     }
 
     document.getElementById('tile-vocht-plus150').addEventListener('click', () => {
-      addVochtEntry(150, 'Water');
+      addVochtEntry(150, selectedDrink);
     });
     document.getElementById('tile-rit-quick').addEventListener('click', () => {
       const ritten = Array.isArray(sharedData.ritten) ? [...sharedData.ritten] : [];
@@ -1456,7 +1490,6 @@
       startChatListener();
     }
 
-    // Auth
     const loginScreen = document.getElementById('login-screen');
     const appShell = document.getElementById('app-shell');
     const authError = document.getElementById('auth-error');
