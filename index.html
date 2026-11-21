@@ -281,7 +281,7 @@
           </div>
 
           <!-- ===================================================== -->
-          <!-- DIALYSE-MODULE                                        -->
+          <!-- DIALYSE-MODULE + PLANNING TOOL                        -->
           <!-- ===================================================== -->
           <div id="dialyse-view" class="hidden space-y-5">
 
@@ -298,7 +298,7 @@
 
                 <div class="flex flex-wrap items-center gap-3">
                   <div id="dialyse-uf-advice-box" class="px-4 py-2 rounded-xl border font-extrabold text-sm tabular-nums bg-emerald-50 border-emerald-300 text-emerald-800">
-                    UF advies: 0,00 L
+                    UF advies: -
                   </div>
                   <div id="dialyse-uf-actual-box" class="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold tabular-nums">
                     Werkelijke UF: -
@@ -307,12 +307,12 @@
               </div>
             </div>
 
-            <!-- Invoerformulier Dialyse -->
+            <!-- Invoer- & Planningsformulier Dialyse -->
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
               <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div>
-                  <span id="dialyse-form-badge" class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Dialyse registreren</span>
-                  <h3 id="dialyse-form-title" class="text-lg font-bold text-slate-900 dark:text-white">Nieuwe dialysesessie</h3>
+                  <span id="dialyse-form-badge" class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Dialyse plannen &amp; registreren</span>
+                  <h3 id="dialyse-form-title" class="text-lg font-bold text-slate-900 dark:text-white">Nieuwe dialysesessie(s)</h3>
                 </div>
                 <div class="flex items-center gap-2">
                   <button type="button" data-open-tab="instellingen"
@@ -400,6 +400,37 @@
                   </div>
                 </div>
 
+                <!-- Planning / Herhaling (net als bij Ritten) -->
+                <div id="dialyse-repeat-fields" class="p-3.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/70 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Herhaling (Planning)</label>
+                    <select id="dialyse-herhaling"
+                      class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
+                      <option value="1Malig">1Malig</option>
+                      <option value="Elkedag">Elkedag</option>
+                      <option value="Om de dag">Om de dag</option>
+                      <option value="Ma wo vrij">Ma wo vrij</option>
+                      <option value="Di do za">Di do za</option>
+                      <option value="Zo di do">Zo di do</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Geldig voor</label>
+                    <select id="dialyse-geldig-type"
+                      class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
+                      <option value="maand">Huidige maand (einde maand)</option>
+                      <option value="einddatum">Tot einddatum</option>
+                    </select>
+                  </div>
+
+                  <div id="dialyse-einddatum-wrap" class="hidden">
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Einddatum</label>
+                    <input id="dialyse-einddatum" type="date"
+                      class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold" />
+                  </div>
+                </div>
+
                 <!-- Vinkhokjes -->
                 <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
                   <span class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2.5">Medicatie &amp; Shuntflow vinkhokjes</span>
@@ -442,9 +473,14 @@
                 </div>
 
                 <div class="flex flex-wrap items-center justify-between pt-1 gap-2">
-                  <span id="dialyse-calc-hint" class="text-xs text-slate-500 dark:text-slate-400">
-                    Bij Dag: Stop = Afspraak + 4 uur en UF advies = Pre - Drooggewicht + 0,6.
-                  </span>
+                  <div class="space-y-0.5">
+                    <span id="dialyse-calc-hint" class="block text-xs text-slate-500 dark:text-slate-400">
+                      Bij Dag: Stop = Afspraak + 4 uur en UF advies = Pre - Drooggewicht + 0,6.
+                    </span>
+                    <span id="dialyse-repeat-hint" class="block text-xs font-semibold text-blue-600 dark:text-blue-400">
+                      1Malig: wordt als 1 sessie op de gekozen datum opgeslagen.
+                    </span>
+                  </div>
                   <div class="flex items-center gap-2 shrink-0">
                     <button id="dialyse-cancel-edit-btn" type="button"
                       class="hidden px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold cursor-pointer">
@@ -459,11 +495,13 @@
               </form>
             </div>
 
-            <!-- Overzicht opgeslagen dialysesessies -->
+            <!-- Overzicht geplande & uitgevoerde dialysesessies -->
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Overzicht dialysesessies</h4>
-                <span class="text-[11px] font-semibold text-blue-600 dark:text-blue-400">Nieuwste eerst</span>
+                <span class="text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                  Volgorde: Vandaag → Morgen → Verder oplopend
+                </span>
               </div>
               <div id="dialyse-list-container" class="space-y-2.5">
                 <p class="text-xs text-slate-400 py-4 text-center">Nog geen dialysesessies opgeslagen.</p>
@@ -766,6 +804,7 @@
                       <option value="Om de dag">Om de dag</option>
                       <option value="Ma wo vrij">Ma wo vrij</option>
                       <option value="Di do za">Di do za</option>
+                      <option value="Zo di do">Zo di do</option>
                     </select>
                   </div>
 
@@ -1328,6 +1367,14 @@
       return formatDateISO(d);
     }
 
+    function getDayCategory(dateISO, todayISO, tomorrowISO) {
+      if (!dateISO) return { bucket: 3, label: 'Geen datum' };
+      if (dateISO === todayISO) return { bucket: 0, label: 'Vandaag' };
+      if (dateISO === tomorrowISO) return { bucket: 1, label: 'Morgen' };
+      if (dateISO > tomorrowISO) return { bucket: 2, label: dateISO };
+      return { bucket: 3, label: dateISO };
+    }
+
     function timeToMinutes(hhmm) {
       if (!hhmm || !hhmm.includes(':')) return null;
       const [h, m] = hhmm.split(':').map(Number);
@@ -1335,9 +1382,79 @@
       return h * 60 + m;
     }
 
+    function generateOccurrenceDates(startDateStr, herhaling, geldigType, einddatumStr) {
+      const [sy, sm, sd] = startDateStr.split('-').map(Number);
+      const startDate = new Date(sy, sm - 1, sd);
+      if (herhaling === '1Malig') {
+        return [startDate];
+      }
+
+      let endDate;
+      if (geldigType === 'einddatum' && einddatumStr) {
+        const [ey, em, ed] = einddatumStr.split('-').map(Number);
+        endDate = new Date(ey, em - 1, ed);
+      } else {
+        endDate = new Date(sy, sm, 0);
+      }
+
+      if (endDate < startDate) {
+        return [startDate];
+      }
+
+      const dates = [];
+      const cur = new Date(startDate.getTime());
+      let dayStep = 0;
+
+      while (cur <= endDate && dates.length < 120) {
+        const dow = cur.getDay();
+        let match = false;
+
+        if (herhaling === 'Elkedag') {
+          match = true;
+        } else if (herhaling === 'Om de dag') {
+          match = dayStep % 2 === 0;
+        } else if (herhaling === 'Ma wo vrij') {
+          match = dow === 1 || dow === 3 || dow === 5;
+        } else if (herhaling === 'Di do za') {
+          match = dow === 2 || dow === 4 || dow === 6;
+        } else if (herhaling === 'Zo di do') {
+          match = dow === 0 || dow === 2 || dow === 4;
+        }
+
+        if (match) {
+          dates.push(new Date(cur.getTime()));
+        }
+        cur.setDate(cur.getDate() + 1);
+        dayStep += 1;
+      }
+
+      return dates.length > 0 ? dates : [startDate];
+    }
+
     // ---------------------------------------------------------
-    // DIALYSE BEREKENINGEN & KLEURCODERING
+    // DIALYSE BEREKENINGEN, PLANNING & KLEURCODERING
     // ---------------------------------------------------------
+    const dialyseHerhalingEl = document.getElementById('dialyse-herhaling');
+    const dialyseGeldigTypeEl = document.getElementById('dialyse-geldig-type');
+    const dialyseEinddatumWrapEl = document.getElementById('dialyse-einddatum-wrap');
+    const dialyseRepeatFieldsEl = document.getElementById('dialyse-repeat-fields');
+    const dialyseRepeatHintEl = document.getElementById('dialyse-repeat-hint');
+
+    function updateDialyseRepeatUI() {
+      if (editingDialyseId) return;
+      const isEinddatum = dialyseGeldigTypeEl.value === 'einddatum';
+      dialyseEinddatumWrapEl.classList.toggle('hidden', !isEinddatum);
+      const rep = dialyseHerhalingEl.value;
+      if (rep === '1Malig') {
+        dialyseRepeatHintEl.textContent = '1Malig: wordt als 1 dialysesessie op de gekozen datum opgeslagen.';
+      } else {
+        dialyseRepeatHintEl.textContent = `Planning "${rep}" wordt aangemaakt voor ${isEinddatum ? 'de gekozen einddatum' : 'de rest van de huidige maand'}.`;
+      }
+    }
+
+    dialyseHerhalingEl.addEventListener('change', updateDialyseRepeatUI);
+    dialyseGeldigTypeEl.addEventListener('change', updateDialyseRepeatUI);
+
     function getDryWeight() {
       const dw = Number(sharedData.dialyseDryWeight);
       return Number.isFinite(dw) && dw > 0 ? dw : 109;
@@ -1383,6 +1500,30 @@
       return 'bg-emerald-100 dark:bg-emerald-950/70 border-emerald-400 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200';
     }
 
+    function sortDialysePlanning(sessiesList) {
+      const todayISO = getTodayISO();
+      const tomorrowISO = getTomorrowISO();
+
+      return (Array.isArray(sessiesList) ? [...sessiesList] : [])
+        .map((sessie, origIdx) => {
+          const raw = String(sessie.afspraak || sessie.startDatumTijd || '').trim();
+          const dateISO = raw.includes('T') ? raw.split('T')[0] : '';
+          const timeHHMM = raw.includes('T') ? raw.split('T')[1].slice(0, 5) : '00:00';
+          const dayInfo = getDayCategory(dateISO, todayISO, tomorrowISO);
+          const sortKey = `${dateISO || '9999-99-99'}T${timeHHMM}`;
+          return { sessie, origIdx, dateISO, timeHHMM, dayInfo, sortKey };
+        })
+        .sort((a, b) => {
+          if (a.dayInfo.bucket !== b.dayInfo.bucket) {
+            return a.dayInfo.bucket - b.dayInfo.bucket;
+          }
+          if (a.sortKey !== b.sortKey) {
+            return a.sortKey.localeCompare(b.sortKey);
+          }
+          return a.origIdx - b.origIdx;
+        });
+    }
+
     function syncDialyseStopFromAfspraak(forceStop = false) {
       const soort = document.getElementById('dialyse-soort').value || 'Dag';
       const afspraakVal = document.getElementById('dialyse-afspraak').value;
@@ -1390,7 +1531,6 @@
       const hintEl = document.getElementById('dialyse-calc-hint');
 
       const hoursAdd = soort === 'Dag' ? 4 : 7;
-      const ufAdd = soort === 'Dag' ? '0,6' : '0,3';
       hintEl.textContent = soort === 'Dag'
         ? `Dagdialyse: Stop = Afspraak + 4 uur • UF advies = Pre gewicht - ${getDryWeight()} + 0,6.`
         : `Nachtdialyse (2 datums): Stop = Afspraak + 7 uur • UF advies = Pre gewicht - ${getDryWeight()} + 0,3.`;
@@ -1492,10 +1632,12 @@
       stopInp.dataset.manualStop = '0';
       duurInp.dataset.manualDuur = '0';
       werkInp.dataset.manualWerkUf = '0';
-      document.getElementById('dialyse-form-badge').textContent = 'Dialyse registreren';
-      document.getElementById('dialyse-form-title').textContent = 'Nieuwe dialysesessie';
+      dialyseRepeatFieldsEl.classList.remove('hidden');
+      document.getElementById('dialyse-form-badge').textContent = 'Dialyse plannen & registreren';
+      document.getElementById('dialyse-form-title').textContent = 'Nieuwe dialysesessie(s)';
       document.getElementById('dialyse-submit-btn').textContent = 'Dialyse opslaan';
       document.getElementById('dialyse-cancel-edit-btn').classList.add('hidden');
+      updateDialyseRepeatUI();
       syncDialyseStopFromAfspraak(true);
     }
 
@@ -1507,6 +1649,7 @@
       if (!item) return;
 
       editingDialyseId = sessieId;
+      dialyseRepeatFieldsEl.classList.add('hidden');
       document.getElementById('dialyse-soort').value = item.soort === 'Nacht' ? 'Nacht' : 'Dag';
       document.getElementById('dialyse-afspraak').value = item.afspraak || '';
       document.getElementById('dialyse-start').value = item.startDatumTijd || '';
@@ -1532,6 +1675,7 @@
       document.getElementById('dialyse-form-badge').textContent = 'Dialyse aanpassen';
       document.getElementById('dialyse-form-title').textContent = 'Dialysesessie bewerken';
       document.getElementById('dialyse-submit-btn').textContent = 'Wijziging opslaan';
+      dialyseRepeatHintEl.textContent = 'Pas deze sessie aan en klik op Wijziging opslaan.';
       document.getElementById('dialyse-cancel-edit-btn').classList.remove('hidden');
 
       updateDialyseLiveCalculations();
@@ -1545,14 +1689,9 @@
       const startDatumTijd = document.getElementById('dialyse-start').value;
       let stopDatumTijd = document.getElementById('dialyse-stop').value;
 
-      if (!afspraak) return;
+      if (!afspraak || !afspraak.includes('T')) return;
 
-      if (!stopDatumTijd && afspraak.includes('T')) {
-        const aDate = parseLocalDateTime(afspraak);
-        if (aDate) {
-          stopDatumTijd = toDateTimeLocalString(new Date(aDate.getTime() + (soort === 'Dag' ? 4 : 7) * 3600000));
-        }
-      }
+      const hoursAdd = soort === 'Dag' ? 4 : 7;
 
       const preGewicht = document.getElementById('dialyse-pre-gewicht').value !== ''
         ? Number(document.getElementById('dialyse-pre-gewicht').value)
@@ -1569,18 +1708,10 @@
         ? Number(document.getElementById('dialyse-werkelijke-uf').value)
         : autoWerkUf;
 
-      const duur = document.getElementById('dialyse-duur').value.trim()
-        || calcDuurLabelFromDates(startDatumTijd, stopDatumTijd);
-
       const adviesUf = calcUfAdvice(preGewicht, soort, getDryWeight());
 
-      const sessieObj = {
-        id: editingDialyseId || `${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      const baseFields = {
         soort,
-        afspraak,
-        startDatumTijd,
-        stopDatumTijd,
-        duur,
         preGewicht,
         postGewicht,
         adviesUf,
@@ -1597,16 +1728,72 @@
 
       const currentList = Array.isArray(sharedData.dialyseSessies) ? [...sharedData.dialyseSessies] : [];
       let nextList;
+
       if (editingDialyseId) {
-        nextList = currentList.map((item, idx) => String(item.id || idx) === editingDialyseId ? sessieObj : item);
+        if (!stopDatumTijd) {
+          const aDate = parseLocalDateTime(afspraak);
+          if (aDate) stopDatumTijd = toDateTimeLocalString(new Date(aDate.getTime() + hoursAdd * 3600000));
+        }
+        const duur = document.getElementById('dialyse-duur').value.trim()
+          || calcDuurLabelFromDates(startDatumTijd, stopDatumTijd);
+
+        nextList = currentList.map((item, idx) => {
+          if (String(item.id || idx) !== editingDialyseId) return item;
+          return {
+            ...item,
+            ...baseFields,
+            afspraak,
+            startDatumTijd,
+            stopDatumTijd,
+            duur
+          };
+        });
       } else {
-        nextList = [...currentList, sessieObj];
+        const herhaling = dialyseHerhalingEl.value;
+        const geldigType = dialyseGeldigTypeEl.value;
+        const einddatum = document.getElementById('dialyse-einddatum').value;
+        const [startDatePart, afspTimePart] = afspraak.split('T');
+        const dates = generateOccurrenceDates(startDatePart, herhaling, geldigType, einddatum);
+
+        const startTimePart = startDatumTijd && startDatumTijd.includes('T')
+          ? startDatumTijd.split('T')[1].slice(0, 5)
+          : '';
+
+        dates.forEach((dObj, i) => {
+          const dateStr = formatDateISO(dObj);
+          const itemAfspraak = `${dateStr}T${afspTimePart.slice(0, 5)}`;
+          const itemAfspraakDate = parseLocalDateTime(itemAfspraak);
+
+          let itemStop = '';
+          if (herhaling === '1Malig' && stopDatumTijd) {
+            itemStop = stopDatumTijd;
+          } else if (itemAfspraakDate) {
+            itemStop = toDateTimeLocalString(new Date(itemAfspraakDate.getTime() + hoursAdd * 3600000));
+          }
+
+          const itemStart = startTimePart ? `${dateStr}T${startTimePart}` : '';
+          const itemDuur = document.getElementById('dialyse-duur').value.trim()
+            || calcDuurLabelFromDates(itemStart, itemStop);
+
+          currentList.push({
+            id: `${Date.now()}_${i}_${Math.random().toString(36).slice(2, 6)}`,
+            ...baseFields,
+            afspraak: itemAfspraak,
+            startDatumTijd: itemStart,
+            stopDatumTijd: itemStop,
+            duur: itemDuur,
+            herhaling,
+            geldigType,
+            einddatum: geldigType === 'einddatum' ? einddatum : ''
+          });
+        });
+        nextList = currentList;
       }
 
       const subInfo = [
         formatIsoDateTimeNL(afspraak),
         adviesUf !== null ? `UF advies ${adviesUf.toFixed(2).replace('.', ',')} L` : '',
-        sessieObj.verpleging ? `Vpk: ${sessieObj.verpleging}` : ''
+        baseFields.verpleging ? `Vpk: ${baseFields.verpleging}` : ''
       ].filter(Boolean).join(' • ');
 
       resetDialyseForm();
@@ -2113,14 +2300,6 @@
       return { dateISO, timeHHMM };
     }
 
-    function getDayCategory(dateISO, todayISO, tomorrowISO) {
-      if (!dateISO) return { bucket: 3, label: 'Geen datum' };
-      if (dateISO === todayISO) return { bucket: 0, label: 'Vandaag' };
-      if (dateISO === tomorrowISO) return { bucket: 1, label: 'Morgen' };
-      if (dateISO > tomorrowISO) return { bucket: 2, label: dateISO };
-      return { bucket: 3, label: dateISO };
-    }
-
     function sortRittenPlanning(rittenList) {
       const todayISO = getTodayISO();
       const tomorrowISO = getTomorrowISO();
@@ -2195,53 +2374,6 @@
       const pctLate = evaluated > 0 ? Math.round((late / evaluated) * 100) : 0;
 
       return { total: list.length, evaluated, onTime, early, late, pctOnTime, pctEarly, pctLate };
-    }
-
-    function generateOccurrenceDates(startDateStr, herhaling, geldigType, einddatumStr) {
-      const [sy, sm, sd] = startDateStr.split('-').map(Number);
-      const startDate = new Date(sy, sm - 1, sd);
-      if (herhaling === '1Malig') {
-        return [startDate];
-      }
-
-      let endDate;
-      if (geldigType === 'einddatum' && einddatumStr) {
-        const [ey, em, ed] = einddatumStr.split('-').map(Number);
-        endDate = new Date(ey, em - 1, ed);
-      } else {
-        endDate = new Date(sy, sm, 0);
-      }
-
-      if (endDate < startDate) {
-        return [startDate];
-      }
-
-      const dates = [];
-      const cur = new Date(startDate.getTime());
-      let dayStep = 0;
-
-      while (cur <= endDate && dates.length < 120) {
-        const dow = cur.getDay();
-        let match = false;
-
-        if (herhaling === 'Elkedag') {
-          match = true;
-        } else if (herhaling === 'Om de dag') {
-          match = dayStep % 2 === 0;
-        } else if (herhaling === 'Ma wo vrij') {
-          match = dow === 1 || dow === 3 || dow === 5;
-        } else if (herhaling === 'Di do za') {
-          match = dow === 2 || dow === 4 || dow === 6;
-        }
-
-        if (match) {
-          dates.push(new Date(cur.getTime()));
-        }
-        cur.setDate(cur.getDate() + 1);
-        dayStep += 1;
-      }
-
-      return dates.length > 0 ? dates : [startDate];
     }
 
     document.getElementById('rit-form').addEventListener('submit', async (e) => {
@@ -3015,6 +3147,7 @@
       const sortedPlanning = sortRittenPlanning(ritten);
       const rittenStats = computeRittenStats(ritten);
       const dialyseSessies = Array.isArray(sharedData.dialyseSessies) ? sharedData.dialyseSessies : [];
+      const sortedDialysePlanning = sortDialysePlanning(dialyseSessies);
       const brieven = Array.isArray(sharedData.brieven) ? sharedData.brieven : [];
       const dialyseStatus = sharedData.dialyseStatus || 'Geen sessie';
       const dialyseSub = sharedData.dialyseSub || 'Klaar voor planning';
@@ -3031,8 +3164,13 @@
         : 'Nog geen rit';
 
       document.getElementById('tile-dialyse-count').textContent = `${dialyseSessies.length} ${dialyseSessies.length === 1 ? 'sessie' : 'sessies'}`;
-      document.getElementById('tile-dialyse-status').textContent = dialyseStatus;
-      document.getElementById('tile-dialyse-sub').textContent = dialyseSub;
+      const nextDialyse = sortedDialysePlanning[0]?.sessie;
+      document.getElementById('tile-dialyse-status').textContent = nextDialyse
+        ? `${nextDialyse.soort || 'Dag'}dialyse`
+        : dialyseStatus;
+      document.getElementById('tile-dialyse-sub').textContent = nextDialyse
+        ? formatIsoDateTimeNL(nextDialyse.afspraak)
+        : dialyseSub;
 
       document.getElementById('tile-brieven-count').textContent = `${brieven.length} ${brieven.length === 1 ? 'brief' : 'brieven'}`;
       document.getElementById('tile-brieven-last').textContent = brieven.length > 0
@@ -3060,19 +3198,24 @@
       }
       updateDialyseLiveCalculations();
 
-      // Dialyse lijst weergeven
+      // Dialyse lijst weergeven (Vandaag -> Morgen -> Verder oplopend)
       const dialyseContainer = document.getElementById('dialyse-list-container');
-      if (dialyseSessies.length === 0) {
+      if (sortedDialysePlanning.length === 0) {
         dialyseContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen dialysesessies opgeslagen.</p>`;
       } else {
-        dialyseContainer.innerHTML = [...dialyseSessies].reverse().map((s, revIdx) => {
-          const sId = String(s.id || revIdx);
+        dialyseContainer.innerHTML = sortedDialysePlanning.map(({ sessie: s, origIdx, dayInfo }) => {
+          const sId = String(s.id || origIdx);
           const adviesVal = s.adviesUf !== null && s.adviesUf !== undefined
             ? Number(s.adviesUf)
             : calcUfAdvice(s.preGewicht, s.soort, getDryWeight());
           const adviesBadge = adviesVal !== null
             ? `<span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold border tabular-nums ${getUfColorClasses(adviesVal)}">UF advies: ${adviesVal.toFixed(2).replace('.', ',')} L</span>`
             : '';
+
+          let dayBadgeClass = 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
+          if (dayInfo.bucket === 0) dayBadgeClass = 'bg-emerald-600 text-white';
+          if (dayInfo.bucket === 1) dayBadgeClass = 'bg-blue-600 text-white';
+          if (dayInfo.bucket === 2) dayBadgeClass = 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300';
 
           const checks = [
             s.epo ? 'Epo' : '',
@@ -3090,7 +3233,9 @@
             <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-start justify-between gap-3">
               <div class="space-y-1.5 min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${dayBadgeClass}">${escapeHtml(dayInfo.label)}</span>
                   <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${soortBadgeClass}">${escapeHtml(s.soort || 'Dag')}</span>
+                  ${s.herhaling && s.herhaling !== '1Malig' ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${escapeHtml(s.herhaling)}</span>` : ''}
                   <span class="text-sm font-bold text-slate-900 dark:text-white tabular-nums">Afspraak: ${escapeHtml(formatIsoDateTimeNL(s.afspraak))}</span>
                   ${adviesBadge}
                   ${s.duur ? `<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 tabular-nums">• Duur: ${escapeHtml(s.duur)}</span>` : ''}
@@ -3468,6 +3613,7 @@
         appShell.classList.remove('hidden');
         document.getElementById('user-email-label').textContent = user.email;
         syncRitFormMode();
+        updateDialyseRepeatUI();
         syncDialyseStopFromAfspraak(false);
         renderAll();
         startRealtime(user.uid);
