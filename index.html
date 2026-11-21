@@ -289,7 +289,7 @@
           </div>
 
           <!-- ===================================================== -->
-          <!-- DIALYSE-MODULE + PLANNING TOOL                        -->
+          <!-- DIALYSE-MODULE + BLOEDDRUK/HARTSLAG + GRAFIEK + 1 PDF -->
           <!-- ===================================================== -->
           <div id="dialyse-view" class="hidden space-y-5">
 
@@ -327,7 +327,7 @@
                 <div class="flex items-center gap-2">
                   <button type="button" data-open-tab="instellingen"
                     class="open-tab-link px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold cursor-pointer">
-                    Instellingen (Verpleging &amp; Kleuren)
+                    Instellingen
                   </button>
                   <button type="button" data-open-tab="start"
                     class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
@@ -480,6 +480,88 @@
                     <select id="dialyse-verpleging"
                       class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
                     </select>
+                  </div>
+                </div>
+
+                <!-- ================================================= -->
+                <!-- SUBGEDEELTE: BLOEDDRUK & HARTSLAG MOMENTEN + GRAFIEK -->
+                <!-- ================================================= -->
+                <div class="p-4 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800/70 space-y-4">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">Subgedeelte Sessie</span>
+                      <h4 class="text-sm font-bold text-slate-900 dark:text-white">Bloeddruk &amp; Hartslag momenten + Grafiek</h4>
+                    </div>
+                    <span id="vitals-count-label" class="text-xs font-bold text-rose-700 dark:text-rose-300 tabular-nums">0 metingen</span>
+                  </div>
+
+                  <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 items-end">
+                    <div>
+                      <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Tijdstip</label>
+                      <div class="flex gap-1">
+                        <input id="vital-tijd-input" type="time"
+                          class="w-full px-2.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold tabular-nums" />
+                        <button id="vital-now-btn" type="button"
+                          class="px-2 py-2 rounded-xl bg-slate-700 hover:bg-slate-800 text-white text-[11px] font-bold cursor-pointer shrink-0">
+                          Nu
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Bovendruk (mmHg)</label>
+                      <input id="vital-sys-input" type="number" min="40" max="300" placeholder="Bijv. 135"
+                        class="w-full px-2.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold tabular-nums" />
+                    </div>
+
+                    <div>
+                      <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Onderdruk (mmHg)</label>
+                      <input id="vital-dia-input" type="number" min="25" max="200" placeholder="Bijv. 80"
+                        class="w-full px-2.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold tabular-nums" />
+                    </div>
+
+                    <div>
+                      <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Hartslag (bpm)</label>
+                      <input id="vital-hr-input" type="number" min="25" max="240" placeholder="Bijv. 72"
+                        class="w-full px-2.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold tabular-nums" />
+                    </div>
+
+                    <div>
+                      <button id="vital-add-btn" type="button"
+                        class="w-full py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold cursor-pointer">
+                        + Meting toevoegen
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Grafiek + Lijst metingen naast elkaar op desktop -->
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-1">
+                    <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <div class="flex flex-wrap items-center justify-between gap-2 mb-2 text-[11px] font-semibold">
+                        <span class="font-bold text-slate-700 dark:text-slate-200">Verloop Bloeddruk &amp; Hartslag</span>
+                        <div class="flex items-center gap-3 tabular-nums">
+                          <span class="inline-flex items-center gap-1 text-rose-600 dark:text-rose-400">
+                            <span class="w-2.5 h-0.5 bg-rose-600 inline-block"></span> Boven
+                          </span>
+                          <span class="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400">
+                            <span class="w-2.5 h-0.5 bg-blue-600 inline-block"></span> Onder
+                          </span>
+                          <span class="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                            <span class="w-2.5 h-0.5 bg-emerald-600 inline-block"></span> Hartslag
+                          </span>
+                        </div>
+                      </div>
+                      <div id="vitals-chart-box">
+                        <p class="text-xs text-slate-400 py-10 text-center">Voeg metingen toe om de grafiek te tonen.</p>
+                      </div>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Gemeten momenten</span>
+                      <div id="vitals-list-box" class="space-y-1.5 max-h-52 overflow-y-auto text-xs">
+                        <p class="text-slate-400 py-8 text-center">Nog geen bloeddruk- of hartslagmetingen toegevoegd.</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -637,27 +719,27 @@
           </div>
 
           <!-- ===================================================== -->
-          <!-- PDF-MODULE: AUTOMATISCH & HANDMATIG PDF-ARCHIEF       -->
+          <!-- PDF-MODULE: 1 PDF PER SESSIE (DIALYSE + BD/HS + GRAFIEK) -->
           <!-- ===================================================== -->
           <div id="pdf-view" class="hidden space-y-5">
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-5">
               <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div>
                   <span class="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">PDF Rapportages &amp; Archief</span>
-                  <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-0.5">Vochtintake • Ritten • Dialyse • Bloeddruk</h3>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-0.5">Dialyse + Bloeddruk/Hartslag + Grafiek in 1 PDF • Vochtintake • Ritten</h3>
                   <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Zodra een rit (of dialysesessie) zijn eindtijd met <strong>1 uur</strong> is gepasseerd, verschijnt hier automatisch een PDF-document.
+                    1 uur na stoptijd van een dialysesessie (of eindtijd van een rit) verschijnt automatisch het PDF-document. Dialyse-PDF's bevatten sessie, metingen én grafiek in 1 document.
                   </p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
+                  <button id="pdf-gen-dialyse-btn" type="button"
+                    class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer">
+                    + PDF Dialyse (met BD &amp; Grafiek)
+                  </button>
                   <button id="pdf-gen-ritten-btn" type="button"
                     class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer">
                     + PDF Ritten
-                  </button>
-                  <button id="pdf-gen-dialyse-btn" type="button"
-                    class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer">
-                    + PDF Dialyse
                   </button>
                   <button id="pdf-gen-vocht-btn" type="button"
                     class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold cursor-pointer">
@@ -668,15 +750,6 @@
                     ← Start
                   </button>
                 </div>
-              </div>
-
-              <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2 text-xs">
-                <span class="text-slate-600 dark:text-slate-300">
-                  <strong>Bloeddruk-module:</strong> Zodra de module <em>Bloeddruk</em> actief is, worden bloeddrukrapporten automatisch in deze zelfde PDF-lijst geplaatst.
-                </span>
-                <span class="px-2.5 py-0.5 rounded-full font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
-                  Bloeddruk: binnenkort
-                </span>
               </div>
 
               <div id="pdf-docs-container" class="space-y-3">
@@ -1320,6 +1393,7 @@
     let selectedDrink = 'Water';
     let editingRitId = null;
     let editingDialyseId = null;
+    let draftVitals = [];
 
     let agendaMode = 'lijst';
     let agendaCursorDate = new Date();
@@ -1588,6 +1662,153 @@
     }
 
     // ---------------------------------------------------------
+    // BLOEDDRUK & HARTSLAG METINGEN + GRAFIEK (SVG)
+    // ---------------------------------------------------------
+    function normalizeVitals(list) {
+      return (Array.isArray(list) ? list : [])
+        .map((m, i) => ({
+          id: m.id || `v_${i}`,
+          tijd: String(m.tijd || '00:00').slice(0, 5),
+          systolisch: Number(m.systolisch),
+          diastolisch: Number(m.diastolisch),
+          hartslag: Number(m.hartslag)
+        }))
+        .filter((m) =>
+          Number.isFinite(m.systolisch) &&
+          Number.isFinite(m.diastolisch) &&
+          Number.isFinite(m.hartslag)
+        )
+        .sort((a, b) => (timeToMinutes(a.tijd) ?? 9999) - (timeToMinutes(b.tijd) ?? 9999));
+    }
+
+    function buildVitalsSvgChart(vitalsList, width = 460, height = 185) {
+      const list = normalizeVitals(vitalsList);
+      if (list.length === 0) {
+        return `<p class="text-xs text-slate-400 py-10 text-center">Geen bloeddruk- of hartslagmetingen beschikbaar voor grafiek.</p>`;
+      }
+
+      const padLeft = 36;
+      const padRight = 16;
+      const padTop = 14;
+      const padBottom = 26;
+      const plotW = Math.max(80, width - padLeft - padRight);
+      const plotH = Math.max(60, height - padTop - padBottom);
+
+      const allVals = list.flatMap((m) => [m.systolisch, m.diastolisch, m.hartslag]);
+      const minRaw = Math.min(...allVals, 40);
+      const maxRaw = Math.max(...allVals, 160);
+      const yMin = Math.max(20, Math.floor((minRaw - 10) / 10) * 10);
+      const yMax = Math.ceil((maxRaw + 10) / 10) * 10;
+      const ySpan = Math.max(20, yMax - yMin);
+
+      const xPos = (idx) => {
+        if (list.length === 1) return padLeft + plotW / 2;
+        return padLeft + (idx / (list.length - 1)) * plotW;
+      };
+      const yPos = (val) => padTop + (1 - (val - yMin) / ySpan) * plotH;
+
+      const gridTicks = 4;
+      const gridLines = [];
+      for (let g = 0; g <= gridTicks; g += 1) {
+        const val = Math.round(yMin + (g / gridTicks) * ySpan);
+        const y = yPos(val).toFixed(1);
+        gridLines.push(`
+          <line x1="${padLeft}" y1="${y}" x2="${padLeft + plotW}" y2="${y}" stroke="#cbd5e1" stroke-dasharray="3,3" stroke-width="1" />
+          <text x="${padLeft - 6}" y="${Number(y) + 3}" text-anchor="end" font-size="10" fill="#64748b">${val}</text>
+        `);
+      }
+
+      const makeSeries = (key, color) => {
+        const pts = list.map((m, idx) => `${xPos(idx).toFixed(1)},${yPos(m[key]).toFixed(1)}`);
+        const line = pts.length > 1
+          ? `<polyline fill="none" stroke="${color}" stroke-width="2.2" points="${pts.join(' ')}" />`
+          : '';
+        const dots = list.map((m, idx) => {
+          const cx = xPos(idx).toFixed(1);
+          const cy = yPos(m[key]).toFixed(1);
+          return `<circle cx="${cx}" cy="${cy}" r="3.5" fill="${color}"><title>${escapeHtml(m.tijd)} • ${m[key]}</title></circle>`;
+        }).join('');
+        return line + dots;
+      };
+
+      const xLabels = list.map((m, idx) => {
+        const x = xPos(idx).toFixed(1);
+        return `<text x="${x}" y="${height - 7}" text-anchor="middle" font-size="10" fill="#64748b">${escapeHtml(m.tijd)}</text>`;
+      }).join('');
+
+      return `
+        <svg viewBox="0 0 ${width} ${height}" class="w-full h-auto select-none">
+          ${gridLines.join('')}
+          ${makeSeries('systolisch', '#e11d48')}
+          ${makeSeries('diastolisch', '#2563eb')}
+          ${makeSeries('hartslag', '#059669')}
+          ${xLabels}
+        </svg>
+      `;
+    }
+
+    function renderDraftVitalsUI() {
+      const list = normalizeVitals(draftVitals);
+      document.getElementById('vitals-count-label').textContent = `${list.length} ${list.length === 1 ? 'meting' : 'metingen'}`;
+      document.getElementById('vitals-chart-box').innerHTML = buildVitalsSvgChart(list);
+
+      const listBox = document.getElementById('vitals-list-box');
+      if (list.length === 0) {
+        listBox.innerHTML = `<p class="text-slate-400 py-8 text-center">Nog geen bloeddruk- of hartslagmetingen toegevoegd.</p>`;
+        return;
+      }
+
+      listBox.innerHTML = list.map((m) => `
+        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 tabular-nums">
+          <div class="flex flex-wrap items-center gap-2.5">
+            <span class="font-extrabold text-slate-800 dark:text-white">${escapeHtml(m.tijd)}</span>
+            <span class="text-rose-600 dark:text-rose-400 font-bold">BD ${m.systolisch}/${m.diastolisch}</span>
+            <span class="text-emerald-600 dark:text-emerald-400 font-bold">HS ${m.hartslag} bpm</span>
+          </div>
+          <button type="button" data-vid="${escapeHtml(m.id)}"
+            class="del-vital-btn text-slate-400 hover:text-rose-600 font-bold px-1.5 cursor-pointer">×</button>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('vital-now-btn').addEventListener('click', () => {
+      document.getElementById('vital-tijd-input').value = currentHHMM();
+    });
+
+    document.getElementById('vital-add-btn').addEventListener('click', () => {
+      const tijd = document.getElementById('vital-tijd-input').value || currentHHMM();
+      const sys = Number(document.getElementById('vital-sys-input').value);
+      const dia = Number(document.getElementById('vital-dia-input').value);
+      const hr = Number(document.getElementById('vital-hr-input').value);
+
+      if (!Number.isFinite(sys) || sys <= 0 || !Number.isFinite(dia) || dia <= 0 || !Number.isFinite(hr) || hr <= 0) {
+        showIncomingToast('Meting', 'Vul bovendruk, onderdruk en hartslag in.');
+        return;
+      }
+
+      draftVitals.push({
+        id: `v_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        tijd: tijd.slice(0, 5),
+        systolisch: sys,
+        diastolisch: dia,
+        hartslag: hr
+      });
+
+      document.getElementById('vital-sys-input').value = '';
+      document.getElementById('vital-dia-input').value = '';
+      document.getElementById('vital-hr-input').value = '';
+      renderDraftVitalsUI();
+    });
+
+    document.getElementById('vitals-list-box').addEventListener('click', (e) => {
+      const btn = e.target.closest('.del-vital-btn');
+      if (!btn) return;
+      const vid = btn.getAttribute('data-vid');
+      draftVitals = draftVitals.filter((m) => m.id !== vid);
+      renderDraftVitalsUI();
+    });
+
+    // ---------------------------------------------------------
     // DIALYSE BEREKENINGEN, PLANNING & KLEURCODERING
     // ---------------------------------------------------------
     const dialyseHerhalingEl = document.getElementById('dialyse-herhaling');
@@ -1829,6 +2050,7 @@
 
     function resetDialyseForm() {
       editingDialyseId = null;
+      draftVitals = [];
       document.getElementById('dialyse-form').reset();
       fillSelectOptions('dialyse-verpleging', sharedData.verplegingOptions, '');
       const startInp = document.getElementById('dialyse-start');
@@ -1844,6 +2066,7 @@
       document.getElementById('dialyse-form-title').textContent = 'Nieuwe dialysesessie(s)';
       document.getElementById('dialyse-submit-btn').textContent = 'Dialyse opslaan';
       document.getElementById('dialyse-cancel-edit-btn').classList.add('hidden');
+      renderDraftVitalsUI();
       updateDialyseRepeatUI();
       syncDialyseTimesFromAfspraak(true);
     }
@@ -1856,6 +2079,7 @@
       if (!item) return;
 
       editingDialyseId = sessieId;
+      draftVitals = normalizeVitals(item.vitals || []);
       dialyseRepeatFieldsEl.classList.add('hidden');
       fillSelectOptions('dialyse-verpleging', sharedData.verplegingOptions, item.verpleging || '');
       document.getElementById('dialyse-soort').value = item.soort === 'Nacht' ? 'Nacht' : 'Dag';
@@ -1887,9 +2111,10 @@
       document.getElementById('dialyse-form-badge').textContent = 'Dialyse aanpassen';
       document.getElementById('dialyse-form-title').textContent = 'Dialysesessie bewerken';
       document.getElementById('dialyse-submit-btn').textContent = 'Wijziging opslaan';
-      dialyseRepeatHintEl.textContent = 'Pas deze sessie aan en klik op Wijziging opslaan.';
+      dialyseRepeatHintEl.textContent = 'Pas deze sessie (inclusief bloeddruk/hartslag) aan en klik op Wijziging opslaan.';
       document.getElementById('dialyse-cancel-edit-btn').classList.remove('hidden');
 
+      renderDraftVitalsUI();
       updateDialyseLiveCalculations();
       document.getElementById('dialyse-form').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
@@ -1921,6 +2146,7 @@
         : autoWerkUf;
 
       const adviesUf = calcUfAdvice(preGewicht, soort, getDryWeight());
+      const vitalsCopy = normalizeVitals(draftVitals);
 
       const baseFields = {
         soort,
@@ -1935,7 +2161,8 @@
         fragmin5000: document.getElementById('dialyse-chk-fragmin5000').checked,
         shuntflowMeting: document.getElementById('dialyse-chk-shuntflow').checked,
         shuntflowResultaat: document.getElementById('dialyse-shuntflow-resultaat').value.trim(),
-        verpleging: document.getElementById('dialyse-verpleging').value.trim()
+        verpleging: document.getElementById('dialyse-verpleging').value.trim(),
+        vitals: vitalsCopy
       };
 
       const currentList = Array.isArray(sharedData.dialyseSessies) ? [...sharedData.dialyseSessies] : [];
@@ -2005,6 +2232,7 @@
       const subInfo = [
         formatIsoDateTimeNL(afspraak),
         adviesUf !== null ? `UF advies ${adviesUf.toFixed(2).replace('.', ',')} L` : '',
+        vitalsCopy.length > 0 ? `${vitalsCopy.length} BD/HS metingen` : '',
         baseFields.verpleging ? `Vpk: ${baseFields.verpleging}` : ''
       ].filter(Boolean).join(' • ');
 
@@ -2102,12 +2330,13 @@
       dialyseSessies.forEach((s, idx) => {
         const done = isDialyseDone(s, nowMs);
         if (overzichtFilter === 'done' && !done) return;
+        const vCnt = normalizeVitals(s.vitals || []).length;
         items.push({
           sortKey: s.stopDatumTijd || s.afspraak || '9999-99-99T00:00',
           category: 'Dialyse',
           done,
           title: `${s.soort || 'Dag'}dialyse${s.verpleging ? ` (${s.verpleging})` : ''}`,
-          detail: `Afspraak ${formatIsoDateTimeNL(s.afspraak)} • Stop ${formatIsoDateTimeNL(s.stopDatumTijd)}${s.adviesUf !== null && s.adviesUf !== undefined ? ` • UF advies ${Number(s.adviesUf).toFixed(2).replace('.', ',')} L` : ''}`
+          detail: `Afspraak ${formatIsoDateTimeNL(s.afspraak)} • Stop ${formatIsoDateTimeNL(s.stopDatumTijd)} • ${vCnt} BD/HS metingen${s.adviesUf !== null && s.adviesUf !== undefined ? ` • UF advies ${Number(s.adviesUf).toFixed(2).replace('.', ',')} L` : ''}`
         });
       });
 
@@ -2163,9 +2392,42 @@
     }
 
     // ---------------------------------------------------------
-    // PDF-MODULE (AUTOMATISCH +1 UUR NA EINDTIJD + HANDMATIG)
+    // PDF-MODULE: ALLES (DIALYSE + BD/HS + GRAFIEK) IN 1 PDF
     // ---------------------------------------------------------
-    function buildPdfDocument(category, title, summaryText, lines, autoKey = '') {
+    function buildDialyseCombinedPdfDoc(sessie, summaryText, autoKey = '') {
+      const vitals = normalizeVitals(sessie.vitals || []);
+      const chartSvg = buildVitalsSvgChart(vitals, 640, 210);
+      const checks = [
+        sessie.epo ? 'Epo' : '',
+        sessie.ijzer ? 'IJzer' : '',
+        sessie.fragmin2500 ? 'Fragmin 2500' : '',
+        sessie.fragmin5000 ? 'Fragmin 5000' : '',
+        sessie.shuntflowMeting ? 'Shuntflow meting' : ''
+      ].filter(Boolean);
+
+      return {
+        id: `pdf_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        autoKey,
+        category: 'Dialyse + BD/HS + Grafiek',
+        title: `Dialyseverslag: ${sessie.soort || 'Dag'}dialyse (${formatIsoDateTimeNL(sessie.afspraak)})`,
+        summaryText,
+        lines: [
+          `Soort dialyse: ${sessie.soort || 'Dag'} • Verpleging: ${sessie.verpleging || '-'}`,
+          `Afspraak: ${formatIsoDateTimeNL(sessie.afspraak)} • Start: ${formatIsoDateTimeNL(sessie.startDatumTijd)} • Stop: ${formatIsoDateTimeNL(sessie.stopDatumTijd)} • Duur: ${sessie.duur || '-'}`,
+          `Gewicht: Pre ${sessie.preGewicht ?? '-'} kg → Post ${sessie.postGewicht ?? '-'} kg`,
+          `UF advies: ${sessie.adviesUf ?? '-'} L • Gebruikte UF: ${sessie.gebruikteUf ?? '-'} • Werkelijke UF: ${sessie.werkelijkeUf ?? '-'}`,
+          checks.length > 0 ? `Vinkjes: ${checks.join(', ')}` : '',
+          sessie.shuntflowResultaat ? `ShuntFlow resultaat: ${sessie.shuntflowResultaat}` : '',
+          ...vitals.map((v) => `Meting ${v.tijd}: Bloeddruk ${v.systolisch}/${v.diastolisch} mmHg • Hartslag ${v.hartslag} bpm`)
+        ].filter(Boolean),
+        vitals,
+        chartSvg,
+        createdAt: new Date().toISOString(),
+        createdLabel: formatDateTimeNL(Date.now())
+      };
+    }
+
+    function buildPdfDocument(category, title, summaryText, lines, autoKey = '', chartSvg = '') {
       return {
         id: `pdf_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         autoKey,
@@ -2173,6 +2435,7 @@
         title,
         summaryText,
         lines,
+        chartSvg,
         createdAt: new Date().toISOString(),
         createdLabel: formatDateTimeNL(Date.now())
       };
@@ -2192,8 +2455,7 @@
         const endDate = parseLocalDateTime(`${dateISO}T${endHHMM}`);
         if (!endDate) return;
 
-        const oneHourAfterEndMs = endDate.getTime() + oneHourMs;
-        if (nowMs >= oneHourAfterEndMs) {
+        if (nowMs >= endDate.getTime() + oneHourMs) {
           const ritKey = `auto_rit_${r.id || `${dateISO}_${r.van}_${r.naar}_${endHHMM}_${idx}`}`;
           if (!existingKeys.has(ritKey)) {
             existingKeys.add(ritKey);
@@ -2215,29 +2477,20 @@
         }
       });
 
-      // 2. Dialyse: 1 uur na stoptijd automatisch PDF aanmaken
+      // 2. Dialyse: 1 uur na stoptijd automatisch 1 gecombineerd PDF (sessie + bloeddruk/hartslag + grafiek) aanmaken
       (Array.isArray(data.dialyseSessies) ? data.dialyseSessies : []).forEach((s, idx) => {
         const stopStr = s.stopDatumTijd || '';
         if (!stopStr || !stopStr.includes('T')) return;
         const stopDate = parseLocalDateTime(stopStr);
         if (!stopDate) return;
 
-        const oneHourAfterStopMs = stopDate.getTime() + oneHourMs;
-        if (nowMs >= oneHourAfterStopMs) {
-          const dialyseKey = `auto_dialyse_${s.id || `${s.soort}_${stopStr}_${idx}`}`;
+        if (nowMs >= stopDate.getTime() + oneHourMs) {
+          const dialyseKey = `auto_dialyse_full_${s.id || `${s.soort}_${stopStr}_${idx}`}`;
           if (!existingKeys.has(dialyseKey)) {
             existingKeys.add(dialyseKey);
-            newDocs.push(buildPdfDocument(
-              'Dialyse',
-              `Dialyse PDF: ${s.soort || 'Dag'}dialyse (${formatIsoDateTimeNL(s.afspraak)})`,
-              `Automatisch aangemaakt 1 uur na stoptijd (${formatIsoDateTimeNL(stopStr)}).`,
-              [
-                `Soort: ${s.soort || 'Dag'}dialyse • Verpleging: ${s.verpleging || '-'}`,
-                `Afspraak: ${formatIsoDateTimeNL(s.afspraak)} • Start: ${formatIsoDateTimeNL(s.startDatumTijd)} • Stop: ${formatIsoDateTimeNL(stopStr)}`,
-                `Gewicht: Pre ${s.preGewicht ?? '-'} kg → Post ${s.postGewicht ?? '-'} kg`,
-                `UF advies: ${s.adviesUf ?? '-'} L • Gebruikte UF: ${s.gebruikteUf ?? '-'} • Werkelijke UF: ${s.werkelijkeUf ?? '-'}`,
-                s.shuntflowResultaat ? `ShuntFlow resultaat: ${s.shuntflowResultaat}` : ''
-              ].filter(Boolean),
+            newDocs.push(buildDialyseCombinedPdfDoc(
+              s,
+              `Automatisch aangemaakt 1 uur na stoptijd (${formatIsoDateTimeNL(stopStr)}) — inclusief bloeddruk/hartslag & grafiek.`,
               dialyseKey
             ));
           }
@@ -2257,6 +2510,47 @@
         .map((line) => `<li style="margin-bottom:6px;">${escapeHtml(line)}</li>`)
         .join('');
 
+      const vitalsList = normalizeVitals(doc.vitals || []);
+      const vitalsTableHtml = vitalsList.length > 0
+        ? `
+          <div style="margin-top:20px;">
+            <h2 style="font-size:15px;margin-bottom:8px;">Bloeddruk- &amp; Hartslagmomenten</h2>
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+              <thead>
+                <tr style="background:#e2e8f0;text-align:left;">
+                  <th style="padding:7px 10px;border:1px solid #cbd5e1;">Tijdstip</th>
+                  <th style="padding:7px 10px;border:1px solid #cbd5e1;">Bloeddruk (mmHg)</th>
+                  <th style="padding:7px 10px;border:1px solid #cbd5e1;">Hartslag (bpm)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${vitalsList.map((v) => `
+                  <tr>
+                    <td style="padding:7px 10px;border:1px solid #cbd5e1;">${escapeHtml(v.tijd)}</td>
+                    <td style="padding:7px 10px;border:1px solid #cbd5e1;">${v.systolisch}/${v.diastolisch}</td>
+                    <td style="padding:7px 10px;border:1px solid #cbd5e1;">${v.hartslag} bpm</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `
+        : '';
+
+      const chartBlockHtml = doc.chartSvg
+        ? `
+          <div style="margin-top:20px;border:1px solid #cbd5e1;border-radius:10px;padding:14px;background:#ffffff;">
+            <h2 style="font-size:15px;margin:0 0 8px;">Grafiek Bloeddruk &amp; Hartslag</h2>
+            <div style="font-size:12px;margin-bottom:8px;color:#334155;">
+              <strong style="color:#e11d48;">— Bovendruk</strong> &nbsp;&nbsp;
+              <strong style="color:#2563eb;">— Onderdruk</strong> &nbsp;&nbsp;
+              <strong style="color:#059669;">— Hartslag</strong>
+            </div>
+            ${doc.chartSvg}
+          </div>
+        `
+        : '';
+
       win.document.write(`
         <!DOCTYPE html>
         <html lang="nl">
@@ -2267,7 +2561,7 @@
             body { font-family: Arial, sans-serif; padding: 32px; color: #0f172a; max-width: 780px; margin: 0 auto; }
             .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; background: #e2e8f0; font-size: 12px; font-weight: bold; text-transform: uppercase; }
             h1 { margin: 12px 0 6px; font-size: 22px; }
-            .meta { color: #475569; font-size: 13px; margin-bottom: 20px; }
+            .meta { color: #475569; font-size: 13px; margin-bottom: 18px; }
             .box { border: 1px solid #cbd5e1; border-radius: 10px; padding: 18px; background: #f8fafc; }
             ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.5; }
             @media print { .no-print { display: none; } }
@@ -2285,6 +2579,8 @@
           <div class="box">
             <ul>${linesHtml || '<li>Geen details</li>'}</ul>
           </div>
+          ${vitalsTableHtml}
+          ${chartBlockHtml}
         </body>
         </html>
       `);
@@ -2294,6 +2590,32 @@
       }, 250);
     }
 
+    document.getElementById('pdf-gen-dialyse-btn').addEventListener('click', () => {
+      const sessies = Array.isArray(sharedData.dialyseSessies) ? sharedData.dialyseSessies : [];
+      const latestSessie = sessies.length > 0
+        ? sessies[sessies.length - 1]
+        : {
+            soort: document.getElementById('dialyse-soort').value || 'Dag',
+            afspraak: document.getElementById('dialyse-afspraak').value || currentDateTimeLocal(),
+            startDatumTijd: document.getElementById('dialyse-start').value || currentDateTimeLocal(),
+            stopDatumTijd: document.getElementById('dialyse-stop').value || '',
+            duur: document.getElementById('dialyse-duur').value || '',
+            preGewicht: document.getElementById('dialyse-pre-gewicht').value || '-',
+            postGewicht: document.getElementById('dialyse-post-gewicht').value || '-',
+            adviesUf: '-',
+            gebruikteUf: document.getElementById('dialyse-gebruikte-uf').value || '-',
+            werkelijkeUf: document.getElementById('dialyse-werkelijke-uf').value || '-',
+            verpleging: document.getElementById('dialyse-verpleging').value || '-',
+            vitals: draftVitals
+          };
+
+      const doc = buildDialyseCombinedPdfDoc(
+        latestSessie,
+        `Gecombineerd PDF-document (Dialyse + Bloeddruk/Hartslag + Grafiek) op ${formatDateTimeNL(Date.now())}`
+      );
+      pushSharedData({ pdfDocs: [...(sharedData.pdfDocs || []), doc] });
+    });
+
     document.getElementById('pdf-gen-ritten-btn').addEventListener('click', () => {
       const ritten = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
       const doc = buildPdfDocument(
@@ -2301,17 +2623,6 @@
         `Rittenoverzicht (${ritten.length} ritten)`,
         `Handmatig rapport op ${formatDateTimeNL(Date.now())}`,
         ritten.map((r) => `${formatIsoDateTimeNL(r.afspraak)} | ${r.van || '-'} → ${r.naar || '-'} | Start ${r.startTijd || '-'} / Stop ${r.eindTijd || '-'}`)
-      );
-      pushSharedData({ pdfDocs: [...(sharedData.pdfDocs || []), doc] });
-    });
-
-    document.getElementById('pdf-gen-dialyse-btn').addEventListener('click', () => {
-      const sessies = Array.isArray(sharedData.dialyseSessies) ? sharedData.dialyseSessies : [];
-      const doc = buildPdfDocument(
-        'Dialyse',
-        `Dialyse-overzicht (${sessies.length} sessies)`,
-        `Handmatig rapport op ${formatDateTimeNL(Date.now())}`,
-        sessies.map((s) => `${s.soort || 'Dag'} | Afspraak ${formatIsoDateTimeNL(s.afspraak)} | Stop ${formatIsoDateTimeNL(s.stopDatumTijd)} | UF advies ${s.adviesUf ?? '-'}`)
       );
       pushSharedData({ pdfDocs: [...(sharedData.pdfDocs || []), doc] });
     });
@@ -2358,11 +2669,9 @@
       container.innerHTML = docs.map((doc) => {
         const catColor = doc.category === 'Ritten'
           ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
-          : doc.category === 'Dialyse'
+          : String(doc.category || '').startsWith('Dialyse')
             ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
-            : doc.category === 'Vochtintake'
-              ? 'bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300'
-              : 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300';
+            : 'bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300';
 
         return `
           <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-start justify-between gap-3">
@@ -3811,7 +4120,7 @@
         `).join('');
       }
 
-      // Instellingen velden (Drooggewicht + Kleurcodering)
+      // Instellingen velden
       const dryWeightInp = document.getElementById('inst-dry-weight');
       if (dryWeightInp && document.activeElement !== dryWeightInp) {
         dryWeightInp.value = getDryWeight();
@@ -3820,194 +4129,101 @@
       const { orangeMin, redMin } = getUfColorThresholds();
       const orangeInp = document.getElementById('inst-uf-orange-min');
       const redInp = document.getElementById('inst-uf-red-min');
-      if (orangeInp && document.activeElement !== orangeInp) {
-        orangeInp.value = orangeMin;
-      }
-      if (redInp && document.activeElement !== redInp) {
-        redInp.value = redMin;
-      }
+      if (orangeInp && document.activeElement !== orangeInp) orangeInp.value = String(orangeMin);
+      if (redInp && document.activeElement !== redInp) redInp.value = String(redMin);
       document.getElementById('inst-uf-green-preview').textContent = `Onder ${formatThresholdNL(orangeMin)} L`;
-
-      updateDialyseLiveCalculations();
-
-      // Dialyse lijst weergeven
-      const dialyseContainer = document.getElementById('dialyse-list-container');
-      if (sortedDialysePlanning.length === 0) {
-        dialyseContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen dialysesessies opgeslagen.</p>`;
-      } else {
-        dialyseContainer.innerHTML = sortedDialysePlanning.map(({ sessie: s, origIdx, dayInfo }) => {
-          const sId = String(s.id || origIdx);
-          const adviesVal = s.adviesUf !== null && s.adviesUf !== undefined
-            ? Number(s.adviesUf)
-            : calcUfAdvice(s.preGewicht, s.soort, getDryWeight());
-          const adviesBadge = adviesVal !== null
-            ? `<span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold border tabular-nums ${getUfColorClasses(adviesVal)}">UF advies: ${adviesVal.toFixed(2).replace('.', ',')} L</span>`
-            : '';
-
-          let dayBadgeClass = 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
-          if (dayInfo.bucket === 0) dayBadgeClass = 'bg-emerald-600 text-white';
-          if (dayInfo.bucket === 1) dayBadgeClass = 'bg-blue-600 text-white';
-          if (dayInfo.bucket === 2) dayBadgeClass = 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300';
-
-          const checks = [
-            s.epo ? 'Epo' : '',
-            s.ijzer ? 'IJzer' : '',
-            s.fragmin2500 ? 'Fragmin 2500' : '',
-            s.fragmin5000 ? 'Fragmin 5000' : '',
-            s.shuntflowMeting ? 'Shuntflow meting' : ''
-          ].filter(Boolean);
-
-          const soortBadgeClass = s.soort === 'Nacht'
-            ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300'
-            : 'bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300';
-
-          return `
-            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-start justify-between gap-3">
-              <div class="space-y-1.5 min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${dayBadgeClass}">${escapeHtml(dayInfo.label)}</span>
-                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${soortBadgeClass}">${escapeHtml(s.soort || 'Dag')}</span>
-                  ${s.herhaling && s.herhaling !== '1Malig' ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${escapeHtml(s.herhaling)}</span>` : ''}
-                  <span class="text-sm font-bold text-slate-900 dark:text-white tabular-nums">Afspraak: ${escapeHtml(formatIsoDateTimeNL(s.afspraak))}</span>
-                  ${adviesBadge}
-                  ${s.duur ? `<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 tabular-nums">• Duur: ${escapeHtml(s.duur)}</span>` : ''}
-                </div>
-
-                <div class="text-xs text-slate-600 dark:text-slate-300 flex flex-wrap gap-x-3 gap-y-0.5 tabular-nums">
-                  <span><strong>Start:</strong> ${escapeHtml(formatIsoDateTimeNL(s.startDatumTijd))}</span>
-                  <span><strong>Stop:</strong> ${escapeHtml(formatIsoDateTimeNL(s.stopDatumTijd))}</span>
-                  <span><strong>Pre:</strong> ${s.preGewicht ?? '-'} kg</span>
-                  <span><strong>Post:</strong> ${s.postGewicht ?? '-'} kg</span>
-                  <span><strong>Gebruikte UF:</strong> ${s.gebruikteUf ?? '-'}</span>
-                  <span><strong>Werkelijke UF:</strong> ${s.werkelijkeUf ?? '-'}</span>
-                </div>
-
-                <div class="text-xs text-slate-600 dark:text-slate-300 flex flex-wrap gap-x-3 gap-y-0.5">
-                  ${s.verpleging ? `<span><strong>Verpleging:</strong> ${escapeHtml(s.verpleging)}</span>` : ''}
-                  ${s.shuntflowResultaat ? `<span><strong>ShuntFlow resultaat:</strong> ${escapeHtml(s.shuntflowResultaat)}</span>` : ''}
-                  ${checks.length > 0 ? `<span><strong>Vinkjes:</strong> ${escapeHtml(checks.join(', '))}</span>` : ''}
-                </div>
-              </div>
-
-              <div class="flex items-center gap-1.5 shrink-0">
-                <button type="button" data-id="${escapeHtml(sId)}"
-                  class="edit-dialyse-btn px-2.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold cursor-pointer">
-                  Bewerken
-                </button>
-                <button type="button" data-id="${escapeHtml(sId)}"
-                  class="del-dialyse-btn px-2.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold cursor-pointer">
-                  Delete
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      // POS Vocht weergave
-      document.getElementById('pos-drink-buttons').innerHTML = products.map((prod) => {
-        const active = prod === selectedDrink;
-        return `
-          <div class="inline-flex items-center rounded-xl overflow-hidden border ${
-            active
-              ? 'border-sky-600 bg-sky-600 text-white'
-              : 'border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200'
-          }">
-            <button type="button" data-drink="${escapeHtml(prod)}" class="select-drink-btn px-3 py-1.5 text-xs font-bold cursor-pointer">
-              ${escapeHtml(prod)}
-            </button>
-            <button type="button" data-drink="${escapeHtml(prod)}" title="Verwijder producttegel"
-              class="del-drink-btn px-2 py-1.5 text-xs font-bold opacity-75 hover:opacity-100 hover:bg-black/15 cursor-pointer">
-              ×
-            </button>
-          </div>
-        `;
-      }).join('');
-
-      document.getElementById('pos-ml-buttons').innerHTML = amounts.map((ml) => `
-        <div class="flex items-center justify-between rounded-xl border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/50 text-sky-950 dark:text-sky-100 overflow-hidden">
-          <button type="button" data-ml="${Number(ml)}" class="add-ml-btn flex-1 py-2.5 px-2.5 text-left text-xs font-extrabold tabular-nums hover:bg-sky-600 hover:text-white transition cursor-pointer">
-            +${Number(ml)} ml
-          </button>
-          <button type="button" data-ml="${Number(ml)}" title="Verwijder hoeveelheidtegel"
-            class="del-ml-btn px-2 py-2.5 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-red-600 hover:bg-red-500/10 cursor-pointer">
-            ×
-          </button>
-        </div>
-      `).join('');
-
-      document.getElementById('bar-24-label').textContent = `${vochtStats.total24} ml`;
-      document.getElementById('bar-24-limit-label').textContent = `van ${vochtStats.lim24} ml`;
-      document.getElementById('bar-24-pct').textContent = `${vochtStats.pct24}%`;
-      const fill24 = document.getElementById('bar-24-fill');
-      fill24.style.width = `${vochtStats.pct24}%`;
-      fill24.className = vochtStats.total24 > vochtStats.lim24
-        ? 'h-full bg-rose-500 transition-all duration-300 rounded-full'
-        : vochtStats.pct24 >= 85
-          ? 'h-full bg-amber-500 transition-all duration-300 rounded-full'
-          : 'h-full bg-sky-500 transition-all duration-300 rounded-full';
-
-      document.getElementById('bar-48-label').textContent = `${vochtStats.total48} ml`;
-      document.getElementById('bar-48-limit-label').textContent = `van ${vochtStats.lim48} ml`;
-      document.getElementById('bar-48-pct').textContent = `${vochtStats.pct48}%`;
-      document.getElementById('window-48-info').textContent = vochtStats.win48.label;
-      document.getElementById('pos-receipt-heading').textContent = vochtStats.win48.isFixedCycle
-        ? 'Intake Bon (48u Om de dag)'
-        : 'Intake Bon (Lopende 48u)';
-
-      const fill48 = document.getElementById('bar-48-fill');
-      fill48.style.width = `${vochtStats.pct48}%`;
-      fill48.className = vochtStats.total48 > vochtStats.lim48
-        ? 'h-full bg-rose-500 transition-all duration-300 rounded-full'
-        : vochtStats.pct48 >= 85
-          ? 'h-full bg-amber-500 transition-all duration-300 rounded-full'
-          : 'h-full bg-indigo-500 transition-all duration-300 rounded-full';
-
-      document.getElementById('pos-receipt-total24').textContent = `${vochtStats.total24} ml`;
 
       const startDateInp = document.getElementById('inst-vocht48-start-date');
       const startTimeInp = document.getElementById('inst-vocht48-start-time');
-      const inst24 = document.getElementById('inst-limit-24');
-      const inst48 = document.getElementById('inst-limit-48');
       if (startDateInp && document.activeElement !== startDateInp) {
         startDateInp.value = sharedData.vocht48StartDate || '2026-11-22';
       }
       if (startTimeInp && document.activeElement !== startTimeInp) {
         startTimeInp.value = sharedData.vocht48StartTime || '05:30';
       }
-      if (inst24 && document.activeElement !== inst24) inst24.value = vochtStats.lim24;
-      if (inst48 && document.activeElement !== inst48) inst48.value = vochtStats.lim48;
+      document.getElementById('inst-vocht48-cycle-preview').textContent = vochtStats.win48.label;
 
-      document.getElementById('inst-vocht48-cycle-preview').textContent = vochtStats.win48.isFixedCycle
-        ? `Actief 48-uurs venster (om de dag): ${vochtStats.win48.label}`
-        : 'Actief: lopende 48 uur (klik op een startdatum/tijd om over te schakelen op om de dag)';
+      const lim24Inp = document.getElementById('inst-limit-24');
+      const lim48Inp = document.getElementById('inst-limit-48');
+      if (lim24Inp && document.activeElement !== lim24Inp) lim24Inp.value = vochtStats.lim24;
+      if (lim48Inp && document.activeElement !== lim48Inp) lim48Inp.value = vochtStats.lim48;
 
-      const receiptEl = document.getElementById('pos-receipt-list');
+      // Vochtintake balken & tegels
+      document.getElementById('bar-24-pct').textContent = `${vochtStats.pct24}%`;
+      document.getElementById('bar-24-label').textContent = `${vochtStats.total24} ml`;
+      document.getElementById('bar-24-limit-label').textContent = `van ${vochtStats.lim24} ml`;
+      document.getElementById('bar-24-fill').style.width = `${vochtStats.pct24}%`;
+      document.getElementById('window-24-info').textContent = `Laatste 24 uur (${formatDateTimeNL(nowMs - 86400000)} – nu)`;
+
+      document.getElementById('bar-48-pct').textContent = `${vochtStats.pct48}%`;
+      document.getElementById('bar-48-label').textContent = `${vochtStats.total48} ml`;
+      document.getElementById('bar-48-limit-label').textContent = `van ${vochtStats.lim48} ml`;
+      document.getElementById('bar-48-fill').style.width = `${vochtStats.pct48}%`;
+      document.getElementById('window-48-info').textContent = vochtStats.win48.label;
+
+      document.getElementById('pos-drink-buttons').innerHTML = products.map((p) => {
+        const active = p === selectedDrink;
+        return `
+          <div class="inline-flex items-center rounded-xl border ${
+            active
+              ? 'bg-sky-600 text-white border-sky-600 shadow-sm'
+              : 'bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700'
+          }">
+            <button type="button" data-drink="${escapeHtml(p)}" class="select-drink-btn px-3.5 py-2 text-xs font-bold cursor-pointer">
+              ${escapeHtml(p)}
+            </button>
+            ${
+              products.length > 1
+                ? `<button type="button" data-drink="${escapeHtml(p)}" title="Verwijder tegel"
+                    class="del-drink-btn pr-2.5 pl-1 py-2 text-xs font-bold opacity-75 hover:opacity-100 cursor-pointer">×</button>`
+                : ''
+            }
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('pos-ml-buttons').innerHTML = amounts.map((ml) => `
+        <div class="relative group rounded-xl border border-sky-200 dark:border-sky-800/70 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition flex items-center justify-between overflow-hidden">
+          <button type="button" data-ml="${ml}"
+            class="add-ml-btn flex-1 py-2.5 px-3 text-left text-xs font-extrabold text-sky-900 dark:text-sky-200 tabular-nums cursor-pointer">
+            + ${ml} ml <span class="block text-[10px] font-semibold opacity-75">${escapeHtml(selectedDrink)}</span>
+          </button>
+          ${
+            amounts.length > 1
+              ? `<button type="button" data-ml="${ml}" title="Verwijder ml-tegel"
+                  class="del-ml-btn px-2 py-2.5 text-xs font-bold text-sky-700/70 dark:text-sky-300/70 hover:text-rose-600 cursor-pointer">×</button>`
+              : ''
+          }
+        </div>
+      `).join('');
+
+      document.getElementById('pos-receipt-heading').textContent = vochtStats.win48.isFixedCycle
+        ? 'Intake Bon (48u Cyclus)'
+        : 'Intake Bon (Laatste 48u)';
+
+      const receiptList = document.getElementById('pos-receipt-list');
       if (vochtStats.in48.length === 0) {
-        receiptEl.innerHTML = `<p class="text-slate-400 text-center py-6">Nog geen vocht geregistreerd in dit 48-uurs venster.</p>`;
+        receiptList.innerHTML = `<p class="text-slate-400 text-center py-6">Geen vocht in de huidige 48-uurs periode.</p>`;
       } else {
-        receiptEl.innerHTML = [...vochtStats.in48].reverse().map((item) => {
-          const t = item.timestamp
-            ? new Date(Number(item.timestamp)).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
-            : '';
-          return `
-            <div class="flex items-center justify-between py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/70">
-              <div class="min-w-0">
-                <span class="font-bold text-slate-800 dark:text-slate-200">${escapeHtml(item.drink || 'Water')}</span>
-                <span class="text-slate-400 ml-1.5">${escapeHtml(t)}</span>
-              </div>
-              <div class="flex items-center gap-2.5 shrink-0">
-                <span class="font-extrabold tabular-nums text-sky-600 dark:text-sky-400">+${Number(item.ml || 0)} ml</span>
-                <button type="button" data-id="${escapeHtml(item.id)}" class="del-vocht-btn text-slate-400 hover:text-red-500 cursor-pointer">✕</button>
-              </div>
+        receiptList.innerHTML = [...vochtStats.in48].reverse().map((item) => `
+          <div class="flex items-center justify-between py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70">
+            <div>
+              <span class="font-bold text-slate-800 dark:text-slate-200">${escapeHtml(item.drink || 'Water')}</span>
+              <span class="block text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">${formatDateTimeNL(item.timestamp)}</span>
             </div>
-          `;
-        }).join('');
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-sky-600 dark:text-sky-400 tabular-nums">+${Number(item.ml)} ml</span>
+              <button type="button" data-id="${escapeHtml(item.id)}" title="Verwijder"
+                class="del-vocht-btn text-xs text-slate-400 hover:text-red-500 font-bold cursor-pointer">×</button>
+            </div>
+          </div>
+        `).join('');
       }
+      document.getElementById('pos-receipt-total24').textContent = `${vochtStats.total24} ml`;
 
       // Ritten statistieken & lijst
       document.getElementById('ritten-stats-summary').textContent =
-        `${rittenStats.evaluated} van ${rittenStats.total} ritten beoordeeld op aankomsttijd`;
+        `${rittenStats.evaluated} van ${rittenStats.total} ritten met eindtijd beoordeeld`;
       document.getElementById('stat-ontime-pct').textContent = `${rittenStats.pctOnTime}%`;
       document.getElementById('stat-ontime-cnt').textContent = `(${rittenStats.onTime} ritten)`;
       document.getElementById('stat-early-pct').textContent = `${rittenStats.pctEarly}%`;
@@ -4023,58 +4239,84 @@
       if (sortedPlanning.length === 0) {
         rittenContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen ritten opgeslagen.</p>`;
       } else {
-        rittenContainer.innerHTML = sortedPlanning.map(({ rit: r, origIdx, dayInfo }) => {
-          const ritId = String(r.id || origIdx);
-          const punct = evaluateRitPunctuality(r);
+        rittenContainer.innerHTML = sortedPlanning.map(({ rit, origIdx, dayInfo }) => {
+          const rid = String(rit.id || origIdx);
+          const punct = evaluateRitPunctuality(rit);
+          let badgeClass = 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
+          if (punct.status === 'optijd') {
+            badgeClass = 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800';
+          } else if (punct.status === 'tevroeg') {
+            badgeClass = 'bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800';
+          } else if (punct.status === 'telaat') {
+            badgeClass = 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800';
+          }
 
-          let badgeClass = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
-          if (punct.status === 'optijd') badgeClass = 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
-          if (punct.status === 'tevroeg') badgeClass = 'bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300';
-          if (punct.status === 'telaat') badgeClass = 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300';
+          const dayBadgeClass = dayInfo.bucket === 0
+            ? 'bg-amber-500 text-white'
+            : dayInfo.bucket === 1
+              ? 'bg-indigo-600 text-white'
+              : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
 
-          let dayBadgeClass = 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
-          if (dayInfo.bucket === 0) dayBadgeClass = 'bg-emerald-600 text-white';
-          if (dayInfo.bucket === 1) dayBadgeClass = 'bg-blue-600 text-white';
-          if (dayInfo.bucket === 2) dayBadgeClass = 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300';
+          const routeLabel = rit.van && rit.naar
+            ? `${rit.van} → ${rit.naar}`
+            : (rit.titel || 'Rit');
 
-          const routeLabel = r.van && r.naar ? `${r.van} → ${r.naar}` : (r.titel || 'Rit');
-          const duurLabel = r.duurMin !== null && r.duurMin !== undefined && r.duurMin !== '' ? `${r.duurMin} min` : '-';
+          const isBeingEdited = editingRitId === rid;
 
           return `
-            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
+            <div class="p-3.5 rounded-xl border ${
+              isBeingEdited
+                ? 'bg-amber-50/70 dark:bg-amber-950/25 border-amber-400 dark:border-amber-600'
+                : 'bg-slate-50 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700'
+            } flex flex-wrap items-center justify-between gap-3">
               <div class="space-y-1 min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
-                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${dayBadgeClass}">${escapeHtml(dayInfo.label)}</span>
-                  <span class="text-sm font-bold text-slate-900 dark:text-white">${escapeHtml(routeLabel)}</span>
-                  <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${badgeClass}">${escapeHtml(punct.label)}</span>
-                  ${r.herhaling && r.herhaling !== '1Malig' ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${escapeHtml(r.herhaling)}</span>` : ''}
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${dayBadgeClass}">
+                    ${escapeHtml(dayInfo.label)}
+                  </span>
+                  <span class="text-sm font-extrabold text-slate-900 dark:text-white">${escapeHtml(routeLabel)}</span>
+                  <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${badgeClass}">
+                    ${escapeHtml(punct.label)}
+                  </span>
+                  ${
+                    rit.firma
+                      ? `<span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">${escapeHtml(rit.firma)}</span>`
+                      : ''
+                  }
                 </div>
-                <div class="text-xs text-slate-600 dark:text-slate-300 flex flex-wrap gap-x-3 gap-y-0.5 tabular-nums">
-                  <span><strong>Afspraak:</strong> ${escapeHtml(formatAfspraakLabel(r.afspraak))}</span>
-                  <span><strong>Start:</strong> ${escapeHtml(r.startTijd || '-')}</span>
-                  <span><strong>Eind:</strong> ${escapeHtml(r.eindTijd || '-')}</span>
-                  <span><strong>Duur:</strong> ${escapeHtml(duurLabel)}</span>
-                  ${r.firma ? `<span><strong>Firma:</strong> ${escapeHtml(r.firma)}</span>` : ''}
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 dark:text-slate-300 tabular-nums">
+                  <span>Afspraak: <strong>${escapeHtml(formatAfspraakLabel(rit.afspraak))}</strong></span>
+                  <span>Start: <strong>${escapeHtml(rit.startTijd || '-')}</strong></span>
+                  <span>Eind: <strong>${escapeHtml(rit.eindTijd || '-')}</strong></span>
+                  ${
+                    rit.duurMin !== null && rit.duurMin !== undefined && rit.duurMin !== ''
+                      ? `<span>Duur: <strong>${escapeHtml(String(rit.duurMin))} min</strong></span>`
+                      : ''
+                  }
                 </div>
-                ${r.opmerking ? `<p class="text-xs text-slate-500 dark:text-slate-400">Opmerking: ${escapeHtml(r.opmerking)}</p>` : ''}
+                ${
+                  rit.opmerking
+                    ? `<p class="text-xs text-slate-500 dark:text-slate-400 italic">${escapeHtml(rit.opmerking)}</p>`
+                    : ''
+                }
               </div>
 
               <div class="flex flex-wrap items-center gap-1.5 shrink-0">
-                <button type="button" data-id="${escapeHtml(ritId)}"
-                  class="start-now-rit-btn px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer">
-                  Start nu
+                <button type="button" data-id="${escapeHtml(rid)}"
+                  class="start-now-rit-btn px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer">
+                  Start Nu
                 </button>
-                <button type="button" data-id="${escapeHtml(ritId)}"
-                  class="stop-now-rit-btn px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer">
-                  Stop nu
+                <button type="button" data-id="${escapeHtml(rid)}"
+                  class="stop-now-rit-btn px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold cursor-pointer">
+                  Stop Nu
                 </button>
-                <button type="button" data-id="${escapeHtml(ritId)}"
-                  class="edit-rit-btn px-2.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold cursor-pointer">
-                  Bewerken
+                <button type="button" data-id="${escapeHtml(rid)}"
+                  class="edit-rit-btn px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold cursor-pointer">
+                  Bewerk
                 </button>
-                <button type="button" data-id="${escapeHtml(ritId)}"
-                  class="del-rit-btn px-2.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold cursor-pointer">
-                  Delete
+                <button type="button" data-id="${escapeHtml(rid)}" title="Verwijder rit"
+                  class="del-rit-btn px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-red-600 hover:text-white text-xs font-bold cursor-pointer">
+                  ×
                 </button>
               </div>
             </div>
@@ -4082,7 +4324,138 @@
         }).join('');
       }
 
-      document.getElementById('last-sync-time').textContent = sharedData.updatedAt || 'Live';
+      // Dialysesessies lijst + ingebouwde bloeddruk/hartslag & grafiek
+      updateDialyseLiveCalculations();
+      renderDraftVitalsUI();
+      const dialyseContainer = document.getElementById('dialyse-list-container');
+      if (sortedDialysePlanning.length === 0) {
+        dialyseContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen dialysesessies opgeslagen.</p>`;
+      } else {
+        dialyseContainer.innerHTML = sortedDialysePlanning.map(({ sessie, origIdx, dayInfo }) => {
+          const sid = String(sessie.id || origIdx);
+          const dayBadgeClass = dayInfo.bucket === 0
+            ? 'bg-amber-500 text-white'
+            : dayInfo.bucket === 1
+              ? 'bg-indigo-600 text-white'
+              : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
+
+          const soortBadgeClass = sessie.soort === 'Nacht'
+            ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800'
+            : 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-800';
+
+          const adviesNum = sessie.adviesUf !== null && sessie.adviesUf !== undefined && sessie.adviesUf !== ''
+            ? Number(sessie.adviesUf)
+            : null;
+          const adviesClasses = getUfColorClasses(adviesNum);
+
+          const vinkjes = [
+            sessie.epo ? 'Epo' : '',
+            sessie.ijzer ? 'IJzer' : '',
+            sessie.fragmin2500 ? 'Fragmin 2500' : '',
+            sessie.fragmin5000 ? 'Fragmin 5000' : '',
+            sessie.shuntflowMeting ? 'Shuntflow meting' : ''
+          ].filter(Boolean);
+
+          const sessieVitals = normalizeVitals(sessie.vitals || []);
+
+          return `
+            <div class="p-4 rounded-xl border ${
+              editingDialyseId === sid
+                ? 'bg-amber-50/70 dark:bg-amber-950/25 border-amber-400 dark:border-amber-600'
+                : 'bg-slate-50 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700'
+            } space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${dayBadgeClass}">
+                    ${escapeHtml(dayInfo.label)}
+                  </span>
+                  <span class="px-2 py-0.5 rounded-md text-[11px] font-extrabold ${soortBadgeClass}">
+                    ${escapeHtml(sessie.soort || 'Dag')}dialyse
+                  </span>
+                  ${
+                    adviesNum !== null && !Number.isNaN(adviesNum)
+                      ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border tabular-nums ${adviesClasses}">
+                          UF advies: ${adviesNum.toFixed(2).replace('.', ',')} L
+                        </span>`
+                      : ''
+                  }
+                  ${
+                    sessieVitals.length > 0
+                      ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 tabular-nums">
+                          ${sessieVitals.length} BD/HS metingen
+                        </span>`
+                      : ''
+                  }
+                  ${
+                    sessie.verpleging
+                      ? `<span class="text-xs font-bold text-slate-700 dark:text-slate-200">Vpk: ${escapeHtml(sessie.verpleging)}</span>`
+                      : ''
+                  }
+                </div>
+
+                <div class="flex items-center gap-1.5">
+                  <button type="button" data-id="${escapeHtml(sid)}"
+                    class="edit-dialyse-btn px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold cursor-pointer">
+                    Bewerk
+                  </button>
+                  <button type="button" data-id="${escapeHtml(sid)}" title="Verwijder sessie"
+                    class="del-dialyse-btn px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-red-600 hover:text-white text-xs font-bold cursor-pointer">
+                    ×
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-slate-600 dark:text-slate-300 tabular-nums">
+                <div>Afspraak: <strong>${escapeHtml(formatIsoDateTimeNL(sessie.afspraak))}</strong></div>
+                <div>Start: <strong>${escapeHtml(formatIsoDateTimeNL(sessie.startDatumTijd))}</strong></div>
+                <div>Stop: <strong>${escapeHtml(formatIsoDateTimeNL(sessie.stopDatumTijd))}</strong></div>
+                <div>Duur: <strong>${escapeHtml(sessie.duur || '-')}</strong></div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-slate-600 dark:text-slate-300 tabular-nums">
+                <div>Pre: <strong>${sessie.preGewicht ?? '-'} kg</strong> • Post: <strong>${sessie.postGewicht ?? '-'} kg</strong></div>
+                <div>Gebruikte UF: <strong>${sessie.gebruikteUf ?? '-'}</strong></div>
+                <div>Werkelijke UF: <strong>${sessie.werkelijkeUf ?? '-'}</strong></div>
+                <div>ShuntFlow: <strong>${escapeHtml(sessie.shuntflowResultaat || '-')}</strong></div>
+              </div>
+
+              ${
+                sessieVitals.length > 0
+                  ? `
+                    <div class="pt-2 border-t border-slate-200/80 dark:border-slate-700/80 grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
+                      <div class="space-y-1 text-xs tabular-nums">
+                        <span class="block text-[10px] font-bold uppercase text-rose-600 dark:text-rose-400">Bloeddruk &amp; Hartslag momenten</span>
+                        ${sessieVitals.map((v) => `
+                          <div class="text-slate-700 dark:text-slate-200">
+                            <strong>${escapeHtml(v.tijd)}</strong> — BD ${v.systolisch}/${v.diastolisch} mmHg • HS ${v.hartslag} bpm
+                          </div>
+                        `).join('')}
+                      </div>
+                      <div class="bg-white dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
+                        ${buildVitalsSvgChart(sessieVitals, 420, 145)}
+                      </div>
+                    </div>
+                  `
+                  : ''
+              }
+
+              ${
+                vinkjes.length > 0
+                  ? `<div class="flex flex-wrap gap-1.5 pt-1">
+                      ${vinkjes.map((v) => `<span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200">✓ ${escapeHtml(v)}</span>`).join('')}
+                    </div>`
+                  : ''
+              }
+            </div>
+          `;
+        }).join('');
+      }
+
+      renderAgendaView(ritten, dialyseSessies, dialyseStatus, dialyseSub);
+      renderOverzichtenView(sharedData);
+      renderPdfView(sharedData);
+
+      document.getElementById('last-sync-time').textContent = sharedData.updatedAt || 'Zojuist';
 
       const startView = document.getElementById('start-view');
       const vochtView = document.getElementById('vocht-view');
@@ -4114,116 +4487,73 @@
         rittenView.classList.remove('hidden');
       } else if (tab === 'dialyse') {
         dialyseView.classList.remove('hidden');
-        updateDialyseLiveCalculations();
       } else if (tab === 'agenda') {
         agendaView.classList.remove('hidden');
-        renderAgendaView(ritten, dialyseSessies, dialyseStatus, dialyseSub);
       } else if (tab === 'overzichten') {
         overzichtenView.classList.remove('hidden');
-        renderOverzichtenView(sharedData);
       } else if (tab === 'pdf') {
         pdfView.classList.remove('hidden');
-        renderPdfView(sharedData);
       } else if (tab === 'instellingen') {
         instView.classList.remove('hidden');
       } else if (tab === 'chat') {
         chatView.classList.remove('hidden');
+        renderChatMessages([]);
         startChatListener();
       } else {
         modBox.classList.remove('hidden');
         document.getElementById('module-heading').textContent = tabNames[tab] || tab;
-        document.getElementById('module-desc').textContent = 'Realtime gesynchroniseerd met Firebase.';
-        document.getElementById('module-content').innerHTML = `
-          <div class="space-y-3">
-            <p>Gegevens voor <strong>${escapeHtml(tabNames[tab] || tab)}</strong> worden live bewaard in je account.</p>
-            <button id="demo-brief-btn" type="button" class="px-4 py-2 rounded-xl bg-amber-600 text-white text-xs font-bold cursor-pointer">
-              + Voorbeeldbrief toevoegen
-            </button>
-          </div>
-        `;
-        const briefBtn = document.getElementById('demo-brief-btn');
-        if (briefBtn) {
-          briefBtn.addEventListener('click', () => {
-            const next = [...brieven, { titel: `Brief #${brieven.length + 1}` }];
-            pushSharedData({ brieven: next });
+        document.getElementById('module-desc').textContent = 'Realtime verbonden met jouw account.';
+        const modContent = document.getElementById('module-content');
+        if (tab === 'brieven') {
+          modContent.innerHTML = `
+            <form id="brief-form" class="flex gap-2 mb-4">
+              <input id="brief-input" type="text" required placeholder="Titel van nieuwe brief..."
+                class="flex-1 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm" />
+              <button type="submit" class="px-4 py-2 rounded-xl bg-amber-600 text-white text-sm font-semibold cursor-pointer">+ Brief</button>
+            </form>
+            <div class="space-y-2">
+              ${
+                brieven.length
+                  ? brieven.map((b, i) => `<div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium">${i + 1}. ${escapeHtml(b.titel)}</div>`).join('')
+                  : '<p class="text-slate-400 text-xs">Nog geen brieven.</p>'
+              }
+            </div>
+          `;
+          document.getElementById('brief-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const inp = document.getElementById('brief-input');
+            const titel = inp.value.trim();
+            if (!titel) return;
+            inp.value = '';
+            pushSharedData({ brieven: [...brieven, { titel }] });
           });
         }
       }
     }
 
-    document.getElementById('tile-vocht-plus150').addEventListener('click', () => addVochtEntry(150, 'Water'));
+    document.getElementById('tile-vocht-plus150').addEventListener('click', () => {
+      addVochtEntry(150, selectedDrink);
+    });
+
     document.getElementById('tile-brief-quick').addEventListener('click', () => {
-      const brieven = Array.isArray(sharedData.brieven) ? sharedData.brieven : [];
-      pushSharedData({ brieven: [...brieven, { titel: `Brief #${brieven.length + 1}` }] });
+      const titel = `Brief ${new Date().toLocaleDateString('nl-NL')}`;
+      pushSharedData({ brieven: [...(sharedData.brieven || []), { titel }] });
     });
 
-    document.getElementById('nav-list').addEventListener('click', (e) => {
-      const btn = e.target.closest('.nav-btn');
-      if (btn) switchLocalTab(btn.getAttribute('data-tab'));
+    document.querySelectorAll('.nav-btn').forEach((btn) => {
+      btn.addEventListener('click', () => switchLocalTab(btn.getAttribute('data-tab')));
     });
-
     document.querySelectorAll('.open-tab-link').forEach((btn) => {
       btn.addEventListener('click', () => switchLocalTab(btn.getAttribute('data-open-tab')));
     });
-
-    function startRealtimeListener(userId) {
-      if (dbUnsub) dbUnsub();
-      const userDataRef = ref(db, `users/${userId}/data`);
-      document.getElementById('rt-status-label').textContent = 'Realtime verbinden...';
-
-      dbUnsub = onValue(userDataRef, (snapshot) => {
-        document.getElementById('rt-status-label').textContent = 'Realtime verbonden';
-        if (snapshot.exists()) {
-          const val = snapshot.val() || {};
-          sharedData = {
-            ...sharedData,
-            ...val,
-            vochtEntries: Array.isArray(val.vochtEntries) ? val.vochtEntries : [],
-            vochtProducts: Array.isArray(val.vochtProducts) && val.vochtProducts.length > 0
-              ? val.vochtProducts
-              : ['Water', 'Koffie', 'Thee', 'Soep', 'Frisdrank'],
-            vochtAmounts: Array.isArray(val.vochtAmounts) && val.vochtAmounts.length > 0
-              ? val.vochtAmounts
-              : [100, 150, 200, 250, 330, 500],
-            vocht48StartDate: val.vocht48StartDate || '2026-11-22',
-            vocht48StartTime: val.vocht48StartTime || '05:30',
-            vocht48Mode: val.vocht48Mode || 'every_other_day',
-            dialyseDryWeight: Number(val.dialyseDryWeight ?? 109),
-            dialyseUfOrangeMin: Number(val.dialyseUfOrangeMin ?? 4.0),
-            dialyseUfRedMin: Number(val.dialyseUfRedMin ?? 4.5),
-            dialyseSessies: Array.isArray(val.dialyseSessies) ? val.dialyseSessies : [],
-            verplegingOptions: Array.isArray(val.verplegingOptions) ? val.verplegingOptions : [],
-            firmaOptions: Array.isArray(val.firmaOptions) ? val.firmaOptions : [],
-            vanOptions: Array.isArray(val.vanOptions) ? val.vanOptions : [],
-            naarOptions: Array.isArray(val.naarOptions) ? val.naarOptions : [],
-            ritten: Array.isArray(val.ritten) ? val.ritten : [],
-            brieven: Array.isArray(val.brieven) ? val.brieven : [],
-            pdfDocs: Array.isArray(val.pdfDocs) ? val.pdfDocs : []
-          };
-
-          const { newDocs, allDocs } = syncAutoPdfReports(sharedData, Date.now());
-          if (newDocs.length > 0) {
-            sharedData.pdfDocs = allDocs;
-            set(ref(db, `users/${userId}/data/pdfDocs`), allDocs).catch(() => {});
-          }
-        }
-        renderAll();
-      }, () => {
-        document.getElementById('rt-status-label').textContent = 'Controleer Database Rules';
-        renderAll();
-      });
-    }
 
     const loginScreen = document.getElementById('login-screen');
     const appShell = document.getElementById('app-shell');
     const authError = document.getElementById('auth-error');
     const authTitle = document.getElementById('auth-title');
-    const emailForm = document.getElementById('email-form');
-    const emailInput = document.getElementById('email-input');
-    const passwordInput = document.getElementById('password-input');
     const emailSubmitBtn = document.getElementById('email-submit-btn');
     const toggleAuthMode = document.getElementById('toggle-auth-mode');
-    let isRegisterMode = false;
+    let registerMode = false;
 
     function showAuthError(msg) {
       authError.textContent = msg;
@@ -4231,29 +4561,25 @@
     }
 
     toggleAuthMode.addEventListener('click', () => {
-      isRegisterMode = !isRegisterMode;
+      registerMode = !registerMode;
       authError.classList.add('hidden');
-      if (isRegisterMode) {
-        authTitle.textContent = 'Account aanmaken';
-        emailSubmitBtn.textContent = 'Registreren met e-mail';
-        toggleAuthMode.textContent = 'Heb je al een account? Log in';
-      } else {
-        authTitle.textContent = 'Inloggen';
-        emailSubmitBtn.textContent = 'Inloggen met e-mail';
-        toggleAuthMode.textContent = 'Nog geen account? Maak er een aan';
-      }
+      authTitle.textContent = registerMode ? 'Account aanmaken' : 'Inloggen';
+      emailSubmitBtn.textContent = registerMode ? 'Registreren met e-mail' : 'Inloggen met e-mail';
+      toggleAuthMode.textContent = registerMode
+        ? 'Heb je al een account? Log in'
+        : 'Nog geen account? Maak er een aan';
     });
 
-    emailForm.addEventListener('submit', async (e) => {
+    document.getElementById('email-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       authError.classList.add('hidden');
-      const email = emailInput.value.trim();
-      const pass = passwordInput.value;
+      const email = document.getElementById('email-input').value.trim();
+      const password = document.getElementById('password-input').value;
       try {
-        if (isRegisterMode) {
-          await createUserWithEmailAndPassword(auth, email, pass);
+        if (registerMode) {
+          await createUserWithEmailAndPassword(auth, email, password);
         } else {
-          await signInWithEmailAndPassword(auth, email, pass);
+          await signInWithEmailAndPassword(auth, email, password);
         }
       } catch (err) {
         showAuthError(err.message || 'Inloggen mislukt.');
@@ -4265,11 +4591,11 @@
       try {
         await signInWithPopup(auth, googleProvider);
       } catch (err) {
-        showAuthError(err.message || 'Google login mislukt.');
+        showAuthError(err.message || 'Google-inloggen mislukt.');
       }
     });
 
-    async function handleLogout() {
+    async function doLogout() {
       stopRecording(true);
       sessionStorage.removeItem('dp_locked');
       pinModal.classList.add('hidden');
@@ -4278,9 +4604,9 @@
       await signOut(auth);
     }
 
-    document.getElementById('logout-sidebar').addEventListener('click', handleLogout);
-    document.getElementById('logout-header').addEventListener('click', handleLogout);
-    document.getElementById('pin-logout-btn').addEventListener('click', handleLogout);
+    document.getElementById('logout-sidebar').addEventListener('click', doLogout);
+    document.getElementById('logout-header').addEventListener('click', doLogout);
+    document.getElementById('pin-logout-btn').addEventListener('click', doLogout);
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -4289,20 +4615,71 @@
         localActiveTab = 'start';
         editingRitId = null;
         editingDialyseId = null;
-        syncRitFormMode();
-        updateDialyseRepeatUI();
-        syncDialyseTimesFromAfspraak(true);
-        document.getElementById('user-email-label').textContent = userEmail || uid;
+        draftVitals = [];
+        document.getElementById('user-email-label').textContent = user.email || user.uid;
         loginScreen.classList.add('hidden');
         appShell.classList.remove('hidden');
-        startRealtimeListener(uid);
-        startChatListener();
-        if (sessionStorage.getItem('dp_locked') === '1') {
+
+        if (sessionStorage.getItem('dp_locked') === '1' && localStorage.getItem(`dp_pin_${uid}`)) {
           openPin(false);
         }
+
+        if (dbUnsub) dbUnsub();
+        const userDataRef = ref(db, `users/${uid}/data`);
+        dbUnsub = onValue(
+          userDataRef,
+          (snap) => {
+            document.getElementById('rt-status-label').textContent = 'Realtime verbonden';
+            if (snap.exists()) {
+              const remote = snap.val() || {};
+              sharedData = {
+                ...sharedData,
+                ...remote,
+                vochtEntries: Array.isArray(remote.vochtEntries) ? remote.vochtEntries : [],
+                vochtProducts: Array.isArray(remote.vochtProducts) && remote.vochtProducts.length > 0
+                  ? remote.vochtProducts
+                  : sharedData.vochtProducts,
+                vochtAmounts: Array.isArray(remote.vochtAmounts) && remote.vochtAmounts.length > 0
+                  ? remote.vochtAmounts
+                  : sharedData.vochtAmounts,
+                vocht48StartDate: remote.vocht48StartDate || '2026-11-22',
+                vocht48StartTime: remote.vocht48StartTime || '05:30',
+                vocht48Mode: remote.vocht48Mode || 'every_other_day',
+                dialyseDryWeight: Number(remote.dialyseDryWeight ?? 109),
+                dialyseUfOrangeMin: Number(remote.dialyseUfOrangeMin ?? 4.0),
+                dialyseUfRedMin: Number(remote.dialyseUfRedMin ?? 4.5),
+                dialyseSessies: Array.isArray(remote.dialyseSessies) ? remote.dialyseSessies : [],
+                verplegingOptions: Array.isArray(remote.verplegingOptions) ? remote.verplegingOptions : [],
+                firmaOptions: Array.isArray(remote.firmaOptions) ? remote.firmaOptions : [],
+                vanOptions: Array.isArray(remote.vanOptions) ? remote.vanOptions : [],
+                naarOptions: Array.isArray(remote.naarOptions) ? remote.naarOptions : [],
+                ritten: Array.isArray(remote.ritten) ? remote.ritten : [],
+                brieven: Array.isArray(remote.brieven) ? remote.brieven : [],
+                pdfDocs: Array.isArray(remote.pdfDocs) ? remote.pdfDocs : []
+              };
+
+              const autoResult = syncAutoPdfReports(sharedData, Date.now());
+              if (autoResult.newDocs.length > 0) {
+                pushSharedData({ pdfDocs: autoResult.allDocs });
+                return;
+              }
+            }
+            renderAll();
+          },
+          () => {
+            document.getElementById('rt-status-label').textContent = 'Realtime leesfout';
+            renderAll();
+          }
+        );
+
+        startChatListener();
       } else {
         uid = null;
         userEmail = '';
+        editingRitId = null;
+        editingDialyseId = null;
+        draftVitals = [];
+        stopRecording(true);
         if (dbUnsub) { dbUnsub(); dbUnsub = null; }
         if (chatUnsub) { chatUnsub(); chatUnsub = null; }
         appShell.classList.add('hidden');
@@ -4312,9 +4689,11 @@
     });
 
     function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, (m) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      }[m]));
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
     }
   </script>
 </body>
