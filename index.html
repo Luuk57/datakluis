@@ -292,7 +292,9 @@
                   <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">UF Advies &amp; Kleurcodering</span>
                   <h3 class="text-base font-bold text-slate-900 dark:text-white mt-0.5">
                     Drooggewicht: <span id="dialyse-dry-weight-display" class="tabular-nums">109</span> kg
-                    <span class="text-xs font-normal text-slate-500 dark:text-slate-400 ml-1">(&lt; 4,0 groen • ≥ 4,0 oranje • ≥ 4,5 rood)</span>
+                    <span id="dialyse-color-legend" class="text-xs font-normal text-slate-500 dark:text-slate-400 ml-1 tabular-nums">
+                      (&lt; 4,0 groen • ≥ 4,0 oranje • ≥ 4,5 rood)
+                    </span>
                   </h3>
                 </div>
 
@@ -317,7 +319,7 @@
                 <div class="flex items-center gap-2">
                   <button type="button" data-open-tab="instellingen"
                     class="open-tab-link px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold cursor-pointer">
-                    Drooggewicht in Instellingen
+                    Drooggewicht &amp; Kleuren
                   </button>
                   <button type="button" data-open-tab="start"
                     class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
@@ -475,7 +477,7 @@
                 <div class="flex flex-wrap items-center justify-between pt-1 gap-2">
                   <div class="space-y-0.5">
                     <span id="dialyse-calc-hint" class="block text-xs text-slate-500 dark:text-slate-400">
-                      Bij Dag: Stop = Afspraak + 4 uur en UF advies = Pre - Drooggewicht + 0,6.
+                      Start neemt Afspraak over (aanpasbaar) • Stop = Start + 4 uur (Dag) of + 7 uur (Nacht).
                     </span>
                     <span id="dialyse-repeat-hint" class="block text-xs font-semibold text-blue-600 dark:text-blue-400">
                       1Malig: wordt als 1 sessie op de gekozen datum opgeslagen.
@@ -863,7 +865,7 @@
               <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div>
                   <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Instellingen (Firebase)</span>
-                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">Drooggewicht, 48u vochtstart, limieten en dropdowns</h3>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">Drooggewicht, UF-kleuren, 48u vochtstart, limieten en dropdowns</h3>
                 </div>
                 <button type="button" data-open-tab="start"
                   class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
@@ -871,18 +873,39 @@
                 </button>
               </div>
 
-              <!-- Drooggewicht Dialyse -->
-              <div class="p-4 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/70 space-y-2">
-                <h4 class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">Dialyse Drooggewicht</h4>
+              <!-- Drooggewicht & UF-Kleurcodering Dialyse -->
+              <div class="p-4 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/70 space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
                   <div>
-                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Drooggewicht (kg)</label>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Dialyse Drooggewicht (kg)</label>
                     <input id="inst-dry-weight" type="number" step="0.1" min="20" max="300" value="109"
                       class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
                   </div>
                   <p class="text-xs text-slate-600 dark:text-slate-400">
                     Formule advies UF: <strong>Pre gewicht - Drooggewicht + (0,6 bij Dag / 0,3 bij Nacht)</strong>.
                   </p>
+                </div>
+
+                <div class="pt-3 border-t border-blue-200/80 dark:border-blue-800/60 space-y-2.5">
+                  <h4 class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">Kleurcodering UF-advies (aanpasbaar)</h4>
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                    <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800">
+                      <span class="text-[11px] font-extrabold uppercase text-emerald-800 dark:text-emerald-300 block">Groen</span>
+                      <p id="inst-uf-green-preview" class="text-xs font-bold text-emerald-700 dark:text-emerald-200 mt-1 tabular-nums">Onder 4,0 L</p>
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-semibold text-amber-800 dark:text-amber-300 mb-1">Oranje vanaf (≥ L)</label>
+                      <input id="inst-uf-orange-min" type="number" step="0.1" min="0" max="20" value="4.0"
+                        class="w-full px-3.5 py-2 rounded-xl border border-amber-300 dark:border-amber-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-semibold text-rose-800 dark:text-rose-300 mb-1">Rood vanaf (≥ L)</label>
+                      <input id="inst-uf-red-min" type="number" step="0.1" min="0" max="20" value="4.5"
+                        class="w-full px-3.5 py-2 rounded-xl border border-rose-300 dark:border-rose-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1183,6 +1206,8 @@
       vocht48StartTime: '05:30',
       vocht48Mode: 'every_other_day',
       dialyseDryWeight: 109,
+      dialyseUfOrangeMin: 4.0,
+      dialyseUfRedMin: 4.5,
       dialyseSessies: [],
       firmaOptions: [],
       vanOptions: [],
@@ -1460,6 +1485,18 @@
       return Number.isFinite(dw) && dw > 0 ? dw : 109;
     }
 
+    function getUfColorThresholds() {
+      const rawOrange = Number(sharedData.dialyseUfOrangeMin);
+      const rawRed = Number(sharedData.dialyseUfRedMin);
+      const orangeMin = Number.isFinite(rawOrange) && rawOrange >= 0 ? rawOrange : 4.0;
+      const redMin = Number.isFinite(rawRed) && rawRed >= 0 ? Math.max(orangeMin, rawRed) : Math.max(orangeMin, 4.5);
+      return { orangeMin, redMin };
+    }
+
+    function formatThresholdNL(val) {
+      return Number(val).toFixed(1).replace('.', ',');
+    }
+
     function calcUfAdvice(preGewicht, soort, dryWeight = getDryWeight()) {
       const pre = Number(preGewicht);
       if (!Number.isFinite(pre) || pre <= 0) return null;
@@ -1491,10 +1528,11 @@
         return 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200';
       }
       const n = Number(ufVal);
-      if (n >= 4.5) {
+      const { orangeMin, redMin } = getUfColorThresholds();
+      if (n >= redMin) {
         return 'bg-rose-100 dark:bg-rose-950/70 border-rose-400 dark:border-rose-700 text-rose-800 dark:text-rose-200';
       }
-      if (n >= 4.0) {
+      if (n >= orangeMin) {
         return 'bg-amber-100 dark:bg-amber-950/70 border-amber-400 dark:border-amber-700 text-amber-800 dark:text-amber-200';
       }
       return 'bg-emerald-100 dark:bg-emerald-950/70 border-emerald-400 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200';
@@ -1524,23 +1562,44 @@
         });
     }
 
-    function syncDialyseStopFromAfspraak(forceStop = false) {
+    // Start datumtijd neemt Afspraak datumtijd over (tenzij handmatig aangepast),
+    // en Stop datumtijd = Start datumtijd + 4 uur (Dag) of + 7 uur (Nacht).
+    function syncDialyseTimesFromAfspraak(forceStop = false) {
       const soort = document.getElementById('dialyse-soort').value || 'Dag';
       const afspraakVal = document.getElementById('dialyse-afspraak').value;
+      const startInp = document.getElementById('dialyse-start');
       const stopInp = document.getElementById('dialyse-stop');
       const hintEl = document.getElementById('dialyse-calc-hint');
 
       const hoursAdd = soort === 'Dag' ? 4 : 7;
       hintEl.textContent = soort === 'Dag'
-        ? `Dagdialyse: Stop = Afspraak + 4 uur • UF advies = Pre gewicht - ${getDryWeight()} + 0,6.`
-        : `Nachtdialyse (2 datums): Stop = Afspraak + 7 uur • UF advies = Pre gewicht - ${getDryWeight()} + 0,3.`;
+        ? `Dagdialyse: Start = Afspraak (aanpasbaar) • Stop = Start + 4 uur • UF advies = Pre - ${getDryWeight()} + 0,6.`
+        : `Nachtdialyse: Start = Afspraak (aanpasbaar) • Stop = Start + 7 uur • UF advies = Pre - ${getDryWeight()} + 0,3.`;
 
-      if (afspraakVal) {
-        const aDate = parseLocalDateTime(afspraakVal);
-        if (aDate && (forceStop || !stopInp.dataset.manualStop || stopInp.dataset.manualStop !== '1')) {
-          const stopDate = new Date(aDate.getTime() + hoursAdd * 60 * 60 * 1000);
-          stopInp.value = toDateTimeLocalString(stopDate);
-        }
+      if (afspraakVal && (!startInp.dataset.manualStart || startInp.dataset.manualStart !== '1')) {
+        startInp.value = afspraakVal;
+      }
+
+      const baseStart = startInp.value || afspraakVal;
+      const sDate = parseLocalDateTime(baseStart);
+      if (sDate && (forceStop || !stopInp.dataset.manualStop || stopInp.dataset.manualStop !== '1')) {
+        const stopDate = new Date(sDate.getTime() + hoursAdd * 60 * 60 * 1000);
+        stopInp.value = toDateTimeLocalString(stopDate);
+      }
+
+      updateDialyseLiveCalculations();
+    }
+
+    function syncDialyseStopFromStart() {
+      const soort = document.getElementById('dialyse-soort').value || 'Dag';
+      const startVal = document.getElementById('dialyse-start').value;
+      const stopInp = document.getElementById('dialyse-stop');
+      const hoursAdd = soort === 'Dag' ? 4 : 7;
+
+      const sDate = parseLocalDateTime(startVal);
+      if (sDate && (!stopInp.dataset.manualStop || stopInp.dataset.manualStop !== '1')) {
+        const stopDate = new Date(sDate.getTime() + hoursAdd * 60 * 60 * 1000);
+        stopInp.value = toDateTimeLocalString(stopDate);
       }
       updateDialyseLiveCalculations();
     }
@@ -1555,7 +1614,10 @@
       const werkUfInp = document.getElementById('dialyse-werkelijke-uf');
 
       const dryWeight = getDryWeight();
+      const { orangeMin, redMin } = getUfColorThresholds();
       document.getElementById('dialyse-dry-weight-display').textContent = String(dryWeight);
+      document.getElementById('dialyse-color-legend').textContent =
+        `(< ${formatThresholdNL(orangeMin)} groen • ≥ ${formatThresholdNL(orangeMin)} oranje • ≥ ${formatThresholdNL(redMin)} rood)`;
 
       if (startVal && stopVal && (!duurInp.dataset.manualDuur || duurInp.dataset.manualDuur !== '1')) {
         const autoDuur = calcDuurLabelFromDates(startVal, stopVal);
@@ -1589,14 +1651,25 @@
     document.getElementById('dialyse-soort').addEventListener('change', () => {
       const stopInp = document.getElementById('dialyse-stop');
       stopInp.dataset.manualStop = '0';
-      syncDialyseStopFromAfspraak(true);
+      syncDialyseTimesFromAfspraak(true);
     });
 
+    document.getElementById('dialyse-afspraak').addEventListener('input', () => {
+      syncDialyseTimesFromAfspraak(false);
+    });
     document.getElementById('dialyse-afspraak').addEventListener('change', () => {
-      syncDialyseStopFromAfspraak(false);
+      syncDialyseTimesFromAfspraak(false);
     });
 
-    document.getElementById('dialyse-start').addEventListener('change', updateDialyseLiveCalculations);
+    document.getElementById('dialyse-start').addEventListener('input', (e) => {
+      e.target.dataset.manualStart = e.target.value ? '1' : '0';
+      syncDialyseStopFromStart();
+    });
+    document.getElementById('dialyse-start').addEventListener('change', (e) => {
+      e.target.dataset.manualStart = e.target.value ? '1' : '0';
+      syncDialyseStopFromStart();
+    });
+
     document.getElementById('dialyse-stop').addEventListener('change', (e) => {
       e.target.dataset.manualStop = '1';
       updateDialyseLiveCalculations();
@@ -1612,8 +1685,10 @@
     });
 
     document.getElementById('dialyse-start-now-btn').addEventListener('click', () => {
-      document.getElementById('dialyse-start').value = currentDateTimeLocal();
-      updateDialyseLiveCalculations();
+      const startInp = document.getElementById('dialyse-start');
+      startInp.dataset.manualStart = '1';
+      startInp.value = currentDateTimeLocal();
+      syncDialyseStopFromStart();
     });
 
     document.getElementById('dialyse-stop-now-btn').addEventListener('click', () => {
@@ -1626,9 +1701,11 @@
     function resetDialyseForm() {
       editingDialyseId = null;
       document.getElementById('dialyse-form').reset();
+      const startInp = document.getElementById('dialyse-start');
       const stopInp = document.getElementById('dialyse-stop');
       const duurInp = document.getElementById('dialyse-duur');
       const werkInp = document.getElementById('dialyse-werkelijke-uf');
+      startInp.dataset.manualStart = '0';
       stopInp.dataset.manualStop = '0';
       duurInp.dataset.manualDuur = '0';
       werkInp.dataset.manualWerkUf = '0';
@@ -1638,7 +1715,7 @@
       document.getElementById('dialyse-submit-btn').textContent = 'Dialyse opslaan';
       document.getElementById('dialyse-cancel-edit-btn').classList.add('hidden');
       updateDialyseRepeatUI();
-      syncDialyseStopFromAfspraak(true);
+      syncDialyseTimesFromAfspraak(true);
     }
 
     document.getElementById('dialyse-cancel-edit-btn').addEventListener('click', resetDialyseForm);
@@ -1652,9 +1729,14 @@
       dialyseRepeatFieldsEl.classList.add('hidden');
       document.getElementById('dialyse-soort').value = item.soort === 'Nacht' ? 'Nacht' : 'Dag';
       document.getElementById('dialyse-afspraak').value = item.afspraak || '';
-      document.getElementById('dialyse-start').value = item.startDatumTijd || '';
-      document.getElementById('dialyse-stop').value = item.stopDatumTijd || '';
-      document.getElementById('dialyse-stop').dataset.manualStop = '1';
+      const startInp = document.getElementById('dialyse-start');
+      startInp.value = item.startDatumTijd || item.afspraak || '';
+      startInp.dataset.manualStart = item.startDatumTijd && item.startDatumTijd !== item.afspraak ? '1' : '0';
+
+      const stopInp = document.getElementById('dialyse-stop');
+      stopInp.value = item.stopDatumTijd || '';
+      stopInp.dataset.manualStop = item.stopDatumTijd ? '1' : '0';
+
       document.getElementById('dialyse-duur').value = item.duur || '';
       document.getElementById('dialyse-duur').dataset.manualDuur = item.duur ? '1' : '0';
       document.getElementById('dialyse-pre-gewicht').value = item.preGewicht ?? '';
@@ -1686,7 +1768,7 @@
       e.preventDefault();
       const soort = document.getElementById('dialyse-soort').value || 'Dag';
       const afspraak = document.getElementById('dialyse-afspraak').value;
-      const startDatumTijd = document.getElementById('dialyse-start').value;
+      const startDatumTijd = document.getElementById('dialyse-start').value || afspraak;
       let stopDatumTijd = document.getElementById('dialyse-stop').value;
 
       if (!afspraak || !afspraak.includes('T')) return;
@@ -1731,8 +1813,8 @@
 
       if (editingDialyseId) {
         if (!stopDatumTijd) {
-          const aDate = parseLocalDateTime(afspraak);
-          if (aDate) stopDatumTijd = toDateTimeLocalString(new Date(aDate.getTime() + hoursAdd * 3600000));
+          const sDate = parseLocalDateTime(startDatumTijd);
+          if (sDate) stopDatumTijd = toDateTimeLocalString(new Date(sDate.getTime() + hoursAdd * 3600000));
         }
         const duur = document.getElementById('dialyse-duur').value.trim()
           || calcDuurLabelFromDates(startDatumTijd, stopDatumTijd);
@@ -1757,21 +1839,21 @@
 
         const startTimePart = startDatumTijd && startDatumTijd.includes('T')
           ? startDatumTijd.split('T')[1].slice(0, 5)
-          : '';
+          : afspTimePart.slice(0, 5);
 
         dates.forEach((dObj, i) => {
           const dateStr = formatDateISO(dObj);
           const itemAfspraak = `${dateStr}T${afspTimePart.slice(0, 5)}`;
-          const itemAfspraakDate = parseLocalDateTime(itemAfspraak);
+          const itemStart = `${dateStr}T${startTimePart}`;
+          const itemStartDate = parseLocalDateTime(itemStart);
 
           let itemStop = '';
           if (herhaling === '1Malig' && stopDatumTijd) {
             itemStop = stopDatumTijd;
-          } else if (itemAfspraakDate) {
-            itemStop = toDateTimeLocalString(new Date(itemAfspraakDate.getTime() + hoursAdd * 3600000));
+          } else if (itemStartDate) {
+            itemStop = toDateTimeLocalString(new Date(itemStartDate.getTime() + hoursAdd * 3600000));
           }
 
-          const itemStart = startTimePart ? `${dateStr}T${startTimePart}` : '';
           const itemDuur = document.getElementById('dialyse-duur').value.trim()
             || calcDuurLabelFromDates(itemStart, itemStop);
 
@@ -2118,6 +2200,20 @@
       const dw = Math.max(20, Number(e.target.value || 109));
       pushSharedData({ dialyseDryWeight: dw });
     });
+
+    function saveUfColorThresholdsFromInputs() {
+      const orangeInp = document.getElementById('inst-uf-orange-min');
+      const redInp = document.getElementById('inst-uf-red-min');
+      const orangeMin = Math.max(0, Number(orangeInp.value ?? 4.0));
+      const redMin = Math.max(orangeMin, Number(redInp.value ?? 4.5));
+      pushSharedData({
+        dialyseUfOrangeMin: orangeMin,
+        dialyseUfRedMin: redMin
+      });
+    }
+
+    document.getElementById('inst-uf-orange-min').addEventListener('change', saveUfColorThresholdsFromInputs);
+    document.getElementById('inst-uf-red-min').addEventListener('change', saveUfColorThresholdsFromInputs);
 
     document.getElementById('inst-vocht48-start-date').addEventListener('change', (e) => {
       const val = e.target.value || '2026-11-22';
@@ -3191,11 +3287,23 @@
         `).join('');
       }
 
-      // Instellingen velden
+      // Instellingen velden (Drooggewicht + Kleurcodering)
       const dryWeightInp = document.getElementById('inst-dry-weight');
       if (dryWeightInp && document.activeElement !== dryWeightInp) {
         dryWeightInp.value = getDryWeight();
       }
+
+      const { orangeMin, redMin } = getUfColorThresholds();
+      const orangeInp = document.getElementById('inst-uf-orange-min');
+      const redInp = document.getElementById('inst-uf-red-min');
+      if (orangeInp && document.activeElement !== orangeInp) {
+        orangeInp.value = orangeMin;
+      }
+      if (redInp && document.activeElement !== redInp) {
+        redInp.value = redMin;
+      }
+      document.getElementById('inst-uf-green-preview').textContent = `Onder ${formatThresholdNL(orangeMin)} L`;
+
       updateDialyseLiveCalculations();
 
       // Dialyse lijst weergeven (Vandaag -> Morgen -> Verder oplopend)
@@ -3614,7 +3722,7 @@
         document.getElementById('user-email-label').textContent = user.email;
         syncRitFormMode();
         updateDialyseRepeatUI();
-        syncDialyseStopFromAfspraak(false);
+        syncDialyseTimesFromAfspraak(false);
         renderAll();
         startRealtime(user.uid);
         if (sessionStorage.getItem('dp_locked') === '1') {
