@@ -281,6 +281,65 @@
           </div>
 
           <!-- ===================================================== -->
+          <!-- AGENDA-MODULE: LIJST / DAG / WEEK / MAAND             -->
+          <!-- ===================================================== -->
+          <div id="agenda-view" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Agenda</span>
+                <h3 id="agenda-period-title" class="text-lg font-bold text-slate-900 dark:text-white mt-0.5">Agenda-overzicht</h3>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <!-- Overzichtvormen: Lijst, Dag, Week, Maand -->
+                <div class="inline-flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-700">
+                  <button type="button" data-agenda-mode="lijst"
+                    class="agenda-mode-btn px-3 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white cursor-pointer">
+                    Lijst
+                  </button>
+                  <button type="button" data-agenda-mode="dag"
+                    class="agenda-mode-btn px-3 py-1 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer">
+                    Dag
+                  </button>
+                  <button type="button" data-agenda-mode="week"
+                    class="agenda-mode-btn px-3 py-1 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer">
+                    Week
+                  </button>
+                  <button type="button" data-agenda-mode="maand"
+                    class="agenda-mode-btn px-3 py-1 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer">
+                    Maand
+                  </button>
+                </div>
+
+                <!-- Periode-navigatie -->
+                <div class="inline-flex items-center gap-1">
+                  <button id="agenda-prev-btn" type="button" title="Vorige periode"
+                    class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold cursor-pointer">
+                    ←
+                  </button>
+                  <button id="agenda-today-btn" type="button"
+                    class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
+                    Vandaag
+                  </button>
+                  <button id="agenda-next-btn" type="button" title="Volgende periode"
+                    class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold cursor-pointer">
+                    →
+                  </button>
+                </div>
+
+                <button type="button" data-open-tab="start"
+                  class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
+                  ← Start
+                </button>
+              </div>
+            </div>
+
+            <div id="agenda-render-container" class="space-y-3">
+              <p class="text-xs text-slate-400 py-6 text-center">Geen agenda-items.</p>
+            </div>
+          </div>
+
+          <!-- ===================================================== -->
           <!-- VOCHTINTAKE POS + 24U & 48U PROGRESS + TEGELBEHEER    -->
           <!-- ===================================================== -->
           <div id="vocht-view" class="hidden space-y-5">
@@ -841,6 +900,9 @@
     let selectedDrink = 'Water';
     let editingRitId = null;
 
+    let agendaMode = 'lijst';
+    let agendaCursorDate = new Date();
+
     let sharedData = {
       vochtEntries: [],
       vochtProducts: ['Water', 'Koffie', 'Thee', 'Soep', 'Frisdrank'],
@@ -953,6 +1015,262 @@
     function switchLocalTab(tab) {
       localActiveTab = tab || 'start';
       renderAll();
+    }
+
+    // ---------------------------------------------------------
+    // AGENDA OVERZICHTVORMEN: LIJST / DAG / WEEK / MAAND
+    // ---------------------------------------------------------
+    document.querySelectorAll('.agenda-mode-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        agendaMode = btn.getAttribute('data-agenda-mode') || 'lijst';
+        renderAll();
+      });
+    });
+
+    document.getElementById('agenda-today-btn').addEventListener('click', () => {
+      agendaCursorDate = new Date();
+      renderAll();
+    });
+
+    document.getElementById('agenda-prev-btn').addEventListener('click', () => {
+      const d = new Date(agendaCursorDate.getTime());
+      if (agendaMode === 'dag') d.setDate(d.getDate() - 1);
+      else if (agendaMode === 'week') d.setDate(d.getDate() - 7);
+      else if (agendaMode === 'maand') d.setMonth(d.getMonth() - 1);
+      else d.setDate(d.getDate() - 7);
+      agendaCursorDate = d;
+      renderAll();
+    });
+
+    document.getElementById('agenda-next-btn').addEventListener('click', () => {
+      const d = new Date(agendaCursorDate.getTime());
+      if (agendaMode === 'dag') d.setDate(d.getDate() + 1);
+      else if (agendaMode === 'week') d.setDate(d.getDate() + 7);
+      else if (agendaMode === 'maand') d.setMonth(d.getMonth() + 1);
+      else d.setDate(d.getDate() + 7);
+      agendaCursorDate = d;
+      renderAll();
+    });
+
+    document.getElementById('agenda-render-container').addEventListener('click', (e) => {
+      const dayBtn = e.target.closest('.agenda-pick-day-btn');
+      if (dayBtn) {
+        const iso = dayBtn.getAttribute('data-iso');
+        if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+          const [y, m, d] = iso.split('-').map(Number);
+          agendaCursorDate = new Date(y, m - 1, d);
+          agendaMode = 'dag';
+          renderAll();
+        }
+        return;
+      }
+      const jumpBtn = e.target.closest('.agenda-jump-tab-btn');
+      if (jumpBtn) {
+        switchLocalTab(jumpBtn.getAttribute('data-tab'));
+      }
+    });
+
+    function getMondayOfWeek(dateObj) {
+      const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+      const dow = d.getDay();
+      const diff = dow === 0 ? -6 : 1 - dow;
+      d.setDate(d.getDate() + diff);
+      return d;
+    }
+
+    function buildAgendaEventList(rittenList, dialyseStatus, dialyseSub) {
+      const todayISO = getTodayISO();
+      const events = [];
+
+      (Array.isArray(rittenList) ? rittenList : []).forEach((r, idx) => {
+        const { dateISO, timeHHMM } = parseRitDateTimeParts(r);
+        const title = r.van && r.naar
+          ? `${r.van} → ${r.naar}${r.firma ? ` (${r.firma})` : ''}`
+          : (r.titel || 'Rit');
+        events.push({
+          id: `rit_${r.id || idx}`,
+          type: 'Rit',
+          targetTab: 'ritten',
+          title,
+          dateISO: dateISO || todayISO,
+          timeHHMM,
+          meta: r.opmerking || (r.duurMin ? `${r.duurMin} min` : '')
+        });
+      });
+
+      if (dialyseStatus && dialyseStatus !== 'Geen sessie') {
+        events.push({
+          id: 'dialyse_active',
+          type: 'Dialyse',
+          targetTab: 'dialyse',
+          title: dialyseStatus,
+          dateISO: todayISO,
+          timeHHMM: '22:00',
+          meta: dialyseSub || ''
+        });
+      }
+
+      return events.sort((a, b) => {
+        const keyA = `${a.dateISO || '9999-99-99'}T${a.timeHHMM || '00:00'}`;
+        const keyB = `${b.dateISO || '9999-99-99'}T${b.timeHHMM || '00:00'}`;
+        return keyA.localeCompare(keyB);
+      });
+    }
+
+    function renderAgendaEventCard(ev) {
+      const isRit = ev.type === 'Rit';
+      const badgeClass = isRit
+        ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
+        : 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300';
+
+      return `
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${badgeClass}">${escapeHtml(ev.type)}</span>
+              <span class="text-xs font-extrabold text-slate-500 dark:text-slate-400 tabular-nums">${escapeHtml(ev.dateISO)} • ${escapeHtml(ev.timeHHMM)}</span>
+            </div>
+            <p class="text-sm font-bold text-slate-900 dark:text-white truncate mt-1">${escapeHtml(ev.title)}</p>
+            ${ev.meta ? `<p class="text-xs text-slate-500 dark:text-slate-400 truncate">${escapeHtml(ev.meta)}</p>` : ''}
+          </div>
+          <button type="button" data-tab="${escapeHtml(ev.targetTab)}"
+            class="agenda-jump-tab-btn px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:border-indigo-400 cursor-pointer shrink-0">
+            Open →
+          </button>
+        </div>
+      `;
+    }
+
+    function renderAgendaView(rittenList, dialyseStatus, dialyseSub) {
+      document.querySelectorAll('.agenda-mode-btn').forEach((btn) => {
+        const active = btn.getAttribute('data-agenda-mode') === agendaMode;
+        btn.className = active
+          ? 'agenda-mode-btn px-3 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white cursor-pointer'
+          : 'agenda-mode-btn px-3 py-1 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer';
+      });
+
+      const events = buildAgendaEventList(rittenList, dialyseStatus, dialyseSub);
+      const titleEl = document.getElementById('agenda-period-title');
+      const containerEl = document.getElementById('agenda-render-container');
+      const todayISO = getTodayISO();
+
+      if (agendaMode === 'lijst') {
+        titleEl.textContent = `Lijstoverzicht (${events.length} ${events.length === 1 ? 'item' : 'items'})`;
+        if (events.length === 0) {
+          containerEl.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">Nog geen agenda-items uit Ritten of Dialyse.</p>`;
+          return;
+        }
+        containerEl.innerHTML = events.map(renderAgendaEventCard).join('');
+        return;
+      }
+
+      if (agendaMode === 'dag') {
+        const dayISO = formatDateISO(agendaCursorDate);
+        const niceDay = agendaCursorDate.toLocaleDateString('nl-NL', {
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
+        titleEl.textContent = `Dag: ${niceDay}`;
+        const dayEvents = events.filter((e) => e.dateISO === dayISO);
+        if (dayEvents.length === 0) {
+          containerEl.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">Geen geplande items op ${escapeHtml(dayISO)}.</p>`;
+          return;
+        }
+        containerEl.innerHTML = dayEvents.map(renderAgendaEventCard).join('');
+        return;
+      }
+
+      if (agendaMode === 'week') {
+        const monday = getMondayOfWeek(agendaCursorDate);
+        const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6);
+        titleEl.textContent = `Week: ${formatDateISO(monday)} t/m ${formatDateISO(sunday)}`;
+
+        const days = [];
+        for (let i = 0; i < 7; i += 1) {
+          const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
+          const iso = formatDateISO(d);
+          const dayEvs = events.filter((e) => e.dateISO === iso);
+          const isToday = iso === todayISO;
+          days.push(`
+            <div class="p-3 rounded-xl border ${
+              isToday
+                ? 'border-indigo-500 bg-indigo-50/40 dark:bg-indigo-950/30'
+                : 'border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40'
+            } space-y-2">
+              <div class="flex items-center justify-between">
+                <button type="button" data-iso="${iso}" class="agenda-pick-day-btn text-left cursor-pointer group">
+                  <span class="text-xs font-extrabold uppercase text-slate-800 dark:text-white group-hover:text-indigo-600 capitalize">
+                    ${d.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' })}
+                  </span>
+                </button>
+                <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 tabular-nums">${dayEvs.length}</span>
+              </div>
+              <div class="space-y-1.5">
+                ${
+                  dayEvs.length === 0
+                    ? `<p class="text-[11px] text-slate-400">Geen items</p>`
+                    : dayEvs.map((ev) => `
+                      <div class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs">
+                        <span class="font-extrabold text-indigo-600 dark:text-indigo-400 tabular-nums">${escapeHtml(ev.timeHHMM)}</span>
+                        <p class="font-semibold text-slate-800 dark:text-slate-200 truncate">${escapeHtml(ev.title)}</p>
+                      </div>
+                    `).join('')
+                }
+              </div>
+            </div>
+          `);
+        }
+        containerEl.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-2.5">${days.join('')}</div>`;
+        return;
+      }
+
+      // Maandoverzicht
+      const year = agendaCursorDate.getFullYear();
+      const month = agendaCursorDate.getMonth();
+      const monthName = agendaCursorDate.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' });
+      titleEl.textContent = `Maand: ${monthName.charAt(0).toUpperCase() + monthName.slice(1)}`;
+
+      const firstOfMonth = new Date(year, month, 1);
+      const gridStart = getMondayOfWeek(firstOfMonth);
+      const headers = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo']
+        .map((h) => `<div class="text-center text-[11px] font-bold uppercase text-slate-400 py-1">${h}</div>`)
+        .join('');
+
+      const cells = [];
+      for (let i = 0; i < 42; i += 1) {
+        const d = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i);
+        const iso = formatDateISO(d);
+        const inMonth = d.getMonth() === month;
+        const isToday = iso === todayISO;
+        const dayEvs = events.filter((e) => e.dateISO === iso);
+
+        cells.push(`
+          <button type="button" data-iso="${iso}"
+            class="agenda-pick-day-btn min-h-[76px] p-2 rounded-xl border text-left flex flex-col justify-between cursor-pointer transition ${
+              isToday
+                ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/40'
+                : inMonth
+                  ? 'border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 hover:border-indigo-400'
+                  : 'border-slate-100 dark:border-slate-900 bg-slate-50/30 dark:bg-slate-950/30 opacity-50'
+            }">
+            <div class="flex items-center justify-between w-full">
+              <span class="text-xs font-extrabold tabular-nums ${
+                isToday ? 'text-indigo-700 dark:text-indigo-300' : 'text-slate-700 dark:text-slate-200'
+              }">${d.getDate()}</span>
+              ${dayEvs.length > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white tabular-nums">${dayEvs.length}</span>` : ''}
+            </div>
+            <div class="space-y-0.5 w-full mt-1">
+              ${dayEvs.slice(0, 2).map((ev) => `
+                <p class="text-[10px] font-semibold truncate text-slate-700 dark:text-slate-300">${escapeHtml(ev.timeHHMM)} ${escapeHtml(ev.title)}</p>
+              `).join('')}
+            </div>
+          </button>
+        `);
+      }
+
+      containerEl.innerHTML = `
+        <div class="grid grid-cols-7 gap-1.5">${headers}</div>
+        <div class="grid grid-cols-7 gap-1.5 mt-1">${cells.join('')}</div>
+      `;
     }
 
     // ---------------------------------------------------------
@@ -1180,11 +1498,6 @@
       return { bucket: 3, label: dateISO };
     }
 
-    // Sluitende sorteerfunctie:
-    // 1. Vandaag (op afspraaktijd oplopend)
-    // 2. Morgen (op afspraaktijd oplopend)
-    // 3. Verdere dagen in de toekomst (op datum en afspraaktijd oplopend)
-    // 4. Eerdere dagen (op datum en afspraaktijd oplopend)
     function sortRittenPlanning(rittenList) {
       const todayISO = getTodayISO();
       const tomorrowISO = getTomorrowISO();
@@ -2054,25 +2367,16 @@
         ? `Laatste: ${brieven[brieven.length - 1].titel}`
         : 'Geen brief';
 
-      const agendaItems = [
-        ...sortedPlanning.map(({ rit: r }) => ({
-          type: 'Rit',
-          titel: r.van && r.naar ? `${r.van} → ${r.naar}${r.firma ? ` (${r.firma})` : ''}` : (r.titel || 'Rit'),
-          tijd: r.afspraak ? formatAfspraakLabel(r.afspraak) : (r.tijd || 'Vandaag')
-        })),
-        ...(dialyseStatus !== 'Geen sessie'
-          ? [{ type: 'Dialyse', titel: dialyseStatus, tijd: dialyseSub }]
-          : [])
-      ];
-      document.getElementById('tile-agenda-total').textContent = `${agendaItems.length} ${agendaItems.length === 1 ? 'item' : 'items'}`;
+      const agendaEvents = buildAgendaEventList(ritten, dialyseStatus, dialyseSub);
+      document.getElementById('tile-agenda-total').textContent = `${agendaEvents.length} ${agendaEvents.length === 1 ? 'item' : 'items'}`;
       const agendaPreview = document.getElementById('tile-agenda-preview');
-      if (agendaItems.length === 0) {
+      if (agendaEvents.length === 0) {
         agendaPreview.innerHTML = `<p class="text-slate-400 dark:text-slate-500">Nog geen agenda-items uit Ritten of Dialyse.</p>`;
       } else {
-        agendaPreview.innerHTML = agendaItems.slice(0, 3).map((item) => `
+        agendaPreview.innerHTML = agendaEvents.slice(0, 3).map((item) => `
           <div class="flex items-center justify-between py-1 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/70">
-            <span class="font-semibold text-slate-800 dark:text-slate-200 truncate">[${item.type}] ${escapeHtml(item.titel)}</span>
-            <span class="text-[11px] text-slate-500 dark:text-slate-400 shrink-0 ml-2">${escapeHtml(item.tijd)}</span>
+            <span class="font-semibold text-slate-800 dark:text-slate-200 truncate">[${item.type}] ${escapeHtml(item.title)}</span>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400 shrink-0 ml-2 tabular-nums">${escapeHtml(item.dateISO)} ${escapeHtml(item.timeHHMM)}</span>
           </div>
         `).join('');
       }
@@ -2237,6 +2541,7 @@
       }
 
       const startView = document.getElementById('start-view');
+      const agendaView = document.getElementById('agenda-view');
       const vochtView = document.getElementById('vocht-view');
       const rittenView = document.getElementById('ritten-view');
       const instellingenView = document.getElementById('instellingen-view');
@@ -2244,6 +2549,7 @@
       const moduleBox = document.getElementById('module-box');
 
       startView.classList.add('hidden');
+      agendaView.classList.add('hidden');
       vochtView.classList.add('hidden');
       rittenView.classList.add('hidden');
       instellingenView.classList.add('hidden');
@@ -2252,6 +2558,9 @@
 
       if (tab === 'start') {
         startView.classList.remove('hidden');
+      } else if (tab === 'agenda') {
+        agendaView.classList.remove('hidden');
+        renderAgendaView(ritten, dialyseStatus, dialyseSub);
       } else if (tab === 'vochtintake') {
         vochtView.classList.remove('hidden');
       } else if (tab === 'ritten') {
@@ -2264,23 +2573,19 @@
         moduleBox.classList.remove('hidden');
         document.getElementById('module-heading').textContent = tabNames[tab];
         document.getElementById('module-desc').textContent = `Onderdeel ${tabNames[tab]} — inhoud wordt live gesynchroniseerd tussen je toestellen.`;
-        document.getElementById('module-content').innerHTML = renderModuleBody(tab, sharedData, agendaItems);
+        document.getElementById('module-content').innerHTML = renderModuleBody(tab, sharedData);
       }
 
       document.getElementById('last-sync-time').textContent = sharedData.updatedAt || 'Zojuist verbonden';
     }
 
-    function renderModuleBody(tab, data, agendaItems) {
+    function renderModuleBody(tab, data) {
       if (tab === 'dialyse') {
         return `<p>Status: <strong>${escapeHtml(data.dialyseStatus || 'Geen sessie')}</strong> — ${escapeHtml(data.dialyseSub || '')}</p>`;
       }
       if (tab === 'brieven') {
         const list = (data.brieven || []).map((b) => `<li>• ${escapeHtml(b.titel)}</li>`).join('');
         return `<p class="mb-2">Brieven in dossier:</p><ul class="space-y-1">${list || '<li class="text-slate-400">Geen brieven</li>'}</ul>`;
-      }
-      if (tab === 'agenda') {
-        const list = agendaItems.map((a) => `<li class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800"><strong>${escapeHtml(a.type)}:</strong> ${escapeHtml(a.titel)} <span class="text-xs text-slate-500">(${escapeHtml(a.tijd)})</span></li>`).join('');
-        return `<p class="mb-3">Overzicht van gekoppelde Ritten en Dialyse:</p><ul class="space-y-2">${list || '<li class="text-slate-400">Geen agenda-items</li>'}</ul>`;
       }
       return '';
     }
