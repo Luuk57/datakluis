@@ -171,7 +171,7 @@
               <h2 id="active-tab-title" class="text-xl font-bold text-slate-900 dark:text-white">Start</h2>
             </div>
             <div class="text-right">
-              <span class="text-[11px] text-slate-400 dark:text-slate-500 block">Laatste data-update</span>
+              <span class="text-[11px] text-slate-400 dark:text-slate-500 block">Laatste Firebase sync</span>
               <span id="last-sync-time" class="text-xs font-bold text-slate-700 dark:text-slate-200 tabular-nums">Nog geen wijziging</span>
             </div>
           </div>
@@ -1165,14 +1165,14 @@
           </div>
 
           <!-- ===================================================== -->
-          <!-- INSTELLINGEN-MODULE (OVERALL IN FIREBASE)             -->
+          <!-- INSTELLINGEN-MODULE (OVERALL IN FIREBASE + BACKUP)    -->
           <!-- ===================================================== -->
           <div id="instellingen-view" class="hidden space-y-5">
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-6">
               <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div>
-                  <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Instellingen (Firebase)</span>
-                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">Drooggewicht, UF-kleuren, 48u vochtstart, limieten en dropdowns</h3>
+                  <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Instellingen &amp; Data (Firebase)</span>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">Drooggewicht, UF-kleuren, 48u vochtstart, limieten, dropdowns &amp; Firebase-data</h3>
                 </div>
                 <button type="button" data-open-tab="start"
                   class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
@@ -1309,6 +1309,30 @@
                   </form>
                   <div id="inst-naar-list" class="space-y-1.5 max-h-48 overflow-y-auto text-xs"></div>
                 </div>
+              </div>
+
+              <!-- Alles wat wordt opgeslagen in Firebase: Overzicht, Export & Import -->
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Firebase Opslag &amp; Back-up</span>
+                    <h4 class="text-sm font-bold text-slate-900 dark:text-white">Alle opgeslagen data &amp; instellingen in Firebase</h4>
+                    <p id="fb-storage-path" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Pad: users/{uid}/sharedData</p>
+                  </div>
+
+                  <div class="flex flex-wrap items-center gap-2">
+                    <button id="fb-export-json-btn" type="button"
+                      class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer">
+                      Exporteer JSON back-up
+                    </button>
+                    <label class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer">
+                      <span>Importeer JSON naar Firebase</span>
+                      <input id="fb-import-json-input" type="file" accept="application/json,.json" class="hidden" />
+                    </label>
+                  </div>
+                </div>
+
+                <div id="fb-counts-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 text-center text-xs"></div>
               </div>
             </div>
           </div>
@@ -2368,7 +2392,7 @@
       dialyseEinddatumWrapEl.classList.toggle('hidden', !isEinddatum);
       const rep = dialyseHerhalingEl.value;
       if (rep === '1Malig') {
-        dialyseRepeatHintEl.textContent = '1Malig: wordt als 1 dialysesessie op de gekozen datum opgeslagen.';
+        dialyseRepeatHintEl.textContent = '1Malig: wordt als 1 sessie op de gekozen datum opgeslagen.';
       } else {
         dialyseRepeatHintEl.textContent = `Planning "${rep}" wordt aangemaakt voor ${isEinddatum ? 'de gekozen einddatum' : 'de rest van de huidige maand'}.`;
       }
@@ -3525,7 +3549,7 @@
     }
 
     // ---------------------------------------------------------
-    // INSTELLINGEN (OVERALL IN FIREBASE)
+    // INSTELLINGEN (OVERALL IN FIREBASE + JSON BACKUP/IMPORT)
     // ---------------------------------------------------------
     function addOptionToList(fieldKey, rawVal) {
       const val = String(rawVal || '').trim();
@@ -3625,6 +3649,54 @@
       if (btn) removeOptionFromList('naarOptions', btn.getAttribute('data-val'));
     });
 
+    document.getElementById('fb-export-json-btn').addEventListener('click', () => {
+      const payload = JSON.stringify(sharedData, null, 2);
+      const blob = new Blob([payload], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `datapoortalen-firebase-${getTodayISO()}.json`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+
+    document.getElementById('fb-import-json-input').addEventListener('change', async (e) => {
+      const file = (e.target.files || [])[0];
+      e.target.value = '';
+      if (!file || !uid) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        if (!parsed || typeof parsed !== 'object') {
+          showIncomingToast('Import', 'Ongeldig JSON-bestand.');
+          return;
+        }
+        await pushSharedData(parsed);
+        showIncomingToast('Firebase', 'JSON-data en instellingen zijn opgeslagen in Firebase.');
+      } catch {
+        showIncomingToast('Import', 'Kon JSON-bestand niet inlezen.');
+      }
+    });
+
+    function renderFirebaseStorageSummary(data) {
+      document.getElementById('fb-storage-path').textContent = `Firebase pad: users/${uid || 'onbekend'}/sharedData`;
+      const counts = [
+        { label: 'Vocht', val: (data.vochtEntries || []).length },
+        { label: 'Ritten', val: (data.ritten || []).length },
+        { label: 'Dialyse', val: (data.dialyseSessies || []).length },
+        { label: 'Mappen', val: (data.briefFolders || []).length },
+        { label: 'Brieven', val: (data.brieven || []).length },
+        { label: 'PDFs', val: (data.pdfDocs || []).length },
+        { label: 'Verpleging', val: (data.verplegingOptions || []).length }
+      ];
+      document.getElementById('fb-counts-grid').innerHTML = counts.map((c) => `
+        <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+          <span class="block text-[10px] font-bold uppercase text-slate-400">${escapeHtml(c.label)}</span>
+          <span class="text-sm font-extrabold text-slate-900 dark:text-white tabular-nums">${c.val}</span>
+        </div>
+      `).join('');
+    }
+
     // ---------------------------------------------------------
     // RITTEN LOGICA
     // ---------------------------------------------------------
@@ -3656,13 +3728,11 @@
       }
     }
 
-    function exitEditMode() {
+    ritCancelEditBtnEl.addEventListener('click', () => {
       editingRitId = null;
       document.getElementById('rit-form').reset();
       syncRitFormMode();
-    }
-
-    ritCancelEditBtnEl.addEventListener('click', exitEditMode);
+    });
 
     function startEditRit(ritId) {
       const list = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
@@ -3860,6 +3930,7 @@
             duurMin: duurVal !== '' ? Number(duurVal) : autoDuur
           };
         });
+
         editingRitId = null;
         document.getElementById('rit-form').reset();
         syncRitFormMode();
@@ -3870,105 +3941,71 @@
       const herhaling = herhalingEl.value;
       const geldigType = geldigTypeEl.value;
       const einddatum = document.getElementById('rit-einddatum').value;
+
       const [startDatePart, timePart] = afspraak.split('T');
       const dates = generateOccurrenceDates(startDatePart, herhaling, geldigType, einddatum);
+      const autoDuur = calcDuurFromTimes(startTijd, eindTijd);
 
       dates.forEach((dObj, i) => {
         const dateStr = formatDateISO(dObj);
         ritten.push({
           id: `${Date.now()}_${i}_${Math.random().toString(36).slice(2, 6)}`,
-          afspraak: `${dateStr}T${timePart.slice(0, 5)}`,
-          startTijd,
-          eindTijd,
+          afspraak: `${dateStr}T${timePart}`,
+          startTijd: herhaling === '1Malig' ? startTijd : '',
+          eindTijd: herhaling === '1Malig' ? eindTijd : '',
+          duurMin: duurVal !== '' ? Number(duurVal) : autoDuur,
           van,
           naar,
           firma,
           opmerking,
           herhaling,
           geldigType,
-          einddatum: geldigType === 'einddatum' ? einddatum : '',
-          duurMin: duurVal !== '' ? Number(duurVal) : null
+          einddatum: geldigType === 'einddatum' ? einddatum : ''
         });
       });
 
       document.getElementById('rit-form').reset();
-      updateRepeatUI();
+      syncRitFormMode();
       await pushSharedData({ ritten });
     });
 
-    document.getElementById('ritten-list-container').addEventListener('click', (e) => {
-      const delBtn = e.target.closest('.del-rit-btn');
-      if (delBtn) {
-        const id = delBtn.getAttribute('data-id');
-        if (editingRitId === id) {
-          editingRitId = null;
-          syncRitFormMode();
-        }
-        const next = (sharedData.ritten || []).filter((r, idx) => String(r.id || idx) !== id);
-        pushSharedData({ ritten: next });
-        return;
-      }
-
+    document.getElementById('ritten-list-container').addEventListener('click', async (e) => {
       const editBtn = e.target.closest('.edit-rit-btn');
       if (editBtn) {
         startEditRit(editBtn.getAttribute('data-id'));
         return;
       }
 
-      const startNowBtn = e.target.closest('.start-now-rit-btn');
-      if (startNowBtn) {
-        const id = startNowBtn.getAttribute('data-id');
-        const nowStr = currentHHMM();
-        const next = (sharedData.ritten || []).map((r, idx) => {
-          if (String(r.id || idx) !== id) return r;
-          const duur = calcDuurFromTimes(nowStr, r.eindTijd);
-          return {
-            ...r,
-            startTijd: nowStr,
-            duurMin: duur !== null ? duur : r.duurMin
-          };
-        });
-        pushSharedData({ ritten: next });
-        return;
+      const delBtn = e.target.closest('.del-rit-btn');
+      if (!delBtn) return;
+      const ritId = delBtn.getAttribute('data-id');
+      if (editingRitId === ritId) {
+        editingRitId = null;
+        syncRitFormMode();
       }
-
-      const stopNowBtn = e.target.closest('.stop-now-rit-btn');
-      if (stopNowBtn) {
-        const id = stopNowBtn.getAttribute('data-id');
-        const nowStr = currentHHMM();
-        const next = (sharedData.ritten || []).map((r, idx) => {
-          if (String(r.id || idx) !== id) return r;
-          const duur = calcDuurFromTimes(r.startTijd, nowStr);
-          return {
-            ...r,
-            eindTijd: nowStr,
-            duurMin: duur !== null ? duur : r.duurMin
-          };
-        });
-        pushSharedData({ ritten: next });
-      }
+      const next = (sharedData.ritten || []).filter((r, idx) => String(r.id || idx) !== ritId);
+      await pushSharedData({ ritten: next });
     });
 
     // ---------------------------------------------------------
-    // VOCHTINTAKE BEREKENINGEN (24U + 48U VANAF STARTDATUM OM DE DAG)
+    // VOCHTINTAKE BEREKENINGEN (48U OM DE DAG + 24U)
     // ---------------------------------------------------------
     function get48HourWindow(data, nowMs = Date.now()) {
-      const periodMs = 48 * 60 * 60 * 1000;
       if (data.vocht48Mode === 'sliding') {
+        const start = nowMs - 48 * 60 * 60 * 1000;
         return {
-          startMs: nowMs - periodMs,
-          endMs: nowMs,
-          isFixedCycle: false,
-          label: `Lopende 48u (${formatDateTimeNL(nowMs - periodMs)} – nu)`
+          start,
+          end: nowMs,
+          label: `Lopende 48u: ${formatDateTimeNL(start)} t/m ${formatDateTimeNL(nowMs)}`
         };
       }
 
-      const dateStr = data.vocht48StartDate || '2026-11-22';
-      const timeStr = data.vocht48StartTime || '05:30';
-      const [y, m, d] = dateStr.split('-').map(Number);
-      const [hh, mm] = timeStr.split(':').map(Number);
+      const startDateStr = data.vocht48StartDate || '2026-11-22';
+      const startTimeStr = data.vocht48StartTime || '05:30';
+      const [y, m, d] = startDateStr.split('-').map(Number);
+      const [hh, mm] = startTimeStr.split(':').map(Number);
 
-      let anchorMs = new Date(
+      const anchor = new Date(
         y || 2026,
         (m || 11) - 1,
         d || 22,
@@ -3976,154 +4013,685 @@
         Number.isFinite(mm) ? mm : 30,
         0,
         0
-      ).getTime();
+      );
+      const anchorMs = anchor.getTime();
+      const cycleMs = 48 * 60 * 60 * 1000;
 
-      if (Number.isNaN(anchorMs)) {
-        return {
-          startMs: nowMs - periodMs,
-          endMs: nowMs,
-          isFixedCycle: false,
-          label: 'Laatste 48 uur'
-        };
-      }
-
+      let startMs;
       if (nowMs >= anchorMs) {
-        const cyclesPassed = Math.floor((nowMs - anchorMs) / periodMs);
-        anchorMs += cyclesPassed * periodMs;
+        const elapsedCycles = Math.floor((nowMs - anchorMs) / cycleMs);
+        startMs = anchorMs + elapsedCycles * cycleMs;
       } else {
-        const cyclesBack = Math.ceil((anchorMs - nowMs) / periodMs);
-        anchorMs -= cyclesBack * periodMs;
+        const stepsBack = Math.ceil((anchorMs - nowMs) / cycleMs);
+        startMs = anchorMs - stepsBack * cycleMs;
       }
+      const endMs = startMs + cycleMs;
 
-      const endMs = anchorMs + periodMs;
       return {
-        startMs: anchorMs,
-        endMs,
-        isFixedCycle: true,
-        label: `Cyclus om de dag: ${formatDateTimeNL(anchorMs)} → ${formatDateTimeNL(endMs)}`
+        start: startMs,
+        end: endMs,
+        label: `48u cyclus (om de dag): ${formatDateTimeNL(startMs)} → ${formatDateTimeNL(endMs)}`
       };
     }
 
-    function computeVochtStats(entries, data, nowMs = Date.now()) {
+    function computeVochtStats(entries, data) {
+      const now = Date.now();
+      const cutoff24 = now - 24 * 60 * 60 * 1000;
+      const win48 = get48HourWindow(data, now);
       const list = Array.isArray(entries) ? entries : [];
-      const cutoff24 = nowMs - 24 * 60 * 60 * 1000;
-      const win48 = get48HourWindow(data, nowMs);
 
-      const in24 = list.filter((e) => Number(e.timestamp || 0) >= cutoff24);
-      const in48 = list.filter((e) => {
-        const ts = Number(e.timestamp || 0);
-        return ts >= win48.startMs && ts <= win48.endMs;
+      let total24 = 0;
+      let total48 = 0;
+      const in48 = [];
+
+      list.forEach((item) => {
+        const ts = Number(item.timestamp || 0);
+        const ml = Number(item.ml || 0);
+        if (ts >= cutoff24) {
+          total24 += ml;
+        }
+        if (ts >= win48.start && ts <= win48.end) {
+          total48 += ml;
+          in48.push(item);
+        }
       });
 
-      const total24 = in24.reduce((sum, e) => sum + Number(e.ml || 0), 0);
-      const total48 = in48.reduce((sum, e) => sum + Number(e.ml || 0), 0);
+      const lim24 = Number(data.vochtLimit24 || 1500);
+      const lim48 = Number(data.vochtLimit48 || 3000);
+      const pct24 = Math.min(100, Math.round((total24 / Math.max(1, lim24)) * 100));
+      const pct48 = Math.min(100, Math.round((total48 / Math.max(1, lim48)) * 100));
 
-      const lim24 = Math.max(1, Number(data.vochtLimit24 || 1500));
-      const lim48 = Math.max(1, Number(data.vochtLimit48 || 3000));
-
-      const pct24 = Math.round((total24 / lim24) * 100);
-      const pct48 = Math.round((total48 / lim48) * 100);
-
-      return { total24, total48, lim24, lim48, pct24, pct48, in24, in48, win48 };
+      return { total24, total48, lim24, lim48, pct24, pct48, in48, win48 };
     }
 
-    function addVochtEntry(drinkName, mlVal) {
-      const ml = Number(mlVal);
-      if (!Number.isFinite(ml) || ml <= 0) return;
+    async function addVochtEntry(ml) {
+      const amount = Number(ml);
+      if (!amount || amount <= 0) return;
       const entries = Array.isArray(sharedData.vochtEntries) ? [...sharedData.vochtEntries] : [];
       entries.push({
         id: `${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-        drink: drinkName || selectedDrink || 'Water',
-        ml,
+        drink: selectedDrink || 'Water',
+        ml: amount,
         timestamp: Date.now()
       });
-      pushSharedData({ vochtEntries: entries });
+      await pushSharedData({ vochtEntries: entries });
     }
 
-    document.getElementById('tile-vocht-plus150').addEventListener('click', () => {
-      addVochtEntry(selectedDrink || 'Water', 150);
+    document.getElementById('tile-vocht-plus150').addEventListener('click', (e) => {
+      e.stopPropagation();
+      addVochtEntry(150);
     });
 
-    document.getElementById('add-drink-tile-form').addEventListener('submit', (e) => {
+    document.getElementById('add-drink-tile-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const inp = document.getElementById('new-drink-tile-input');
       const name = inp.value.trim();
       if (!name) return;
-      const prods = Array.isArray(sharedData.vochtProducts) ? [...sharedData.vochtProducts] : [];
-      if (!prods.includes(name)) prods.push(name);
+      const products = Array.isArray(sharedData.vochtProducts) ? [...sharedData.vochtProducts] : [];
+      if (!products.some((p) => p.toLowerCase() === name.toLowerCase())) {
+        products.push(name);
+      }
       selectedDrink = name;
       inp.value = '';
-      pushSharedData({ vochtProducts: prods });
+      await pushSharedData({ vochtProducts: products });
     });
 
-    document.getElementById('add-ml-tile-form').addEventListener('submit', (e) => {
+    document.getElementById('add-ml-tile-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const inp = document.getElementById('new-ml-tile-input');
       const ml = Number(inp.value);
-      if (!Number.isFinite(ml) || ml <= 0) return;
-      const amts = Array.isArray(sharedData.vochtAmounts) ? [...sharedData.vochtAmounts] : [];
-      if (!amts.includes(ml)) amts.push(ml);
-      amts.sort((a, b) => a - b);
+      if (!ml || ml <= 0) return;
+      const amounts = Array.isArray(sharedData.vochtAmounts) ? [...sharedData.vochtAmounts] : [];
+      if (!amounts.includes(ml)) {
+        amounts.push(ml);
+        amounts.sort((a, b) => a - b);
+      }
       inp.value = '';
-      pushSharedData({ vochtAmounts: amts });
+      await pushSharedData({ vochtAmounts: amounts });
     });
 
-    document.getElementById('pos-drink-buttons').addEventListener('click', (e) => {
-      const delBtn = e.target.closest('.del-drink-tile-btn');
+    document.getElementById('pos-drink-buttons').addEventListener('click', async (e) => {
+      const delBtn = e.target.closest('.del-drink-tile');
       if (delBtn) {
-        const prod = delBtn.getAttribute('data-drink');
-        const next = (sharedData.vochtProducts || []).filter((p) => p !== prod);
-        if (selectedDrink === prod) selectedDrink = next[0] || 'Water';
-        pushSharedData({ vochtProducts: next });
+        const name = delBtn.getAttribute('data-drink');
+        const nextProducts = (sharedData.vochtProducts || []).filter((p) => p !== name);
+        if (selectedDrink === name) {
+          selectedDrink = nextProducts[0] || 'Water';
+        }
+        await pushSharedData({ vochtProducts: nextProducts });
         return;
       }
-      const pickBtn = e.target.closest('.pick-drink-tile-btn');
+
+      const pickBtn = e.target.closest('.pick-drink-tile');
       if (pickBtn) {
-        selectedDrink = pickBtn.getAttribute('data-drink');
-        renderAll();
+        selectedDrink = pickBtn.getAttribute('data-drink') || 'Water';
+        renderVochtView(sharedData);
       }
     });
 
-    document.getElementById('pos-ml-buttons').addEventListener('click', (e) => {
-      const delBtn = e.target.closest('.del-ml-tile-btn');
+    document.getElementById('pos-ml-buttons').addEventListener('click', async (e) => {
+      const delBtn = e.target.closest('.del-ml-tile');
       if (delBtn) {
-        const mlVal = Number(delBtn.getAttribute('data-ml'));
-        const next = (sharedData.vochtAmounts || []).filter((m) => Number(m) !== mlVal);
-        pushSharedData({ vochtAmounts: next });
+        const ml = Number(delBtn.getAttribute('data-ml'));
+        const nextAmounts = (sharedData.vochtAmounts || []).filter((a) => Number(a) !== ml);
+        await pushSharedData({ vochtAmounts: nextAmounts });
         return;
       }
-      const addBtn = e.target.closest('.add-ml-tile-btn');
+
+      const addBtn = e.target.closest('.add-ml-tile');
       if (addBtn) {
-        const mlVal = Number(addBtn.getAttribute('data-ml'));
-        addVochtEntry(selectedDrink, mlVal);
+        await addVochtEntry(Number(addBtn.getAttribute('data-ml')));
       }
     });
 
-    document.getElementById('pos-receipt-list').addEventListener('click', (e) => {
-      const btn = e.target.closest('.del-vocht-entry-btn');
+    document.getElementById('pos-clear-btn').addEventListener('click', async () => {
+      await pushSharedData({ vochtEntries: [] });
+    });
+
+    document.getElementById('pos-receipt-list').addEventListener('click', async (e) => {
+      const btn = e.target.closest('.del-vocht-entry');
       if (!btn) return;
       const id = btn.getAttribute('data-id');
-      const next = (sharedData.vochtEntries || []).filter((entry) => entry.id !== id);
-      pushSharedData({ vochtEntries: next });
-    });
-
-    document.getElementById('pos-clear-btn').addEventListener('click', () => {
-      pushSharedData({ vochtEntries: [] });
+      const next = (sharedData.vochtEntries || []).filter((item) => item.id !== id);
+      await pushSharedData({ vochtEntries: next });
     });
 
     // ---------------------------------------------------------
-    // LIVE KLOK
+    // RENDER FUNCTIES
+    // ---------------------------------------------------------
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function fillSelectOptions(selectId, optionsList, currentValue = '') {
+      const el = document.getElementById(selectId);
+      if (!el) return;
+      const opts = Array.isArray(optionsList) ? optionsList : [];
+      const placeholder = selectId === 'rit-firma' ? '— Kies firma —' : '— Kies optie —';
+      const items = [`<option value="">${placeholder}</option>`];
+      opts.forEach((opt) => {
+        items.push(`<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`);
+      });
+      if (currentValue && !opts.includes(currentValue)) {
+        items.push(`<option value="${escapeHtml(currentValue)}">${escapeHtml(currentValue)}</option>`);
+      }
+      el.innerHTML = items.join('');
+      el.value = currentValue || '';
+    }
+
+    function renderOptionList(containerId, list) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      const items = Array.isArray(list) ? list : [];
+      if (items.length === 0) {
+        el.innerHTML = `<p class="text-slate-400 text-[11px]">Nog geen items.</p>`;
+        return;
+      }
+      el.innerHTML = items.map((item) => `
+        <div class="flex items-center justify-between py-1 px-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+          <span class="font-medium truncate">${escapeHtml(item)}</span>
+          <button type="button" data-val="${escapeHtml(item)}" class="del-opt-btn text-slate-400 hover:text-red-600 font-bold ml-2 cursor-pointer">×</button>
+        </div>
+      `).join('');
+    }
+
+    function renderStartTiles(data) {
+      const stats = computeVochtStats(data.vochtEntries, data);
+      document.getElementById('tile-vocht-value').textContent = `${stats.total24} ml`;
+      document.getElementById('tile-vocht-48u').textContent = `48u: ${stats.total48} / ${stats.lim48} ml`;
+
+      const ritten = Array.isArray(data.ritten) ? data.ritten : [];
+      const rStats = computeRittenStats(ritten);
+      document.getElementById('tile-ritten-count').textContent = `${ritten.length} ${ritten.length === 1 ? 'rit' : 'ritten'}`;
+      document.getElementById('tile-ritten-ontime').textContent = `${rStats.pctOnTime}% op tijd`;
+
+      if (ritten.length > 0) {
+        const last = ritten[ritten.length - 1];
+        const route = last.van && last.naar ? `${last.van} → ${last.naar}` : (last.titel || 'Rit');
+        document.getElementById('tile-ritten-last').textContent = `${route} • ${formatIsoDateTimeNL(last.afspraak)}`;
+      } else {
+        document.getElementById('tile-ritten-last').textContent = 'Nog geen rit';
+      }
+
+      const sessies = Array.isArray(data.dialyseSessies) ? data.dialyseSessies : [];
+      document.getElementById('tile-dialyse-count').textContent = `${sessies.length} ${sessies.length === 1 ? 'sessie' : 'sessies'}`;
+      if (sessies.length > 0) {
+        const sortedSessies = sortDialysePlanning(sessies);
+        const nextS = sortedSessies[0].sessie;
+        const vpk = normalizeVerplegingSelection(nextS).join(', ');
+        document.getElementById('tile-dialyse-status').textContent = `${nextS.soort || 'Dag'}dialyse`;
+        document.getElementById('tile-dialyse-sub').textContent = [
+          formatIsoDateTimeNL(nextS.afspraak),
+          nextS.adviesUf !== null && nextS.adviesUf !== undefined ? `UF ${Number(nextS.adviesUf).toFixed(2).replace('.', ',')} L` : '',
+          vpk ? `Vpk: ${vpk}` : ''
+        ].filter(Boolean).join(' • ');
+      } else {
+        document.getElementById('tile-dialyse-status').textContent = data.dialyseStatus || 'Geen sessie';
+        document.getElementById('tile-dialyse-sub').textContent = data.dialyseSub || 'Klik om sessie te openen';
+      }
+
+      const brieven = Array.isArray(data.brieven) ? data.brieven : [];
+      document.getElementById('tile-brieven-count').textContent = `${brieven.length} ${brieven.length === 1 ? 'brief' : 'brieven'}`;
+      if (brieven.length > 0) {
+        const lastB = brieven[brieven.length - 1];
+        document.getElementById('tile-brieven-last').textContent = `${lastB.titel || 'Brief'} (${lastB.folder || 'Nefrologie'})`;
+      } else {
+        document.getElementById('tile-brieven-last').textContent = 'Geen brief';
+      }
+
+      const agendaEvents = buildAgendaEventList(ritten, sessies, data.dialyseStatus, data.dialyseSub);
+      document.getElementById('tile-agenda-total').textContent = `${agendaEvents.length} ${agendaEvents.length === 1 ? 'item' : 'items'}`;
+      const agendaPreviewEl = document.getElementById('tile-agenda-preview');
+      if (agendaEvents.length === 0) {
+        agendaPreviewEl.innerHTML = `<p class="text-slate-400 dark:text-slate-500">Nog geen agenda-items uit Ritten of Dialyse.</p>`;
+      } else {
+        agendaPreviewEl.innerHTML = agendaEvents.slice(0, 3).map((ev) => `
+          <div class="flex items-center justify-between gap-2 py-1 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${
+                ev.type === 'Rit'
+                  ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
+                  : 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
+              }">${escapeHtml(ev.type)}</span>
+              <span class="font-semibold text-slate-800 dark:text-slate-200 truncate">${escapeHtml(ev.title)}</span>
+            </div>
+            <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 tabular-nums shrink-0">${escapeHtml(ev.dateISO)} ${escapeHtml(ev.timeHHMM)}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderVochtView(data) {
+      const stats = computeVochtStats(data.vochtEntries, data);
+
+      document.getElementById('bar-24-pct').textContent = `${stats.pct24}%`;
+      document.getElementById('bar-24-label').textContent = `${stats.total24} ml`;
+      document.getElementById('bar-24-limit-label').textContent = `van ${stats.lim24} ml`;
+      document.getElementById('bar-24-fill').style.width = `${stats.pct24}%`;
+      document.getElementById('bar-24-fill').className =
+        `h-full transition-all duration-300 rounded-full ${stats.total24 > stats.lim24 ? 'bg-red-500' : 'bg-sky-500'}`;
+
+      document.getElementById('bar-48-pct').textContent = `${stats.pct48}%`;
+      document.getElementById('bar-48-label').textContent = `${stats.total48} ml`;
+      document.getElementById('bar-48-limit-label').textContent = `van ${stats.lim48} ml`;
+      document.getElementById('bar-48-fill').style.width = `${stats.pct48}%`;
+      document.getElementById('bar-48-fill').className =
+        `h-full transition-all duration-300 rounded-full ${stats.total48 > stats.lim48 ? 'bg-red-500' : 'bg-indigo-500'}`;
+
+      document.getElementById('window-48-info').textContent = stats.win48.label;
+
+      const products = Array.isArray(data.vochtProducts) && data.vochtProducts.length > 0
+        ? data.vochtProducts
+        : ['Water'];
+      if (!products.includes(selectedDrink)) {
+        selectedDrink = products[0];
+      }
+
+      document.getElementById('pos-drink-buttons').innerHTML = products.map((p) => {
+        const active = p === selectedDrink;
+        return `
+          <div class="inline-flex items-center rounded-xl border ${
+            active
+              ? 'bg-sky-600 text-white border-sky-600 shadow-sm'
+              : 'bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700'
+          }">
+            <button type="button" data-drink="${escapeHtml(p)}" class="pick-drink-tile px-3.5 py-2 text-xs font-bold cursor-pointer">
+              ${escapeHtml(p)}
+            </button>
+            <button type="button" data-drink="${escapeHtml(p)}" title="Verwijder tegel"
+              class="del-drink-tile pr-2.5 pl-1 py-2 text-xs font-bold opacity-75 hover:opacity-100 cursor-pointer">
+              ×
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      const amounts = Array.isArray(data.vochtAmounts) && data.vochtAmounts.length > 0
+        ? data.vochtAmounts
+        : [150, 250];
+
+      document.getElementById('pos-ml-buttons').innerHTML = amounts.map((ml) => `
+        <div class="relative flex items-center justify-between rounded-xl border border-sky-200 dark:border-sky-800/70 bg-sky-50/70 dark:bg-sky-950/30 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition">
+          <button type="button" data-ml="${ml}"
+            class="add-ml-tile flex-1 py-2.5 px-3 text-left text-xs font-extrabold text-sky-900 dark:text-sky-200 cursor-pointer tabular-nums">
+            +${ml} ml
+            <span class="block text-[10px] font-medium text-sky-700/80 dark:text-sky-300/80 truncate">${escapeHtml(selectedDrink)}</span>
+          </button>
+          <button type="button" data-ml="${ml}" title="Verwijder ml-tegel"
+            class="del-ml-tile px-2 py-2.5 text-xs font-bold text-slate-400 hover:text-red-600 cursor-pointer">
+            ×
+          </button>
+        </div>
+      `).join('');
+
+      document.getElementById('pos-receipt-total24').textContent = `${stats.total24} ml`;
+      const receiptEl = document.getElementById('pos-receipt-list');
+      if (stats.in48.length === 0) {
+        receiptEl.innerHTML = `<p class="text-slate-400 text-center py-6">Nog geen vocht in deze 48u periode.</p>`;
+      } else {
+        receiptEl.innerHTML = [...stats.in48].reverse().map((item) => `
+          <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70">
+            <div class="min-w-0">
+              <span class="font-bold text-slate-800 dark:text-slate-200">${escapeHtml(item.drink || 'Water')}</span>
+              <span class="text-[11px] text-slate-400 ml-1.5 tabular-nums">${formatDateTimeNL(item.timestamp)}</span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="font-extrabold text-sky-600 dark:text-sky-400 tabular-nums">+${item.ml} ml</span>
+              <button type="button" data-id="${escapeHtml(item.id)}" class="del-vocht-entry text-slate-400 hover:text-red-600 font-bold cursor-pointer">×</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderDialyseView(data) {
+      updateDialyseLiveCalculations();
+      renderVerplegingMultiSelect();
+      renderDraftVitalsUI();
+
+      const sessies = Array.isArray(data.dialyseSessies) ? data.dialyseSessies : [];
+      const container = document.getElementById('dialyse-list-container');
+
+      if (sessies.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen dialysesessies opgeslagen.</p>`;
+        return;
+      }
+
+      const sorted = sortDialysePlanning(sessies);
+      container.innerHTML = sorted.map(({ sessie: s, origIdx, dayInfo }) => {
+        const sid = String(s.id || origIdx);
+        const soort = s.soort || 'Dag';
+        const soortBadge = soort === 'Nacht'
+          ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300'
+          : 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300';
+
+        const dayBadge = dayInfo.bucket === 0
+          ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-600 text-white">Vandaag</span>`
+          : dayInfo.bucket === 1
+            ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-sky-600 text-white">Morgen</span>`
+            : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 tabular-nums">${escapeHtml(dayInfo.label)}</span>`;
+
+        const adviesNum = s.adviesUf !== null && s.adviesUf !== undefined && s.adviesUf !== ''
+          ? Number(s.adviesUf)
+          : calcUfAdvice(s.preGewicht, soort, getDryWeight());
+
+        const adviesBadge = adviesNum !== null && !Number.isNaN(adviesNum)
+          ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border tabular-nums ${getUfColorClasses(adviesNum)}">UF advies: ${adviesNum.toFixed(2).replace('.', ',')} L</span>`
+          : '';
+
+        const checks = [
+          s.epo ? 'Epo' : '',
+          s.ijzer ? 'IJzer' : '',
+          s.fragmin2500 ? 'Fragmin 2500' : '',
+          s.fragmin5000 ? 'Fragmin 5000' : '',
+          s.shuntflowMeting ? 'Shuntflow meting' : ''
+        ].filter(Boolean);
+
+        const vitalsList = normalizeVitals(s.vitals || []);
+        const vpkList = normalizeVerplegingSelection(s);
+
+        return `
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                ${dayBadge}
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${soortBadge}">${escapeHtml(soort)}</span>
+                <span class="text-xs font-extrabold text-slate-900 dark:text-white tabular-nums">Afspraak: ${escapeHtml(formatIsoDateTimeNL(s.afspraak))}</span>
+                ${adviesBadge}
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button type="button" data-id="${escapeHtml(sid)}"
+                  class="edit-dialyse-btn px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold cursor-pointer">
+                  Bewerk
+                </button>
+                <button type="button" data-id="${escapeHtml(sid)}" title="Verwijder sessie"
+                  class="del-dialyse-btn px-2 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-red-600 hover:text-white text-xs font-bold cursor-pointer">
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600 dark:text-slate-300 tabular-nums">
+              ${s.startDatumTijd ? `<span>Start: <strong>${escapeHtml(formatIsoDateTimeNL(s.startDatumTijd))}</strong></span>` : ''}
+              ${s.stopDatumTijd ? `<span>Stop: <strong>${escapeHtml(formatIsoDateTimeNL(s.stopDatumTijd))}</strong></span>` : ''}
+              ${s.duur ? `<span>Duur: <strong>${escapeHtml(s.duur)}</strong></span>` : ''}
+              ${s.preGewicht !== null && s.preGewicht !== undefined && s.preGewicht !== '' ? `<span>Pre: <strong>${s.preGewicht} kg</strong></span>` : ''}
+              ${s.postGewicht !== null && s.postGewicht !== undefined && s.postGewicht !== '' ? `<span>Post: <strong>${s.postGewicht} kg</strong></span>` : ''}
+              ${s.gebruikteUf !== null && s.gebruikteUf !== undefined && s.gebruikteUf !== '' ? `<span>Gebruikte UF: <strong>${s.gebruikteUf}</strong></span>` : ''}
+              ${s.werkelijkeUf !== null && s.werkelijkeUf !== undefined && s.werkelijkeUf !== '' ? `<span>Werkelijke UF: <strong>${s.werkelijkeUf}</strong></span>` : ''}
+              ${vpkList.length > 0 ? `<span>Verpleging: <strong>${escapeHtml(vpkList.join(', '))}</strong></span>` : ''}
+              ${s.shuntflowResultaat ? `<span>ShuntFlow: <strong>${escapeHtml(s.shuntflowResultaat)}</strong></span>` : ''}
+            </div>
+
+            ${
+              vitalsList.length > 0
+                ? `<div class="flex flex-wrap gap-1.5 pt-0.5 text-[11px] tabular-nums">
+                    ${vitalsList.map((m) => `
+                      <span class="px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/70 font-semibold">
+                        ${escapeHtml(m.tijd)} • BD ${m.systolisch}/${m.diastolisch} • HS ${m.hartslag}
+                      </span>
+                    `).join('')}
+                  </div>`
+                : ''
+            }
+
+            ${
+              checks.length > 0
+                ? `<div class="flex flex-wrap gap-1.5 pt-0.5">
+                    ${checks.map((c) => `<span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">${escapeHtml(c)}</span>`).join('')}
+                  </div>`
+                : ''
+            }
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderRittenView(data) {
+      const ritten = Array.isArray(data.ritten) ? data.ritten : [];
+      const stats = computeRittenStats(ritten);
+
+      document.getElementById('ritten-stats-summary').textContent =
+        stats.evaluated > 0
+          ? `${stats.pctOnTime}% op tijd (${stats.onTime} van ${stats.evaluated} beoordeelde ritten)`
+          : '0 gereden ritten beoordeeld (vul eindtijd in om te beoordelen)';
+
+      document.getElementById('stat-ontime-pct').textContent = `${stats.pctOnTime}%`;
+      document.getElementById('stat-early-pct').textContent = `${stats.pctEarly}%`;
+      document.getElementById('stat-late-pct').textContent = `${stats.pctLate}%`;
+
+      document.getElementById('stat-ontime-cnt').textContent = `(${stats.onTime} ${stats.onTime === 1 ? 'rit' : 'ritten'})`;
+      document.getElementById('stat-early-cnt').textContent = `(${stats.early} ${stats.early === 1 ? 'rit' : 'ritten'})`;
+      document.getElementById('stat-late-cnt').textContent = `(${stats.late} ${stats.late === 1 ? 'rit' : 'ritten'})`;
+
+      document.getElementById('bar-rit-ontime').style.width = `${stats.pctOnTime}%`;
+      document.getElementById('bar-rit-early').style.width = `${stats.pctEarly}%`;
+      document.getElementById('bar-rit-late').style.width = `${stats.pctLate}%`;
+
+      const container = document.getElementById('ritten-list-container');
+      if (ritten.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen ritten opgeslagen.</p>`;
+        return;
+      }
+
+      const sorted = sortRittenPlanning(ritten);
+      container.innerHTML = sorted.map(({ rit: r, origIdx, dayInfo }) => {
+        const rid = String(r.id || origIdx);
+        const punct = evaluateRitPunctuality(r);
+
+        let punctBadge = '';
+        if (punct.status === 'optijd') {
+          punctBadge = `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Op tijd</span>`;
+        } else if (punct.status === 'tevroeg') {
+          punctBadge = `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300">${escapeHtml(punct.label)}</span>`;
+        } else if (punct.status === 'telaat') {
+          punctBadge = `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">${escapeHtml(punct.label)}</span>`;
+        } else {
+          punctBadge = `<span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Geen eindtijd</span>`;
+        }
+
+        const dayBadge = dayInfo.bucket === 0
+          ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-600 text-white">Vandaag</span>`
+          : dayInfo.bucket === 1
+            ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-sky-600 text-white">Morgen</span>`
+            : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 tabular-nums">${escapeHtml(dayInfo.label)}</span>`;
+
+        const route = r.van && r.naar ? `${r.van} → ${r.naar}` : (r.titel || 'Rit');
+
+        return `
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
+            <div class="space-y-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                ${dayBadge}
+                <span class="text-sm font-bold text-slate-900 dark:text-white">${escapeHtml(route)}</span>
+                ${punctBadge}
+                ${r.firma ? `<span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">${escapeHtml(r.firma)}</span>` : ''}
+              </div>
+              <div class="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+                <span>Afspraak: <strong>${escapeHtml(formatIsoDateTimeNL(r.afspraak))}</strong></span>
+                ${r.startTijd ? `<span>Start: <strong>${escapeHtml(r.startTijd)}</strong></span>` : ''}
+                ${r.eindTijd ? `<span>Eind: <strong>${escapeHtml(r.eindTijd)}</strong></span>` : ''}
+                ${r.duurMin !== null && r.duurMin !== undefined && r.duurMin !== '' ? `<span>Duur: <strong>${escapeHtml(r.duurMin)} min</strong></span>` : ''}
+                ${r.opmerking ? `<span>• ${escapeHtml(r.opmerking)}</span>` : ''}
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" data-id="${escapeHtml(rid)}"
+                class="edit-rit-btn px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold cursor-pointer">
+                Bewerk
+              </button>
+              <button type="button" data-id="${escapeHtml(rid)}" title="Verwijder rit"
+                class="del-rit-btn px-2 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-red-600 hover:text-white text-xs font-bold cursor-pointer">
+                ×
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderInstellingenView(data) {
+      const dw = getDryWeight();
+      const { orangeMin, redMin } = getUfColorThresholds();
+      const dryEl = document.getElementById('inst-dry-weight');
+      if (dryEl && document.activeElement !== dryEl) {
+        dryEl.value = String(dw);
+      }
+      const orangeEl = document.getElementById('inst-uf-orange-min');
+      const redEl = document.getElementById('inst-uf-red-min');
+      if (orangeEl && document.activeElement !== orangeEl) {
+        orangeEl.value = String(orangeMin);
+      }
+      if (redEl && document.activeElement !== redEl) {
+        redEl.value = String(redMin);
+      }
+      document.getElementById('inst-uf-green-preview').textContent = `Onder ${formatThresholdNL(orangeMin)} L`;
+
+      const startDateEl = document.getElementById('inst-vocht48-start-date');
+      const startTimeEl = document.getElementById('inst-vocht48-start-time');
+      if (startDateEl && document.activeElement !== startDateEl) {
+        startDateEl.value = data.vocht48StartDate || '2026-11-22';
+      }
+      if (startTimeEl && document.activeElement !== startTimeEl) {
+        startTimeEl.value = data.vocht48StartTime || '05:30';
+      }
+
+      const win48 = get48HourWindow(data);
+      document.getElementById('inst-vocht48-cycle-preview').textContent = `Actieve periode: ${win48.label}`;
+
+      const lim24El = document.getElementById('inst-limit-24');
+      const lim48El = document.getElementById('inst-limit-48');
+      if (lim24El && document.activeElement !== lim24El) {
+        lim24El.value = String(data.vochtLimit24 || 1500);
+      }
+      if (lim48El && document.activeElement !== lim48El) {
+        lim48El.value = String(data.vochtLimit48 || 3000);
+      }
+
+      renderOptionList('inst-verpleging-list', data.verplegingOptions);
+      renderOptionList('inst-firma-list', data.firmaOptions);
+      renderOptionList('inst-van-list', data.vanOptions);
+      renderOptionList('inst-naar-list', data.naarOptions);
+
+      fillSelectOptions('rit-firma', data.firmaOptions, document.getElementById('rit-firma').value);
+      fillSelectOptions('rit-van', data.vanOptions, document.getElementById('rit-van').value);
+      fillSelectOptions('rit-naar', data.naarOptions, document.getElementById('rit-naar').value);
+
+      renderFirebaseStorageSummary(data);
+    }
+
+    function renderAll() {
+      const tabTitles = {
+        start: 'Start',
+        vochtintake: 'Vochtintake',
+        ritten: 'Ritten',
+        dialyse: 'Dialyse',
+        brieven: 'Brieven',
+        agenda: 'Agenda',
+        overzichten: 'Overzichten',
+        pdf: 'PDF',
+        chat: 'Chat',
+        instellingen: 'Instellingen'
+      };
+
+      document.querySelectorAll('.nav-btn').forEach((btn) => {
+        const isCurrent = btn.getAttribute('data-tab') === localActiveTab;
+        btn.className = isCurrent
+          ? 'nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white cursor-pointer flex items-center justify-between'
+          : 'nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between';
+      });
+
+      document.getElementById('active-tab-title').textContent = tabTitles[localActiveTab] || 'Start';
+
+      document.getElementById('start-view').classList.toggle('hidden', localActiveTab !== 'start');
+      document.getElementById('vocht-view').classList.toggle('hidden', localActiveTab !== 'vochtintake');
+      document.getElementById('ritten-view').classList.toggle('hidden', localActiveTab !== 'ritten');
+      document.getElementById('dialyse-view').classList.toggle('hidden', localActiveTab !== 'dialyse');
+      document.getElementById('brieven-view').classList.toggle('hidden', localActiveTab !== 'brieven');
+      document.getElementById('agenda-view').classList.toggle('hidden', localActiveTab !== 'agenda');
+      document.getElementById('overzichten-view').classList.toggle('hidden', localActiveTab !== 'overzichten');
+      document.getElementById('pdf-view').classList.toggle('hidden', localActiveTab !== 'pdf');
+      document.getElementById('chat-view').classList.toggle('hidden', localActiveTab !== 'chat');
+      document.getElementById('instellingen-view').classList.toggle('hidden', localActiveTab !== 'instellingen');
+
+      if (data.updatedAt) {
+        document.getElementById('last-sync-time').textContent = data.updatedAt;
+      }
+
+      const ritten = Array.isArray(data.ritten) ? data.ritten : [];
+      const dialyseSessies = Array.isArray(data.dialyseSessies) ? data.dialyseSessies : [];
+      const doneCount = ritten.filter((r) => isRitDone(r)).length + dialyseSessies.filter((s) => isDialyseDone(s)).length;
+      document.getElementById('overzichten-done-badge').textContent = String(doneCount);
+
+      const pdfDocs = Array.isArray(data.pdfDocs) ? data.pdfDocs : [];
+      const pdfBadge = document.getElementById('pdf-count-badge');
+      if (pdfDocs.length > 0) {
+        pdfBadge.textContent = String(pdfDocs.length);
+        pdfBadge.classList.remove('hidden');
+      } else {
+        pdfBadge.classList.add('hidden');
+      }
+
+      renderStartTiles(data);
+      renderVochtView(data);
+      renderRittenView(data);
+      renderDialyseView(data);
+      renderBrievenView(data);
+      renderAgendaView(ritten, dialyseSessies, data.dialyseStatus, data.dialyseSub);
+      renderOverzichtenView(data);
+      renderPdfView(data);
+      renderInstellingenView(data);
+      updateUnreadBadge();
+    }
+
+    function sharedDataRef() {
+      return ref(db, `users/${uid}/sharedData`);
+    }
+
+    async function pushSharedData(partial) {
+      if (!uid) return;
+      const nowLabel = formatDateTimeNL(Date.now());
+      const merged = {
+        ...sharedData,
+        ...partial,
+        updatedAt: nowLabel
+      };
+      sharedData = merged;
+      renderAll();
+      try {
+        await set(sharedDataRef(), merged);
+      } catch (err) {
+        console.error('Realtime sync fout:', err);
+      }
+    }
+
+    // ---------------------------------------------------------
+    // KLOK & AUTOMATISCHE 1-UUR PDF CHECK
     // ---------------------------------------------------------
     function updateClock() {
       const now = new Date();
-      const timeStr = now.toLocaleTimeString('nl-NL', {
-        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      document.getElementById('clock-time').textContent = now.toLocaleTimeString('nl-NL', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
       });
-      const dateStr = now.toLocaleDateString('nl-NL', {
-        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      document.getElementById('clock-date').textContent = now.toLocaleDateString('nl-NL', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
       });
-      document.getElementById('clock-time').textContent = timeStr;
-      document.getElementById('clock-date').textContent = dateStr;
+
+      if (uid) {
+        const autoSync = syncAutoPdfReports(sharedData, now.getTime());
+        if (autoSync.newDocs.length > 0) {
+          pushSharedData({ pdfDocs: autoSync.allDocs });
+        }
+      }
     }
     updateClock();
     setInterval(updateClock, 1000);
@@ -4133,9 +4701,12 @@
     // ---------------------------------------------------------
     const fsBtn = document.getElementById('fullscreen-toggle');
     const fsText = document.getElementById('fullscreen-text');
-    function updateFullscreenLabel() {
-      fsText.textContent = document.fullscreenElement ? 'Sluit volledig beeld' : 'Volledig beeld';
+
+    function syncFullscreenUI() {
+      const isFs = Boolean(document.fullscreenElement);
+      fsText.textContent = isFs ? 'Sluit volledig beeld' : 'Volledig beeld';
     }
+
     fsBtn.addEventListener('click', async () => {
       try {
         if (!document.fullscreenElement) {
@@ -4143,11 +4714,9 @@
         } else {
           await document.exitFullscreen();
         }
-      } catch {
-        fsText.textContent = 'Niet ondersteund';
-      }
+      } catch {}
     });
-    document.addEventListener('fullscreenchange', updateFullscreenLabel);
+    document.addEventListener('fullscreenchange', syncFullscreenUI);
 
     // ---------------------------------------------------------
     // PINCODE VERGRENDELING (ALLEEN OP DIT TOESTEL)
@@ -4155,41 +4724,43 @@
     const pinModal = document.getElementById('pin-modal');
     const pinHeading = document.getElementById('pin-heading');
     const pinSubtext = document.getElementById('pin-subtext');
+    const pinMsg = document.getElementById('pin-msg');
     const pinForm = document.getElementById('pin-form');
     const pinCodeInput = document.getElementById('pin-code-input');
-    const pinSubmit = document.getElementById('pin-submit');
-    const pinMsg = document.getElementById('pin-msg');
+    const pinChangeBtn = document.getElementById('pin-change-btn');
 
-    let pinMode = 'unlock';
-    let isLockedLocal = false;
+    let isSettingNewPin = false;
+    let firstPinAttempt = '';
 
-    function getDevicePinKey() {
-      return uid ? `dp_device_pin_${uid}` : null;
+    function pinStorageKey() {
+      return `dp_device_pin_${uid || 'anon'}`;
     }
 
-    function showPinMsg(text) {
-      pinMsg.textContent = text;
+    function showPinError(msg) {
+      pinMsg.textContent = msg;
       pinMsg.classList.remove('hidden');
     }
 
-    function hidePinMsg() {
+    function clearPinError() {
+      pinMsg.textContent = '';
       pinMsg.classList.add('hidden');
     }
 
-    function openPinModal(mode, message = '') {
-      pinMode = mode;
+    function openPinModal(forceCreate = false) {
+      if (!uid) return;
+      clearPinError();
       pinCodeInput.value = '';
-      hidePinMsg();
-      if (message) showPinMsg(message);
+      firstPinAttempt = '';
+      const existingPin = localStorage.getItem(pinStorageKey());
 
-      if (mode === 'set') {
-        pinHeading.textContent = 'Pincode instellen';
-        pinSubtext.textContent = 'Kies een 4-cijferige pincode voor dit toestel.';
-        pinSubmit.textContent = 'Pincode opslaan';
+      if (!existingPin || forceCreate) {
+        isSettingNewPin = true;
+        pinHeading.textContent = existingPin ? 'Nieuwe pincode instellen' : 'Pincode instellen';
+        pinSubtext.textContent = 'Kies een 4-cijferige pincode voor dit apparaat.';
       } else {
+        isSettingNewPin = false;
         pinHeading.textContent = 'Scherm vergrendeld';
         pinSubtext.textContent = 'Voer je 4-cijferige pincode in.';
-        pinSubmit.textContent = 'Ontgrendelen';
       }
 
       pinModal.classList.remove('hidden');
@@ -4197,71 +4768,392 @@
     }
 
     function closePinModal() {
-      isLockedLocal = false;
       pinModal.classList.add('hidden');
-      hidePinMsg();
+      pinCodeInput.value = '';
+      isSettingNewPin = false;
+      firstPinAttempt = '';
+      clearPinError();
     }
 
-    document.getElementById('lock-trigger').addEventListener('click', () => {
-      if (!uid) return;
-      isLockedLocal = true;
-      const savedPin = localStorage.getItem(getDevicePinKey());
-      if (!savedPin) {
-        openPinModal('set', 'Nog geen pincode op dit toestel. Stel er direct een in.');
-      } else {
-        openPinModal('unlock');
-      }
-    });
-
-    document.getElementById('pin-change-btn').addEventListener('click', () => {
-      if (!uid) return;
-      openPinModal('set', 'Nieuwe 4-cijferige pincode instellen voor dit toestel.');
-    });
+    pinChangeBtn.addEventListener('click', () => openPinModal(true));
 
     pinForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      if (!uid) return;
+      clearPinError();
       const code = pinCodeInput.value.trim();
+
       if (!/^\d{4}$/.test(code)) {
-        showPinMsg('Voer exact 4 cijfers in.');
+        showPinError('Voer precies 4 cijfers in.');
         return;
       }
 
-      if (pinMode === 'set') {
-        localStorage.setItem(getDevicePinKey(), code);
+      if (isSettingNewPin) {
+        if (!firstPinAttempt) {
+          firstPinAttempt = code;
+          pinCodeInput.value = '';
+          pinSubtext.textContent = 'Voer dezelfde 4-cijferige pincode nogmaals in.';
+          pinCodeInput.focus();
+          return;
+        }
+        if (code !== firstPinAttempt) {
+          firstPinAttempt = '';
+          pinCodeInput.value = '';
+          showPinError('De twee pincodes kwamen niet overeen. Begin opnieuw.');
+          return;
+        }
+        localStorage.setItem(pinStorageKey(), code);
+        closePinModal();
+        return;
+      }
+
+      const savedPin = localStorage.getItem(pinStorageKey());
+      if (code === savedPin) {
         closePinModal();
       } else {
-        const savedPin = localStorage.getItem(getDevicePinKey());
-        if (!savedPin) {
-          localStorage.setItem(getDevicePinKey(), code);
-          closePinModal();
-        } else if (code === savedPin) {
-          closePinModal();
-        } else {
-          showPinMsg('Onjuiste pincode. Probeer opnieuw.');
-          pinCodeInput.value = '';
-          pinCodeInput.focus();
-        }
+        pinCodeInput.value = '';
+        showPinError('Onjuiste pincode.');
+        pinCodeInput.focus();
       }
     });
 
-    document.getElementById('pin-logout-btn').addEventListener('click', async () => {
-      closePinModal();
-      await signOut(auth);
+    document.getElementById('lock-trigger').addEventListener('click', () => openPinModal(false));
+
+    // ---------------------------------------------------------
+    // CHAT: TEKST + SPRAAKBERICHT (AUDIO) + DICTEREN
+    // ---------------------------------------------------------
+    const chatTargetMode = document.getElementById('chat-target-mode');
+    const chatRecipientWrapper = document.getElementById('chat-recipient-wrapper');
+    const chatSelfInfo = document.getElementById('chat-self-info');
+    const chatRecipientInput = document.getElementById('chat-recipient-input');
+    const chatMessagesBox = document.getElementById('chat-messages-box');
+    const chatMessageInput = document.getElementById('chat-message-input');
+
+    const voiceRecordBtn = document.getElementById('voice-record-btn');
+    const voiceRecordLabel = document.getElementById('voice-record-label');
+    const voiceStatusBar = document.getElementById('voice-status-bar');
+    const voiceStatusText = document.getElementById('voice-status-text');
+    const cancelRecordBtn = document.getElementById('cancel-record-btn');
+    const dictateBtn = document.getElementById('dictate-btn');
+    const dictateLabel = document.getElementById('dictate-label');
+
+    function sanitizeKey(str) {
+      return String(str || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+    }
+
+    function activeThreadId() {
+      if (!uid) return null;
+      if (chatTargetMode.value === 'user') {
+        const target = chatRecipientInput.value.trim().toLowerCase();
+        if (!target) return null;
+        const pair = [uid, sanitizeKey(target)].sort();
+        return `dm_${pair[0]}_${pair[1]}`;
+      }
+      return `self_${uid}`;
+    }
+
+    function subscribeToChat() {
+      if (chatUnsub) {
+        chatUnsub();
+        chatUnsub = null;
+      }
+      knownMessageIds = new Set();
+      initialChatLoaded = false;
+
+      if (!uid) return;
+
+      const msgsRef = ref(db, 'chats');
+      chatUnsub = onValue(msgsRef, (snap) => {
+        const raw = snap.val() || {};
+        const currentThread = activeThreadId();
+        const threadMessages = [];
+
+        Object.entries(raw).forEach(([key, msg]) => {
+          if (!msg) return;
+
+          const isForMe =
+            (msg.threadId && currentThread && msg.threadId === currentThread) ||
+            (!msg.threadId && (msg.senderUid === uid || msg.recipientEmail === userEmail.toLowerCase()));
+
+          if (isForMe) {
+            threadMessages.push({ id: key, ...msg });
+          }
+
+          const isIncomingOther = msg.senderUid && msg.senderUid !== uid;
+          const isIncomingToMe =
+            (msg.recipientUid && msg.recipientUid === uid) ||
+            (msg.recipientEmail && userEmail && msg.recipientEmail.toLowerCase() === userEmail.toLowerCase());
+
+          if (!knownMessageIds.has(key)) {
+            knownMessageIds.add(key);
+            if (initialChatLoaded && isIncomingOther && isIncomingToMe) {
+              playNotificationSound();
+              const preview = msg.audioData
+                ? `Spraakbericht (${msg.audioDuration || 'audio'})`
+                : (msg.text || 'Nieuw bericht');
+              showIncomingToast(msg.senderEmail || 'Gebruiker', preview);
+              if (localActiveTab !== 'chat') {
+                unreadCount += 1;
+                updateUnreadBadge();
+              }
+            }
+          }
+        });
+
+        initialChatLoaded = true;
+        threadMessages.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        renderChatMessages(threadMessages);
+      });
+    }
+
+    function renderChatMessages(messages) {
+      if (!messages || messages.length === 0) {
+        chatMessagesBox.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">Nog geen berichten in dit gesprek.</p>`;
+        return;
+      }
+
+      chatMessagesBox.innerHTML = messages.map((m) => {
+        const mine = m.senderUid === uid;
+        const timeStr = m.createdAt
+          ? new Date(m.createdAt).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
+          : '';
+
+        const audioHtml = m.audioData
+          ? `<div class="mt-1.5">
+               <audio controls src="${m.audioData}" class="max-w-full h-9"></audio>
+             </div>`
+          : '';
+
+        const textHtml = m.text
+          ? `<p class="mt-1 break-words ${m.audioData ? 'text-xs opacity-90' : ''}">${escapeHtml(m.text)}</p>`
+          : '';
+
+        return `
+          <div class="flex ${mine ? 'justify-end' : 'justify-start'}">
+            <div class="max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm shadow-sm ${
+              mine
+                ? 'bg-blue-600 text-white'
+                : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700'
+            }">
+              <div class="flex items-center justify-between gap-3 text-[11px] opacity-75">
+                <span class="font-semibold truncate">${escapeHtml(m.senderEmail || 'Gebruiker')}</span>
+                <span class="tabular-nums shrink-0">${timeStr}</span>
+              </div>
+              ${audioHtml}
+              ${textHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+    }
+
+    async function sendChatPayload({ text = '', audioData = '', audioDuration = '' }) {
+      if (!uid) return;
+      const cleanText = String(text || '').trim();
+      if (!cleanText && !audioData) return;
+
+      const mode = chatTargetMode.value;
+      const recipientRaw = chatRecipientInput.value.trim().toLowerCase();
+      if (mode === 'user' && !recipientRaw) {
+        showIncomingToast('Let op', 'Vul eerst een e-mailadres of naam van de ontvanger in.');
+        return;
+      }
+
+      const threadId = activeThreadId();
+      const recipientUid = mode === 'self' ? uid : sanitizeKey(recipientRaw);
+      const recipientEmail = mode === 'self' ? userEmail.toLowerCase() : recipientRaw;
+
+      await push(ref(db, 'chats'), {
+        threadId,
+        senderUid: uid,
+        senderEmail: userEmail || 'Gebruiker',
+        recipientUid,
+        recipientEmail,
+        text: cleanText,
+        audioData,
+        audioDuration,
+        createdAt: Date.now()
+      });
+    }
+
+    chatTargetMode.addEventListener('change', () => {
+      const isOther = chatTargetMode.value === 'user';
+      chatRecipientWrapper.classList.toggle('hidden', !isOther);
+      chatSelfInfo.classList.toggle('hidden', isOther);
+      subscribeToChat();
+    });
+
+    chatRecipientInput.addEventListener('input', () => {
+      subscribeToChat();
+    });
+
+    document.getElementById('chat-send-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = chatMessageInput.value.trim();
+      if (!text) return;
+      chatMessageInput.value = '';
+      await sendChatPayload({ text });
+    });
+
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordStartMs = 0;
+    let discardRecording = false;
+
+    function stopRecordingUI() {
+      voiceStatusBar.classList.add('hidden');
+      voiceRecordLabel.textContent = 'Spraakbericht';
+      voiceRecordBtn.classList.remove('ring-4', 'ring-rose-300');
+    }
+
+    voiceRecordBtn.addEventListener('click', async () => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        discardRecording = false;
+        mediaRecorder.stop();
+        stopRecordingUI();
+        return;
+      }
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showIncomingToast('Microfoon', 'Spraakopname wordt niet ondersteund in deze browser.');
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = [];
+        discardRecording = false;
+        recordStartMs = Date.now();
+
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = (ev) => {
+          if (ev.data && ev.data.size > 0) audioChunks.push(ev.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+          stream.getTracks().forEach((t) => t.stop());
+          stopRecordingUI();
+
+          if (discardRecording || audioChunks.length === 0) {
+            audioChunks = [];
+            return;
+          }
+
+          const sec = Math.max(1, Math.round((Date.now() - recordStartMs) / 1000));
+          const durationLabel = `${sec}s`;
+          const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+          audioChunks = [];
+
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            const base64Audio = typeof reader.result === 'string' ? reader.result : '';
+            if (!base64Audio) return;
+            const caption = chatMessageInput.value.trim();
+            chatMessageInput.value = '';
+            await sendChatPayload({
+              text: caption,
+              audioData: base64Audio,
+              audioDuration: durationLabel
+            });
+          };
+          reader.readAsDataURL(blob);
+        };
+
+        mediaRecorder.start();
+        voiceStatusBar.classList.remove('hidden');
+        voiceStatusText.textContent = 'Opnemen... klik nogmaals op Spraakbericht om te versturen.';
+        voiceRecordLabel.textContent = 'Stop & Verstuur';
+        voiceRecordBtn.classList.add('ring-4', 'ring-rose-300');
+      } catch {
+        showIncomingToast('Microfoon', 'Geef microfoontoegang om een spraakbericht op te nemen.');
+      }
+    });
+
+    cancelRecordBtn.addEventListener('click', () => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        discardRecording = true;
+        mediaRecorder.stop();
+      }
+      stopRecordingUI();
+    });
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let isDictating = false;
+
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.lang = 'nl-NL';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        isDictating = true;
+        dictateLabel.textContent = 'Luistert...';
+        dictateBtn.classList.add('border-blue-500', 'text-blue-600', 'dark:text-blue-400');
+      };
+
+      recognition.onresult = (ev) => {
+        const transcript = ev.results?.[0]?.[0]?.transcript || '';
+        if (transcript) {
+          chatMessageInput.value = chatMessageInput.value
+            ? `${chatMessageInput.value.trim()} ${transcript}`
+            : transcript;
+          chatMessageInput.focus();
+        }
+      };
+
+      recognition.onerror = () => {
+        showIncomingToast('Dicteren', 'Kon spraak niet herkennen. Controleer microfoonrechten.');
+      };
+
+      recognition.onend = () => {
+        isDictating = false;
+        dictateLabel.textContent = 'Dicteer';
+        dictateBtn.classList.remove('border-blue-500', 'text-blue-600', 'dark:text-blue-400');
+      };
+    }
+
+    dictateBtn.addEventListener('click', () => {
+      if (!recognition) {
+        showIncomingToast('Dicteren', 'Spraakherkenning wordt niet ondersteund in deze browser.');
+        return;
+      }
+      if (isDictating) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
     });
 
     // ---------------------------------------------------------
-    // INLOGGEN & UITLOGGEN
+    // NAVIGATIE
+    // ---------------------------------------------------------
+    document.getElementById('nav-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.nav-btn');
+      if (!btn) return;
+      switchLocalTab(btn.getAttribute('data-tab'));
+    });
+
+    document.addEventListener('click', (e) => {
+      const opener = e.target.closest('.open-tab-link');
+      if (!opener) return;
+      switchLocalTab(opener.getAttribute('data-open-tab'));
+    });
+
+    // ---------------------------------------------------------
+    // AUTHENTIFICATIE & REALTIME LISTENER
     // ---------------------------------------------------------
     const loginScreen = document.getElementById('login-screen');
     const appShell = document.getElementById('app-shell');
-    const authTitle = document.getElementById('auth-title');
     const authError = document.getElementById('auth-error');
+    const authTitle = document.getElementById('auth-title');
     const emailForm = document.getElementById('email-form');
     const emailInput = document.getElementById('email-input');
     const passwordInput = document.getElementById('password-input');
     const emailSubmitBtn = document.getElementById('email-submit-btn');
-    const toggleAuthModeBtn = document.getElementById('toggle-auth-mode');
+    const toggleAuthMode = document.getElementById('toggle-auth-mode');
     const googleBtn = document.getElementById('google-btn');
 
     let isRegisterMode = false;
@@ -4272,20 +5164,21 @@
     }
 
     function clearAuthError() {
+      authError.textContent = '';
       authError.classList.add('hidden');
     }
 
-    toggleAuthModeBtn.addEventListener('click', () => {
-      isRegisterMode = !isRegisterMode;
+    toggleAuthMode.addEventListener('click', () => {
       clearAuthError();
+      isRegisterMode = !isRegisterMode;
       if (isRegisterMode) {
         authTitle.textContent = 'Account aanmaken';
         emailSubmitBtn.textContent = 'Registreren met e-mail';
-        toggleAuthModeBtn.textContent = 'Heb je al een account? Log in';
+        toggleAuthMode.textContent = 'Heb je al een account? Log in';
       } else {
         authTitle.textContent = 'Inloggen';
         emailSubmitBtn.textContent = 'Inloggen met e-mail';
-        toggleAuthModeBtn.textContent = 'Nog geen account? Maak er een aan';
+        toggleAuthMode.textContent = 'Nog geen account? Maak er een aan';
       }
     });
 
@@ -4315,891 +5208,92 @@
     });
 
     async function handleLogout() {
-      stopVoiceRecording(true);
-      stopDictation();
-      if (dbUnsub) { dbUnsub(); dbUnsub = null; }
-      if (chatUnsub) { chatUnsub(); chatUnsub = null; }
-      uid = null;
-      userEmail = '';
-      initialChatLoaded = false;
-      knownMessageIds.clear();
+      closePinModal();
+      if (dbUnsub) {
+        dbUnsub();
+        dbUnsub = null;
+      }
+      if (chatUnsub) {
+        chatUnsub();
+        chatUnsub = null;
+      }
       await signOut(auth);
     }
 
     document.getElementById('logout-sidebar').addEventListener('click', handleLogout);
     document.getElementById('logout-header').addEventListener('click', handleLogout);
+    document.getElementById('pin-logout-btn').addEventListener('click', handleLogout);
 
-    // ---------------------------------------------------------
-    // NAVIGATIE TUSSEN TABS
-    // ---------------------------------------------------------
-    document.querySelectorAll('.nav-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        switchLocalTab(btn.getAttribute('data-tab'));
-      });
-    });
-
-    document.querySelectorAll('.open-tab-link').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        switchLocalTab(btn.getAttribute('data-open-tab') || 'start');
-      });
-    });
-
-    // ---------------------------------------------------------
-    // REALTIME DATA-SYNC MET FIREBASE
-    // ---------------------------------------------------------
-    function setRtStatus(connected, text) {
-      const label = document.getElementById('rt-status-label');
-      label.textContent = text;
-      label.className = connected
-        ? 'text-[11px] text-emerald-400 font-medium'
-        : 'text-[11px] text-amber-400 font-medium';
-    }
-
-    async function pushSharedData(partialPatch) {
-      if (!uid) return;
-      const nowLabel = new Date().toLocaleTimeString('nl-NL', {
-        hour: '2-digit', minute: '2-digit', second: '2-digit'
-      });
-
-      const merged = {
-        ...sharedData,
-        ...partialPatch,
-        updatedAt: nowLabel
-      };
-
-      const autoSynced = syncAutoPdfReports(merged, Date.now());
-      if (autoSynced.newDocs.length > 0) {
-        merged.pdfDocs = autoSynced.allDocs;
-      }
-
-      sharedData = merged;
-      renderAll();
-
-      try {
-        await set(ref(db, `users/${uid}/sharedData`), merged);
-        setRtStatus(true, 'Realtime verbonden');
-      } catch (err) {
-        console.error('Firebase sync fout:', err);
-        setRtStatus(false, 'Sync fout — probeert opnieuw');
-      }
-    }
-
-    function fillSelectOptions(selectId, list, currentValue) {
-      const sel = document.getElementById(selectId);
-      if (!sel) return;
-      const opts = Array.isArray(list) ? list : [];
-      const prev = currentValue !== undefined ? currentValue : sel.value;
-
-      const optionsHtml = [`<option value="">-- Kies --</option>`]
-        .concat(opts.map((item) => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`))
-        .join('');
-
-      sel.innerHTML = optionsHtml;
-      if (prev && opts.includes(prev)) {
-        sel.value = prev;
-      } else {
-        sel.value = '';
-      }
-    }
-
-    function renderOptionList(containerId, list) {
-      const el = document.getElementById(containerId);
-      if (!el) return;
-      const opts = Array.isArray(list) ? list : [];
-      if (opts.length === 0) {
-        el.innerHTML = `<p class="text-slate-400 italic">Nog geen items.</p>`;
-        return;
-      }
-      el.innerHTML = opts.map((item) => `
-        <div class="flex items-center justify-between py-1 px-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-          <span class="font-medium truncate">${escapeHtml(item)}</span>
-          <button type="button" data-val="${escapeHtml(item)}"
-            class="del-opt-btn text-slate-400 hover:text-red-600 font-bold px-1.5 cursor-pointer">×</button>
-        </div>
-      `).join('');
-    }
-
-    function renderAll() {
-      const tabTitles = {
-        start: 'Start',
-        vochtintake: 'Vochtintake (POS)',
-        ritten: 'Ritten',
-        dialyse: 'Dialyse',
-        brieven: 'Brieven',
-        agenda: 'Agenda',
-        overzichten: 'Overzichten',
-        pdf: 'PDF',
-        chat: 'Chat',
-        instellingen: 'Instellingen'
-      };
-
-      document.getElementById('active-tab-title').textContent = tabTitles[localActiveTab] || 'Start';
-      document.getElementById('last-sync-time').textContent = sharedData.updatedAt || 'Nog geen wijziging';
-
-      document.querySelectorAll('.nav-btn').forEach((btn) => {
-        const isCurrent = btn.getAttribute('data-tab') === localActiveTab;
-        btn.className = isCurrent
-          ? 'nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white cursor-pointer flex items-center justify-between'
-          : 'nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between';
-      });
-
-      document.getElementById('start-view').classList.toggle('hidden', localActiveTab !== 'start');
-      document.getElementById('vocht-view').classList.toggle('hidden', localActiveTab !== 'vochtintake');
-      document.getElementById('ritten-view').classList.toggle('hidden', localActiveTab !== 'ritten');
-      document.getElementById('dialyse-view').classList.toggle('hidden', localActiveTab !== 'dialyse');
-      document.getElementById('brieven-view').classList.toggle('hidden', localActiveTab !== 'brieven');
-      document.getElementById('agenda-view').classList.toggle('hidden', localActiveTab !== 'agenda');
-      document.getElementById('overzichten-view').classList.toggle('hidden', localActiveTab !== 'overzichten');
-      document.getElementById('pdf-view').classList.toggle('hidden', localActiveTab !== 'pdf');
-      document.getElementById('chat-view').classList.toggle('hidden', localActiveTab !== 'chat');
-      document.getElementById('instellingen-view').classList.toggle('hidden', localActiveTab !== 'instellingen');
-
-      if (localActiveTab === 'chat') {
-        updateUnreadBadge();
-      }
-
-      const stats = computeVochtStats(sharedData.vochtEntries, sharedData);
-      const rittenList = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
-      const dialyseSessies = Array.isArray(sharedData.dialyseSessies) ? sharedData.dialyseSessies : [];
-      const brievenList = Array.isArray(sharedData.brieven) ? sharedData.brieven : [];
-      const pdfDocsList = Array.isArray(sharedData.pdfDocs) ? sharedData.pdfDocs : [];
-      const ritStats = computeRittenStats(rittenList);
-
-      const nowMs = Date.now();
-      const doneCount =
-        rittenList.filter((r) => isRitDone(r, nowMs)).length +
-        dialyseSessies.filter((s) => isDialyseDone(s, nowMs)).length;
-      document.getElementById('overzichten-done-badge').textContent = String(doneCount);
-
-      const pdfBadge = document.getElementById('pdf-count-badge');
-      if (pdfDocsList.length > 0) {
-        pdfBadge.textContent = String(pdfDocsList.length);
-        pdfBadge.classList.remove('hidden');
-      } else {
-        pdfBadge.classList.add('hidden');
-      }
-
-      document.getElementById('tile-vocht-value').textContent = `${stats.total24} ml`;
-      document.getElementById('tile-vocht-48u').textContent = `48u (${stats.win48.isFixedCycle ? 'om de dag' : 'lopend'}): ${stats.total48} ml`;
-
-      document.getElementById('tile-ritten-count').textContent = `${rittenList.length} ${rittenList.length === 1 ? 'rit' : 'ritten'}`;
-      document.getElementById('tile-ritten-ontime').textContent = ritStats.evaluated > 0 ? `${ritStats.pctOnTime}% op tijd` : '0% op tijd';
-      const sortedRitten = sortRittenPlanning(rittenList);
-      const firstRitObj = sortedRitten[0];
-      if (firstRitObj) {
-        const lr = firstRitObj.rit;
-        const route = lr.van && lr.naar ? `${lr.van} → ${lr.naar}` : (lr.titel || 'Rit');
-        document.getElementById('tile-ritten-last').textContent = `${firstRitObj.dayInfo.label}: ${route} (${firstRitObj.timeHHMM})`;
-      } else {
-        document.getElementById('tile-ritten-last').textContent = 'Nog geen rit';
-      }
-
-      const sortedDialyse = sortDialysePlanning(dialyseSessies);
-      const firstDialyseObj = sortedDialyse[0];
-      document.getElementById('tile-dialyse-count').textContent = `${dialyseSessies.length} ${dialyseSessies.length === 1 ? 'sessie' : 'sessies'}`;
-      if (firstDialyseObj) {
-        const fd = firstDialyseObj.sessie;
-        document.getElementById('tile-dialyse-status').textContent = `${fd.soort || 'Dag'}dialyse (${firstDialyseObj.dayInfo.label})`;
-        document.getElementById('tile-dialyse-sub').textContent =
-          `${formatIsoDateTimeNL(fd.afspraak)}${fd.adviesUf !== null && fd.adviesUf !== undefined ? ` • UF advies ${Number(fd.adviesUf).toFixed(2).replace('.', ',')} L` : ''}`;
-      } else {
-        document.getElementById('tile-dialyse-status').textContent = sharedData.dialyseStatus || 'Geen sessie';
-        document.getElementById('tile-dialyse-sub').textContent = sharedData.dialyseSub || 'Klik om sessie te openen';
-      }
-
-      document.getElementById('tile-brieven-count').textContent = `${brievenList.length} ${brievenList.length === 1 ? 'brief' : 'brieven'}`;
-      const lastBrief = brievenList[brievenList.length - 1];
-      document.getElementById('tile-brieven-last').textContent = lastBrief
-        ? `[${lastBrief.folder || 'Nefrologie'}] ${lastBrief.titel}`
-        : 'Map Nefrologie gereed';
-
-      const agendaEvents = buildAgendaEventList(rittenList, dialyseSessies, sharedData.dialyseStatus, sharedData.dialyseSub);
-      document.getElementById('tile-agenda-total').textContent = `${agendaEvents.length} ${agendaEvents.length === 1 ? 'item' : 'items'}`;
-      const agendaPreviewEl = document.getElementById('tile-agenda-preview');
-      if (agendaEvents.length === 0) {
-        agendaPreviewEl.innerHTML = `<p class="text-slate-400 dark:text-slate-500">Nog geen agenda-items uit Ritten of Dialyse.</p>`;
-      } else {
-        agendaPreviewEl.innerHTML = agendaEvents.slice(0, 3).map((ev) => `
-          <div class="flex items-center justify-between gap-2 py-1 border-b border-slate-100 dark:border-slate-800 last:border-b-0">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${
-                ev.type === 'Rit'
-                  ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
-                  : 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
-              }">${escapeHtml(ev.type)}</span>
-              <span class="font-semibold text-slate-800 dark:text-slate-200 truncate">${escapeHtml(ev.title)}</span>
-            </div>
-            <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 tabular-nums shrink-0">${escapeHtml(ev.dateISO)} ${escapeHtml(ev.timeHHMM)}</span>
-          </div>
-        `).join('');
-      }
-
-      document.getElementById('bar-24-label').textContent = `${stats.total24} ml`;
-      document.getElementById('bar-24-limit-label').textContent = `van ${stats.lim24} ml`;
-      document.getElementById('bar-24-pct').textContent = `${stats.pct24}%`;
-      const bar24Fill = document.getElementById('bar-24-fill');
-      bar24Fill.style.width = `${Math.min(100, Math.max(0, stats.pct24))}%`;
-      bar24Fill.className = `h-full transition-all duration-300 rounded-full ${stats.pct24 > 100 ? 'bg-red-500' : 'bg-sky-500'}`;
-
-      document.getElementById('bar-48-label').textContent = `${stats.total48} ml`;
-      document.getElementById('bar-48-limit-label').textContent = `van ${stats.lim48} ml`;
-      document.getElementById('bar-48-pct').textContent = `${stats.pct48}%`;
-      document.getElementById('window-48-info').textContent = stats.win48.label;
-      document.getElementById('pos-receipt-heading').textContent = stats.win48.isFixedCycle ? 'Intake Bon (48u Cyclus)' : 'Intake Bon (Laatste 48u)';
-      const bar48Fill = document.getElementById('bar-48-fill');
-      bar48Fill.style.width = `${Math.min(100, Math.max(0, stats.pct48))}%`;
-      bar48Fill.className = `h-full transition-all duration-300 rounded-full ${stats.pct48 > 100 ? 'bg-red-500' : 'bg-indigo-500'}`;
-
-      document.getElementById('pos-receipt-total24').textContent = `${stats.total24} ml`;
-
-      const drinks = Array.isArray(sharedData.vochtProducts) && sharedData.vochtProducts.length > 0
-        ? sharedData.vochtProducts : ['Water'];
-      if (!drinks.includes(selectedDrink)) selectedDrink = drinks[0];
-
-      document.getElementById('pos-drink-buttons').innerHTML = drinks.map((prod) => {
-        const active = prod === selectedDrink;
-        return `
-          <div class="inline-flex items-center rounded-xl border ${
-            active
-              ? 'bg-sky-600 text-white border-sky-600 shadow-sm'
-              : 'bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700'
-          }">
-            <button type="button" data-drink="${escapeHtml(prod)}"
-              class="pick-drink-tile-btn px-3.5 py-2 text-xs font-bold cursor-pointer">
-              ${escapeHtml(prod)}
-            </button>
-            <button type="button" data-drink="${escapeHtml(prod)}" title="Verwijder producttegel"
-              class="del-drink-tile-btn pr-2 pl-1 py-2 text-xs font-bold opacity-75 hover:opacity-100 cursor-pointer">
-              ×
-            </button>
-          </div>
-        `;
-      }).join('');
-
-      const amounts = Array.isArray(sharedData.vochtAmounts) && sharedData.vochtAmounts.length > 0
-        ? sharedData.vochtAmounts : [150, 250];
-
-      document.getElementById('pos-ml-buttons').innerHTML = amounts.map((ml) => `
-        <div class="relative flex items-center justify-between rounded-xl border border-sky-200 dark:border-sky-800/70 bg-sky-50/70 dark:bg-sky-950/30 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition">
-          <button type="button" data-ml="${Number(ml)}"
-            class="add-ml-tile-btn flex-1 py-2.5 px-3 text-left text-xs font-extrabold text-sky-900 dark:text-sky-200 tabular-nums cursor-pointer">
-            + ${Number(ml)} ml
-          </button>
-          <button type="button" data-ml="${Number(ml)}" title="Verwijder ml-tegel"
-            class="del-ml-tile-btn px-2 py-2.5 text-xs font-bold text-slate-400 hover:text-red-600 cursor-pointer">
-            ×
-          </button>
-        </div>
-      `).join('');
-
-      const receiptList = document.getElementById('pos-receipt-list');
-      if (stats.in48.length === 0) {
-        receiptList.innerHTML = `<p class="text-slate-400 text-center py-6">Geen vocht in deze 48-uurs periode.</p>`;
-      } else {
-        receiptList.innerHTML = [...stats.in48].reverse().map((entry) => `
-          <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
-            <div class="min-w-0">
-              <span class="font-bold text-slate-800 dark:text-slate-100">${escapeHtml(entry.drink || 'Water')}</span>
-              <span class="text-sky-600 dark:text-sky-400 font-extrabold ml-1.5 tabular-nums">+${Number(entry.ml)} ml</span>
-              <span class="block text-[10px] text-slate-400 tabular-nums">${formatDateTimeNL(entry.timestamp)}</span>
-            </div>
-            <button type="button" data-id="${escapeHtml(entry.id)}"
-              class="del-vocht-entry-btn text-slate-400 hover:text-red-600 font-bold px-1.5 cursor-pointer">×</button>
-          </div>
-        `).join('');
-      }
-
-      document.getElementById('ritten-stats-summary').textContent =
-        ritStats.evaluated > 0
-          ? `${ritStats.evaluated} van ${ritStats.total} ritten beoordeeld op eindtijd`
-          : `0 van ${ritStats.total} ritten met eindtijd beoordeeld`;
-
-      document.getElementById('stat-ontime-pct').textContent = `${ritStats.pctOnTime}%`;
-      document.getElementById('stat-ontime-cnt').textContent = `(${ritStats.onTime} ${ritStats.onTime === 1 ? 'rit' : 'ritten'})`;
-      document.getElementById('stat-early-pct').textContent = `${ritStats.pctEarly}%`;
-      document.getElementById('stat-early-cnt').textContent = `(${ritStats.early} ${ritStats.early === 1 ? 'rit' : 'ritten'})`;
-      document.getElementById('stat-late-pct').textContent = `${ritStats.pctLate}%`;
-      document.getElementById('stat-late-cnt').textContent = `(${ritStats.late} ${ritStats.late === 1 ? 'rit' : 'ritten'})`;
-
-      document.getElementById('bar-rit-ontime').style.width = `${ritStats.pctOnTime}%`;
-      document.getElementById('bar-rit-early').style.width = `${ritStats.pctEarly}%`;
-      document.getElementById('bar-rit-late').style.width = `${ritStats.pctLate}%`;
-
-      if (!editingRitId) {
-        fillSelectOptions('rit-firma', sharedData.firmaOptions);
-        fillSelectOptions('rit-van', sharedData.vanOptions);
-        fillSelectOptions('rit-naar', sharedData.naarOptions);
-      }
-
-      const rittenContainer = document.getElementById('ritten-list-container');
-      if (sortedRitten.length === 0) {
-        rittenContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen ritten opgeslagen.</p>`;
-      } else {
-        rittenContainer.innerHTML = sortedRitten.map(({ rit, origIdx, dayInfo, timeHHMM }) => {
-          const rid = String(rit.id || origIdx);
-          const route = rit.van && rit.naar ? `${rit.van} → ${rit.naar}` : (rit.titel || `Rit #${origIdx + 1}`);
-          const punct = evaluateRitPunctuality(rit);
-
-          let badgeHtml = '';
-          if (punct.status === 'optijd') {
-            badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Op tijd</span>`;
-          } else if (punct.status === 'tevroeg') {
-            badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300">${escapeHtml(punct.label)}</span>`;
-          } else if (punct.status === 'telaat') {
-            badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">${escapeHtml(punct.label)}</span>`;
-          } else {
-            badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Geen stoptijd</span>`;
-          }
-
-          const dayBadgeClass = dayInfo.bucket === 0
-            ? 'bg-emerald-600 text-white'
-            : dayInfo.bucket === 1
-              ? 'bg-indigo-600 text-white'
-              : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
-
-          return `
-            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
-              <div class="space-y-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${dayBadgeClass}">${escapeHtml(dayInfo.label)}</span>
-                  <span class="text-xs font-extrabold text-emerald-700 dark:text-emerald-300 tabular-nums">${escapeHtml(timeHHMM)}</span>
-                  <span class="text-sm font-bold text-slate-900 dark:text-white truncate">${escapeHtml(route)}</span>
-                  ${rit.firma ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">${escapeHtml(rit.firma)}</span>` : ''}
-                  ${badgeHtml}
-                </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
-                  Afspraak: ${escapeHtml(formatIsoDateTimeNL(rit.afspraak))}
-                  ${rit.startTijd ? ` • Start: ${escapeHtml(rit.startTijd)}` : ''}
-                  ${rit.eindTijd ? ` • Stop: ${escapeHtml(rit.eindTijd)}` : ''}
-                  ${rit.duurMin !== null && rit.duurMin !== undefined && rit.duurMin !== '' ? ` • Duur: ${escapeHtml(String(rit.duurMin))} min` : ''}
-                </p>
-                ${rit.opmerking ? `<p class="text-xs text-slate-600 dark:text-slate-300">${escapeHtml(rit.opmerking)}</p>` : ''}
-              </div>
-              <div class="flex flex-wrap items-center gap-1.5 shrink-0">
-                <button type="button" data-id="${escapeHtml(rid)}"
-                  class="start-now-rit-btn px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer">
-                  Start nu
-                </button>
-                <button type="button" data-id="${escapeHtml(rid)}"
-                  class="stop-now-rit-btn px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold cursor-pointer">
-                  Stop nu
-                </button>
-                <button type="button" data-id="${escapeHtml(rid)}"
-                  class="edit-rit-btn px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold cursor-pointer">
-                  Bewerk
-                </button>
-                <button type="button" data-id="${escapeHtml(rid)}" title="Verwijder rit"
-                  class="del-rit-btn px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-red-600 hover:text-white text-xs font-bold cursor-pointer">
-                  ×
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      renderVerplegingMultiSelect();
-      updateDialyseLiveCalculations();
-
-      const dialyseListContainer = document.getElementById('dialyse-list-container');
-      if (sortedDialyse.length === 0) {
-        dialyseListContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen dialysesessies opgeslagen.</p>`;
-      } else {
-        dialyseListContainer.innerHTML = sortedDialyse.map(({ sessie, origIdx, dayInfo, timeHHMM }) => {
-          const sid = String(sessie.id || origIdx);
-          const dayBadgeClass = dayInfo.bucket === 0
-            ? 'bg-blue-600 text-white'
-            : dayInfo.bucket === 1
-              ? 'bg-indigo-600 text-white'
-              : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
-
-          const vpkList = normalizeVerplegingSelection(sessie);
-          const vpkText = vpkList.length > 0 ? vpkList.join(', ') : '';
-
-          const checks = [
-            sessie.epo ? 'Epo' : '',
-            sessie.ijzer ? 'IJzer' : '',
-            sessie.fragmin2500 ? 'Fragmin 2500' : '',
-            sessie.fragmin5000 ? 'Fragmin 5000' : '',
-            sessie.shuntflowMeting ? 'Shuntflow' : ''
-          ].filter(Boolean);
-
-          const adviesNum = sessie.adviesUf !== null && sessie.adviesUf !== undefined ? Number(sessie.adviesUf) : null;
-          const adviesBadge = adviesNum !== null && !Number.isNaN(adviesNum)
-            ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold border tabular-nums ${getUfColorClasses(adviesNum)}">UF advies ${adviesNum.toFixed(2).replace('.', ',')} L</span>`
-            : '';
-
-          const vCount = normalizeVitals(sessie.vitals || []).length;
-
-          return `
-            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
-              <div class="space-y-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${dayBadgeClass}">${escapeHtml(dayInfo.label)}</span>
-                  <span class="text-xs font-extrabold text-blue-700 dark:text-blue-300 tabular-nums">${escapeHtml(timeHHMM)}</span>
-                  <span class="text-sm font-bold text-slate-900 dark:text-white">${escapeHtml(sessie.soort || 'Dag')}dialyse</span>
-                  ${adviesBadge}
-                  ${vpkText ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">Vpk: ${escapeHtml(vpkText)}</span>` : ''}
-                  ${vCount > 0 ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 tabular-nums">${vCount} BD/HS metingen</span>` : ''}
-                </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
-                  Start: ${escapeHtml(formatIsoDateTimeNL(sessie.startDatumTijd || sessie.afspraak))}
-                  ${sessie.stopDatumTijd ? ` • Stop: ${escapeHtml(formatIsoDateTimeNL(sessie.stopDatumTijd))}` : ''}
-                  ${sessie.duur ? ` • Duur: ${escapeHtml(sessie.duur)}` : ''}
-                  ${sessie.preGewicht !== null && sessie.preGewicht !== undefined ? ` • Pre: ${sessie.preGewicht} kg` : ''}
-                  ${sessie.postGewicht !== null && sessie.postGewicht !== undefined ? ` • Post: ${sessie.postGewicht} kg` : ''}
-                  ${sessie.gebruikteUf !== null && sessie.gebruikteUf !== undefined ? ` • Gebr. UF: ${sessie.gebruikteUf}` : ''}
-                  ${sessie.werkelijkeUf !== null && sessie.werkelijkeUf !== undefined ? ` • Werk. UF: ${sessie.werkelijkeUf}` : ''}
-                </p>
-                ${checks.length > 0 || sessie.shuntflowResultaat ? `
-                  <p class="text-xs text-slate-600 dark:text-slate-300">
-                    ${checks.length > 0 ? `Vinkjes: ${escapeHtml(checks.join(', '))}` : ''}
-                    ${sessie.shuntflowResultaat ? `${checks.length > 0 ? ' • ' : ''}ShuntFlow: ${escapeHtml(sessie.shuntflowResultaat)}` : ''}
-                  </p>
-                ` : ''}
-              </div>
-              <div class="flex items-center gap-1.5 shrink-0">
-                <button type="button" data-id="${escapeHtml(sid)}"
-                  class="edit-dialyse-btn px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold cursor-pointer">
-                  Bewerk
-                </button>
-                <button type="button" data-id="${escapeHtml(sid)}" title="Verwijder dialysesessie"
-                  class="del-dialyse-btn px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-red-600 hover:text-white text-xs font-bold cursor-pointer">
-                  ×
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      renderBrievenView(sharedData);
-      renderAgendaView(rittenList, dialyseSessies, sharedData.dialyseStatus, sharedData.dialyseSub);
-      renderOverzichtenView(sharedData);
-      renderPdfView(sharedData);
-
-      document.getElementById('inst-dry-weight').value = String(getDryWeight());
-      const { orangeMin, redMin } = getUfColorThresholds();
-      document.getElementById('inst-uf-orange-min').value = String(orangeMin);
-      document.getElementById('inst-uf-red-min').value = String(redMin);
-      document.getElementById('inst-uf-green-preview').textContent = `Onder ${formatThresholdNL(orangeMin)} L`;
-
-      document.getElementById('inst-vocht48-start-date').value = sharedData.vocht48StartDate || '2026-11-22';
-      document.getElementById('inst-vocht48-start-time').value = sharedData.vocht48StartTime || '05:30';
-      document.getElementById('inst-vocht48-cycle-preview').textContent = stats.win48.label;
-
-      document.getElementById('inst-limit-24').value = String(stats.lim24);
-      document.getElementById('inst-limit-48').value = String(stats.lim48);
-      renderOptionList('inst-verpleging-list', sharedData.verplegingOptions);
-      renderOptionList('inst-firma-list', sharedData.firmaOptions);
-      renderOptionList('inst-van-list', sharedData.vanOptions);
-      renderOptionList('inst-naar-list', sharedData.naarOptions);
-    }
-
-    setInterval(() => {
-      if (!uid) return;
-      const synced = syncAutoPdfReports(sharedData, Date.now());
-      if (synced.newDocs.length > 0) {
-        pushSharedData({ pdfDocs: synced.allDocs });
-      }
-    }, 60000);
-
-    function startSharedSync(currentUid) {
-      if (dbUnsub) dbUnsub();
-      const sharedRef = ref(db, `users/${currentUid}/sharedData`);
-      dbUnsub = onValue(sharedRef, (snap) => {
-        setRtStatus(true, 'Realtime verbonden');
-        const val = snap.val();
-        if (val && typeof val === 'object') {
-          sharedData = {
-            ...sharedData,
-            ...val,
-            vochtEntries: Array.isArray(val.vochtEntries) ? val.vochtEntries : [],
-            vochtProducts: Array.isArray(val.vochtProducts) && val.vochtProducts.length > 0
-              ? val.vochtProducts : ['Water', 'Koffie', 'Thee', 'Soep', 'Frisdrank'],
-            vochtAmounts: Array.isArray(val.vochtAmounts) && val.vochtAmounts.length > 0
-              ? val.vochtAmounts : [100, 150, 200, 250, 330, 500],
-            vochtLimit24: Number(val.vochtLimit24 || 1500),
-            vochtLimit48: Number(val.vochtLimit48 || 3000),
-            vocht48StartDate: val.vocht48StartDate || '2026-11-22',
-            vocht48StartTime: val.vocht48StartTime || '05:30',
-            vocht48Mode: val.vocht48Mode || 'every_other_day',
-            dialyseDryWeight: Number(val.dialyseDryWeight || 109),
-            dialyseUfOrangeMin: Number(val.dialyseUfOrangeMin ?? 4.0),
-            dialyseUfRedMin: Number(val.dialyseUfRedMin ?? 4.5),
-            dialyseSessies: Array.isArray(val.dialyseSessies) ? val.dialyseSessies : [],
-            verplegingOptions: Array.isArray(val.verplegingOptions) ? val.verplegingOptions : [],
-            firmaOptions: Array.isArray(val.firmaOptions) ? val.firmaOptions : [],
-            vanOptions: Array.isArray(val.vanOptions) ? val.vanOptions : [],
-            naarOptions: Array.isArray(val.naarOptions) ? val.naarOptions : [],
-            ritten: Array.isArray(val.ritten) ? val.ritten : [],
-            briefFolders: Array.isArray(val.briefFolders) && val.briefFolders.length > 0
-              ? val.briefFolders : ['Nefrologie'],
-            brieven: Array.isArray(val.brieven) ? val.brieven : [],
-            pdfDocs: Array.isArray(val.pdfDocs) ? val.pdfDocs : []
-          };
-
-          const synced = syncAutoPdfReports(sharedData, Date.now());
-          if (synced.newDocs.length > 0) {
-            sharedData.pdfDocs = synced.allDocs;
-            set(sharedRef, sharedData).catch(() => {});
-          }
-        }
-        renderAll();
-      }, (err) => {
-        console.error('Realtime leesfout:', err);
-        setRtStatus(false, 'Verbinding verbroken');
-      });
-    }
-
-    // ---------------------------------------------------------
-    // CHAT (TEKST + SPRAAKBERICHT + DICTEREN)
-    // ---------------------------------------------------------
-    const chatTargetMode = document.getElementById('chat-target-mode');
-    const chatRecipientWrapper = document.getElementById('chat-recipient-wrapper');
-    const chatRecipientInput = document.getElementById('chat-recipient-input');
-    const chatSelfInfo = document.getElementById('chat-self-info');
-    const chatMessagesBox = document.getElementById('chat-messages-box');
-    const chatSendForm = document.getElementById('chat-send-form');
-    const chatMessageInput = document.getElementById('chat-message-input');
-
-    chatTargetMode.addEventListener('change', () => {
-      const toUser = chatTargetMode.value === 'user';
-      chatRecipientWrapper.classList.toggle('hidden', !toUser);
-      chatSelfInfo.classList.toggle('hidden', toUser);
-    });
-
-    function getChatPath() {
-      if (!uid) return null;
-      if (chatTargetMode.value === 'user') {
-        const rawTarget = chatRecipientInput.value.trim().toLowerCase();
-        if (!rawTarget) return null;
-        const safeKey = encodeURIComponent(rawTarget).replace(/\./g, '%2E');
-        const pairKey = [uid, safeKey].sort().join('__');
-        return `chats/direct/${pairKey}`;
-      }
-      return `chats/self/${uid}`;
-    }
-
-    let activeChatPath = null;
-
-    function subscribeToChat() {
-      const nextPath = getChatPath();
-      if (nextPath === activeChatPath && chatUnsub) return;
-
-      if (chatUnsub) {
-        chatUnsub();
-        chatUnsub = null;
-      }
-
-      activeChatPath = nextPath;
-      initialChatLoaded = false;
-      knownMessageIds.clear();
-
-      if (!nextPath) {
-        chatMessagesBox.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">Vul een e-mailadres of gebruikersnaam in om dit gesprek te laden.</p>`;
-        return;
-      }
-
-      chatUnsub = onValue(ref(db, nextPath), (snap) => {
-        const raw = snap.val() || {};
-        const entries = Object.entries(raw).map(([id, msg]) => ({ id, ...msg }));
-        entries.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-
-        if (!initialChatLoaded) {
-          entries.forEach((m) => knownMessageIds.add(m.id));
-          initialChatLoaded = true;
-        } else {
-          entries.forEach((m) => {
-            if (!knownMessageIds.has(m.id)) {
-              knownMessageIds.add(m.id);
-              const isFromMe = m.senderUid === uid;
-              if (!isFromMe || chatTargetMode.value === 'self') {
-                playNotificationSound();
-                const previewText = m.type === 'audio'
-                  ? `Spraakbericht (${m.durationSec || 0}s)`
-                  : (m.text || '');
-                showIncomingToast(m.senderEmail || 'Bericht', previewText);
-                if (localActiveTab !== 'chat') {
-                  unreadCount += 1;
-                  updateUnreadBadge();
-                }
-              }
-            }
-          });
-        }
-
-        renderChatMessages(entries);
-      });
-    }
-
-    chatRecipientInput.addEventListener('input', subscribeToChat);
-    chatTargetMode.addEventListener('change', subscribeToChat);
-
-    function renderChatMessages(entries) {
-      if (!entries.length) {
-        chatMessagesBox.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">Nog geen berichten in dit gesprek.</p>`;
-        return;
-      }
-
-      chatMessagesBox.innerHTML = entries.map((m) => {
-        const mine = m.senderUid === uid;
-        const timeLabel = m.createdAt
-          ? new Date(m.createdAt).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
-          : '';
-
-        const contentHtml = m.type === 'audio' && m.audioData
-          ? `
-            <div class="space-y-1.5">
-              <span class="text-[11px] font-semibold opacity-80 block">Spraakbericht${m.durationSec ? ` (${m.durationSec}s)` : ''}</span>
-              <audio controls preload="metadata" src="${m.audioData}" class="max-w-full h-9"></audio>
-            </div>
-          `
-          : `<p class="text-sm break-words">${escapeHtml(m.text || '')}</p>`;
-
-        return `
-          <div class="flex flex-col ${mine ? 'items-end' : 'items-start'}">
-            <div class="max-w-[82%] rounded-2xl px-4 py-2.5 ${
-              mine
-                ? 'bg-blue-600 text-white rounded-br-sm'
-                : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-bl-sm'
-            }">
-              <div class="flex items-center justify-between gap-3 mb-1">
-                <span class="text-[10px] font-bold opacity-80">${escapeHtml(m.senderEmail || 'Gebruiker')}</span>
-                <span class="text-[10px] opacity-70 tabular-nums">${timeLabel}</span>
-              </div>
-              ${contentHtml}
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
-    }
-
-    chatSendForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!uid) return;
-      const text = chatMessageInput.value.trim();
-      if (!text) return;
-
-      const path = getChatPath();
-      if (!path) {
-        showIncomingToast('Let op', 'Vul eerst een ontvanger in.');
-        return;
-      }
-
-      chatMessageInput.value = '';
-      await push(ref(db, path), {
-        type: 'text',
-        text,
-        senderUid: uid,
-        senderEmail: userEmail || 'Gebruiker',
-        createdAt: Date.now()
-      });
-    });
-
-    const voiceRecordBtn = document.getElementById('voice-record-btn');
-    const voiceRecordLabel = document.getElementById('voice-record-label');
-    const voiceStatusBar = document.getElementById('voice-status-bar');
-    const voiceStatusText = document.getElementById('voice-status-text');
-    const cancelRecordBtn = document.getElementById('cancel-record-btn');
-
-    let mediaRecorder = null;
-    let audioChunks = [];
-    let recordStartMs = 0;
-    let recordTimerInterval = null;
-    let discardRecording = false;
-
-    function stopVoiceRecording(discard = false) {
-      discardRecording = discard;
-      if (recordTimerInterval) {
-        clearInterval(recordTimerInterval);
-        recordTimerInterval = null;
-      }
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-      }
-      if (mediaRecorder && mediaRecorder.stream) {
-        mediaRecorder.stream.getTracks().forEach((t) => t.stop());
-      }
-      voiceStatusBar.classList.add('hidden');
-      voiceRecordLabel.textContent = 'Spraakbericht';
-      voiceRecordBtn.classList.remove('bg-amber-600', 'hover:bg-amber-700');
-      voiceRecordBtn.classList.add('bg-rose-600', 'hover:bg-rose-700');
-    }
-
-    cancelRecordBtn.addEventListener('click', () => stopVoiceRecording(true));
-
-    voiceRecordBtn.addEventListener('click', async () => {
-      if (!uid) return;
-      const path = getChatPath();
-      if (!path) {
-        showIncomingToast('Let op', 'Vul eerst een ontvanger in.');
-        return;
-      }
-
-      if (mediaRecorder && mediaRecorder.state === 'recording') {
-        stopVoiceRecording(false);
-        return;
-      }
-
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showIncomingToast('Microfoon', 'Spraakopname wordt in deze browser niet ondersteund.');
-        return;
-      }
-
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioChunks = [];
-        discardRecording = false;
-        recordStartMs = Date.now();
-
-        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-          ? 'audio/webm;codecs=opus'
-          : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '');
-
-        mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
-
-        mediaRecorder.ondataavailable = (ev) => {
-          if (ev.data && ev.data.size > 0) audioChunks.push(ev.data);
-        };
-
-        mediaRecorder.onstop = async () => {
-          const durationSec = Math.max(1, Math.round((Date.now() - recordStartMs) / 1000));
-          if (discardRecording || audioChunks.length === 0) return;
-
-          const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
-          const reader = new FileReader();
-          reader.onloadend = async () => {
-            const base64Audio = reader.result;
-            if (typeof base64Audio === 'string' && base64Audio.length < 7500000) {
-              await push(ref(db, path), {
-                type: 'audio',
-                audioData: base64Audio,
-                durationSec,
-                senderUid: uid,
-                senderEmail: userEmail || 'Gebruiker',
-                createdAt: Date.now()
-              });
-            } else {
-              showIncomingToast('Spraakbericht', 'Opname was te lang voor directe verzending. Houd het kort.');
-            }
-          };
-          reader.readAsDataURL(blob);
-        };
-
-        mediaRecorder.start();
-        voiceStatusBar.classList.remove('hidden');
-        voiceStatusText.textContent = 'Opnemen... (0s) — klik nogmaals op Spraakbericht om te versturen';
-        voiceRecordLabel.textContent = 'Stop & verstuur';
-        voiceRecordBtn.classList.remove('bg-rose-600', 'hover:bg-rose-700');
-        voiceRecordBtn.classList.add('bg-amber-600', 'hover:bg-amber-700');
-
-        recordTimerInterval = setInterval(() => {
-          const sec = Math.round((Date.now() - recordStartMs) / 1000);
-          voiceStatusText.textContent = `Opnemen... (${sec}s) — klik nogmaals op Spraakbericht om te versturen`;
-        }, 500);
-      } catch {
-        showIncomingToast('Microfoon', 'Geen toegang tot microfoon.');
-      }
-    });
-
-    const dictateBtn = document.getElementById('dictate-btn');
-    const dictateLabel = document.getElementById('dictate-label');
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
-    let isDictating = false;
-
-    function stopDictation() {
-      isDictating = false;
-      if (recognition) {
-        try { recognition.stop(); } catch {}
-        recognition = null;
-      }
-      dictateLabel.textContent = 'Dicteer';
-    }
-
-    dictateBtn.addEventListener('click', () => {
-      if (!SpeechRecognition) {
-        showIncomingToast('Dicteren', 'Dicteren wordt niet ondersteund in deze browser.');
-        return;
-      }
-      if (isDictating) {
-        stopDictation();
-        return;
-      }
-
-      recognition = new SpeechRecognition();
-      recognition.lang = 'nl-NL';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      isDictating = true;
-      dictateLabel.textContent = 'Luistert...';
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        chatMessageInput.value = chatMessageInput.value
-          ? `${chatMessageInput.value} ${transcript}`
-          : transcript;
-        chatMessageInput.focus();
-      };
-
-      recognition.onerror = () => stopDictation();
-      recognition.onend = () => stopDictation();
-
-      try {
-        recognition.start();
-      } catch {
-        stopDictation();
-      }
-    });
-
-    // ---------------------------------------------------------
-    // AUTHENTICATIE STATE LISTENER
-    // ---------------------------------------------------------
     onAuthStateChanged(auth, (user) => {
       if (user) {
         uid = user.uid;
-        userEmail = user.email || 'Ingelogde gebruiker';
-        document.getElementById('user-email-label').textContent = userEmail;
-
+        userEmail = user.email || '';
+        document.getElementById('user-email-label').textContent = userEmail || uid;
         loginScreen.classList.add('hidden');
         appShell.classList.remove('hidden');
 
-        startSharedSync(uid);
-        subscribeToChat();
-        renderAll();
-
-        const savedPin = localStorage.getItem(getDevicePinKey());
-        if (savedPin || isLockedLocal) {
-          isLockedLocal = true;
-          openPinModal('unlock');
+        if (!document.getElementById('dialyse-afspraak').value) {
+          document.getElementById('dialyse-afspraak').value = currentDateTimeLocal();
         }
+        if (!document.getElementById('vital-tijd-input').value) {
+          document.getElementById('vital-tijd-input').value = currentHHMM();
+        }
+
+        syncRitFormMode();
+        updateDialyseRepeatUI();
+        syncDialyseTimesFromAfspraak(true);
+        openPinModal(false);
+
+        if (dbUnsub) dbUnsub();
+        dbUnsub = onValue(sharedDataRef(), (snap) => {
+          document.getElementById('rt-status-label').textContent = 'Realtime verbonden';
+          const remote = snap.val();
+          if (remote && typeof remote === 'object') {
+            sharedData = {
+              ...sharedData,
+              ...remote,
+              vochtEntries: Array.isArray(remote.vochtEntries) ? remote.vochtEntries : [],
+              vochtProducts: Array.isArray(remote.vochtProducts) && remote.vochtProducts.length > 0
+                ? remote.vochtProducts
+                : sharedData.vochtProducts,
+              vochtAmounts: Array.isArray(remote.vochtAmounts) && remote.vochtAmounts.length > 0
+                ? remote.vochtAmounts
+                : sharedData.vochtAmounts,
+              dialyseSessies: Array.isArray(remote.dialyseSessies) ? remote.dialyseSessies : [],
+              verplegingOptions: Array.isArray(remote.verplegingOptions) ? remote.verplegingOptions : [],
+              firmaOptions: Array.isArray(remote.firmaOptions) ? remote.firmaOptions : [],
+              vanOptions: Array.isArray(remote.vanOptions) ? remote.vanOptions : [],
+              naarOptions: Array.isArray(remote.naarOptions) ? remote.naarOptions : [],
+              ritten: Array.isArray(remote.ritten) ? remote.ritten : [],
+              briefFolders: Array.isArray(remote.briefFolders) && remote.briefFolders.length > 0
+                ? remote.briefFolders
+                : sharedData.briefFolders,
+              brieven: Array.isArray(remote.brieven) ? remote.brieven : [],
+              pdfDocs: Array.isArray(remote.pdfDocs) ? remote.pdfDocs : []
+            };
+          }
+          renderAll();
+        }, () => {
+          document.getElementById('rt-status-label').textContent = 'Verbindingsfout';
+        });
+
+        subscribeToChat();
       } else {
         uid = null;
         userEmail = '';
-        loginScreen.classList.remove('hidden');
+        closePinModal();
+        if (dbUnsub) {
+          dbUnsub();
+          dbUnsub = null;
+        }
+        if (chatUnsub) {
+          chatUnsub();
+          chatUnsub = null;
+        }
         appShell.classList.add('hidden');
-        pinModal.classList.add('hidden');
+        loginScreen.classList.remove('hidden');
       }
     });
-
-    function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
-    syncRitFormMode();
-    updateDialyseRepeatUI();
-    renderVerplegingMultiSelect();
-    renderDraftVitalsUI();
-    renderBriefDraftAttachments();
   </script>
 </body>
 </html>
