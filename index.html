@@ -338,7 +338,7 @@
                   <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Producttegels (klik om te kiezen, × om te verwijderen)</label>
                   <div id="pos-drink-buttons" class="flex flex-wrap gap-2"></div>
                   <form id="add-drink-tile-form" class="flex gap-2 pt-1">
-                    <input id="new-drink-tile-input" type="text" required placeholder="Nieuwe producttegel (bijv. Melk, Koffiebeker)"
+                    <input id="new-drink-tile-input" type="text" required placeholder="Nieuwe producttegel..."
                       class="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
                     <button type="submit"
                       class="px-3.5 py-1.5 rounded-xl bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 text-white text-xs font-bold cursor-pointer shrink-0">
@@ -351,7 +351,7 @@
                   <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hoeveelheidtegels in ml (klik om direct toe te voegen, × om te verwijderen)</label>
                   <div id="pos-ml-buttons" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
                   <form id="add-ml-tile-form" class="flex gap-2 pt-1">
-                    <input id="new-ml-tile-input" type="number" min="1" max="5000" required placeholder="Nieuwe ml-tegel (bijv. 125)"
+                    <input id="new-ml-tile-input" type="number" min="1" max="5000" required placeholder="Nieuwe ml-tegel..."
                       class="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs tabular-nums" />
                     <button type="submit"
                       class="px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold cursor-pointer shrink-0">
@@ -435,7 +435,7 @@
                 <div class="flex items-center gap-2">
                   <button type="button" data-open-tab="instellingen"
                     class="open-tab-link px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold cursor-pointer">
-                    Lijsten bewerken
+                    Lijsten in Instellingen
                   </button>
                   <button type="button" data-open-tab="start"
                     class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
@@ -512,7 +512,7 @@
                 <!-- Opmerking -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Opmerking</label>
-                  <input id="rit-opmerking" type="text" placeholder="Bijv. Rolstoel / wachttijd"
+                  <input id="rit-opmerking" type="text" placeholder="Opmerking..."
                     class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
                 </div>
 
@@ -568,13 +568,13 @@
           </div>
 
           <!-- ===================================================== -->
-          <!-- INSTELLINGEN-MODULE (VOCHTLIMIETEN + DROPDOWNLIJSTEN)   -->
+          <!-- INSTELLINGEN-MODULE (OVERALL IN FIREBASE)             -->
           <!-- ===================================================== -->
           <div id="instellingen-view" class="hidden space-y-5">
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-6">
               <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div>
-                  <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Instellingen</span>
+                  <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Instellingen (Firebase)</span>
                   <h3 class="text-lg font-bold text-slate-900 dark:text-white">Limieten en dropdown-opties</h3>
                 </div>
                 <button type="button" data-open-tab="start"
@@ -606,7 +606,7 @@
                 <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
                   <h5 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Firma dropdown</h5>
                   <form id="add-firma-form" class="flex gap-1.5">
-                    <input id="new-firma-input" type="text" required placeholder="Nieuwe firma..."
+                    <input id="new-firma-input" type="text" required placeholder="Firma toevoegen..."
                       class="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs" />
                     <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold cursor-pointer">+</button>
                   </form>
@@ -617,7 +617,7 @@
                 <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
                   <h5 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Van dropdown</h5>
                   <form id="add-van-form" class="flex gap-1.5">
-                    <input id="new-van-input" type="text" required placeholder="Nieuwe vertreklocatie..."
+                    <input id="new-van-input" type="text" required placeholder="Van toevoegen..."
                       class="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs" />
                     <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold cursor-pointer">+</button>
                   </form>
@@ -628,7 +628,7 @@
                 <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
                   <h5 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Naar dropdown</h5>
                   <form id="add-naar-form" class="flex gap-1.5">
-                    <input id="new-naar-input" type="text" required placeholder="Nieuwe bestemming..."
+                    <input id="new-naar-input" type="text" required placeholder="Naar toevoegen..."
                       class="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs" />
                     <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold cursor-pointer">+</button>
                   </form>
@@ -840,9 +840,9 @@
       vochtAmounts: [100, 150, 200, 250, 330, 500],
       vochtLimit24: 1500,
       vochtLimit48: 3000,
-      firmaOptions: ['Ziekenhuisvervoer', 'Regiotaxi', 'Eigen vervoer'],
-      vanOptions: ['Thuis', 'Dialysecentrum', 'Ziekenhuis'],
-      naarOptions: ['Dialysecentrum', 'Thuis', 'Ziekenhuis'],
+      firmaOptions: [],
+      vanOptions: [],
+      naarOptions: [],
       ritten: [],
       dialyseStatus: 'Geen sessie',
       dialyseSub: 'Klaar voor planning',
@@ -949,7 +949,7 @@
     }
 
     // ---------------------------------------------------------
-    // INSTELLINGEN (VOCHTLIMIETEN + FIRMA / VAN / NAAR LIJSTEN)
+    // INSTELLINGEN (OVERALL IN FIREBASE)
     // ---------------------------------------------------------
     function addOptionToList(fieldKey, rawVal) {
       const val = String(rawVal || '').trim();
@@ -1140,7 +1140,6 @@
         const [ey, em, ed] = einddatumStr.split('-').map(Number);
         endDate = new Date(ey, em - 1, ed);
       } else {
-        // Einde van de huidige maand
         endDate = new Date(sy, sm, 0);
       }
 
@@ -1153,7 +1152,7 @@
       let dayStep = 0;
 
       while (cur <= endDate && dates.length < 120) {
-        const dow = cur.getDay(); // 0=zo, 1=ma, 2=di, 3=wo, 4=do, 5=vr, 6=za
+        const dow = cur.getDay();
         let match = false;
 
         if (herhaling === 'Elkedag') {
@@ -1787,7 +1786,7 @@
       if (!el) return;
       const opts = Array.isArray(list) ? list : [];
       if (opts.length === 0) {
-        el.innerHTML = `<p class="text-slate-400 py-2">Geen items</p>`;
+        el.innerHTML = `<p class="text-slate-400 py-2">Nog geen items toegevoegd</p>`;
         return;
       }
       el.innerHTML = opts.map((item) => `
@@ -1825,7 +1824,7 @@
           : 'nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between';
       });
 
-      // Dropdowns & instellingenlijsten
+      // Dropdowns & instellingenlijsten vanuit Firebase
       fillSelectOptions('rit-firma', sharedData.firmaOptions);
       fillSelectOptions('rit-van', sharedData.vanOptions);
       fillSelectOptions('rit-naar', sharedData.naarOptions);
@@ -2136,7 +2135,14 @@
       dbUnsub = onValue(dataRef, (snap) => {
         document.getElementById('rt-status-label').textContent = 'Realtime live';
         if (snap.exists()) {
-          sharedData = { ...sharedData, ...snap.val() };
+          const val = snap.val();
+          sharedData = {
+            ...sharedData,
+            ...val,
+            firmaOptions: Array.isArray(val.firmaOptions) ? val.firmaOptions : [],
+            vanOptions: Array.isArray(val.vanOptions) ? val.vanOptions : [],
+            naarOptions: Array.isArray(val.naarOptions) ? val.naarOptions : []
+          };
         }
         renderAll();
       }, () => {
