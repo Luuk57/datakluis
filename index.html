@@ -77,8 +77,8 @@
         </div>
 
         <nav class="space-y-1.5" id="menu-buttons">
-          <button data-tab="start" class="menu-btn w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium bg-blue-600 text-white cursor-pointer">Start</button>
-          <button data-tab="vochtintake" class="menu-btn w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Vochtintake</button>
+          <button data-tab="start" class="menu-btn w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Start</button>
+          <button data-tab="vochtintake" class="menu-btn w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium bg-blue-600 text-white cursor-pointer">Vochtintake</button>
           <button data-tab="ritten" class="menu-btn w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Ritten</button>
           <button data-tab="dialyse" class="menu-btn w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Dialyse</button>
           <button data-tab="brieven" class="menu-btn w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Brieven</button>
@@ -97,10 +97,8 @@
     <!-- Rechter kolom: Bovenbalk + Werkruimte -->
     <div class="flex-1 flex flex-col min-w-0">
 
-      <!-- BOVENBALK: Live datum/tijd + Volledig beeld + Pincode slot + Uitloggen -->
+      <!-- BOVENBALK -->
       <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
-        
-        <!-- Live Tijd & Datum -->
         <div class="flex items-center gap-3">
           <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
           <div>
@@ -110,9 +108,7 @@
           </div>
         </div>
 
-        <!-- Actieknoppen rechtsboven -->
         <div class="flex items-center gap-2">
-          <!-- Volledig beeld knop -->
           <button id="fullscreen-btn" type="button" title="Volledig beeld"
             class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-medium flex items-center gap-1.5 transition cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -121,7 +117,6 @@
             <span id="fullscreen-label">Volledig beeld</span>
           </button>
 
-          <!-- Vergrendel met pincode knop -->
           <button id="lock-btn" type="button" title="Scherm vergrendelen met pincode"
             class="px-3 py-2 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-medium flex items-center gap-1.5 transition cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -130,7 +125,6 @@
             <span>Vergrendel</span>
           </button>
 
-          <!-- Uitloggen knop -->
           <button id="logout-btn-header" type="button" title="Uitloggen"
             class="px-3 py-2 rounded-lg border border-red-200 bg-red-50 hover:bg-red-600 text-red-700 hover:text-white text-xs font-medium flex items-center gap-1.5 transition cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -142,12 +136,185 @@
       </header>
 
       <!-- Hoofdinhoud -->
-      <main class="flex-1 p-6 md:p-10">
-        <div class="max-w-4xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+      <main class="flex-1 p-4 md:p-8">
+
+        <!-- OVERIGE TABS (Start, Ritten, Dialyse, Brieven, Agenda) -->
+        <div id="other-tab-view" class="hidden max-w-5xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
           <h2 id="page-title" class="text-2xl font-bold text-slate-900">Start</h2>
           <p id="page-description" class="text-slate-600 mt-2">
-            Welkom bij DataPoortalen. Kies links een onderdeel. Ritten en Dialyse koppelen we straks automatisch aan de Agenda.
+            Welkom bij DataPoortalen. Kies links een onderdeel.
           </p>
+        </div>
+
+        <!-- MODULE: VOCHTINTAKE -->
+        <div id="vochtintake-view" class="max-w-6xl mx-auto space-y-6">
+
+          <!-- 1. PROGRESS BARS: 24 UUR & 48 UUR (TUSSEN DIALYSES) -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Vochtmonitor</span>
+                <h2 class="text-xl font-bold text-slate-900">Vochtintake — 24u &amp; 48u tussen dialyses</h2>
+              </div>
+
+              <!-- Limieten instellen -->
+              <div class="flex flex-wrap items-center gap-3 text-xs bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+                <label class="flex items-center gap-1.5 font-medium text-slate-700">
+                  <span>Limiet 24u (ml):</span>
+                  <input id="limit-24h-input" type="number" min="100" step="50" value="1500"
+                    class="w-20 px-2 py-1 rounded-lg border border-slate-300 bg-white font-semibold text-slate-900" />
+                </label>
+                <label class="flex items-center gap-1.5 font-medium text-slate-700">
+                  <span>Limiet 48u (ml):</span>
+                  <input id="limit-48h-input" type="number" min="100" step="50" value="3000"
+                    class="w-20 px-2 py-1 rounded-lg border border-slate-300 bg-white font-semibold text-slate-900" />
+                </label>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Progress 24 uur -->
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="flex items-baseline justify-between mb-2">
+                  <span class="text-sm font-bold text-slate-800">Laatste 24 uur</span>
+                  <span id="stats-24h" class="text-sm font-bold text-slate-900 tabular-nums">0 / 1500 ml (0%)</span>
+                </div>
+                <div class="w-full h-4 bg-slate-200 rounded-full overflow-hidden">
+                  <div id="bar-24h" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <p id="remain-24h" class="text-xs text-slate-500 mt-2">Nog 1500 ml beschikbaar binnen 24 uur.</p>
+              </div>
+
+              <!-- Progress 48 uur (tussen dialyses) -->
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="flex items-baseline justify-between mb-2">
+                  <span class="text-sm font-bold text-slate-800">Laatste 48 uur (tussen dialyses)</span>
+                  <span id="stats-48h" class="text-sm font-bold text-slate-900 tabular-nums">0 / 3000 ml (0%)</span>
+                </div>
+                <div class="w-full h-4 bg-slate-200 rounded-full overflow-hidden">
+                  <div id="bar-48h" class="h-full bg-blue-600 transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <p id="remain-48h" class="text-xs text-slate-500 mt-2">Nog 3000 ml beschikbaar over 48 uur.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. SNEL TOEVOEGEN: PRODUCT-TEGELS & HOEVEELHEID-TEGELS -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Linker deel: Product-tegels (7 kolommen) -->
+            <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <div>
+                  <h3 class="text-base font-bold text-slate-900">1. Kies een product-tegel</h3>
+                  <p class="text-xs text-slate-500">Eigen producten gelden alleen op jouw account.</p>
+                </div>
+                <button id="toggle-add-product-btn" type="button"
+                  class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition cursor-pointer">
+                  + Product / Bibliotheek
+                </button>
+              </div>
+
+              <!-- Paneel voor nieuw product + drink-afbeeldingen bibliotheek -->
+              <div id="add-product-panel" class="hidden mb-5 p-4 rounded-xl bg-blue-50/70 border border-blue-200 space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase tracking-wider text-blue-800">Nieuwe product-tegel maken</span>
+                  <button id="close-add-product-btn" type="button" class="text-xs text-slate-500 hover:text-slate-800 cursor-pointer">Sluiten</button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div class="sm:col-span-2">
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Productnaam</label>
+                    <input id="new-product-name" type="text" placeholder="Bijv. Zwarte koffie of Appeldrank"
+                      class="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-sm" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Standaard ml (optioneel)</label>
+                    <input id="new-product-ml" type="number" min="10" step="10" placeholder="200"
+                      class="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-sm" />
+                  </div>
+                </div>
+
+                <!-- Bibliotheek met afbeeldingen van allerlei soorten drinken -->
+                <div>
+                  <p class="text-xs font-semibold text-slate-700 mb-2">Kies een afbeelding uit de drink-bibliotheek:</p>
+                  <div id="drink-library-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-48 overflow-y-auto p-1"></div>
+                </div>
+
+                <button id="save-new-product-btn" type="button"
+                  class="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition cursor-pointer">
+                  Product-tegel opslaan in mijn account
+                </button>
+              </div>
+
+              <!-- Grid met actieve product-tegels -->
+              <div id="product-tiles-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+            </div>
+
+            <!-- Rechter deel: Vaste hoeveelheid-tegels & Direct boeken (5 kolommen) -->
+            <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between space-y-6">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-1">
+                  <h3 class="text-base font-bold text-slate-900">2. Vaste hoeveelheid-tegels</h3>
+                  <span class="text-[11px] font-medium text-slate-400">Alleen jouw account</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-4">Klik op een hoeveelheid om direct te boeken, of maak eigen ml-tegels.</p>
+
+                <!-- Geselecteerd product tonen -->
+                <div class="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                  <div class="flex items-center gap-2.5 min-w-0">
+                    <span id="selected-product-icon" class="text-xl shrink-0">💧</span>
+                    <div class="truncate">
+                      <span class="text-[10px] uppercase font-bold text-slate-400 block">Gekozen product</span>
+                      <span id="selected-product-label" class="text-sm font-bold text-slate-900 truncate">Water</span>
+                    </div>
+                  </div>
+                  <span class="text-[11px] px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-medium shrink-0">Actief</span>
+                </div>
+
+                <!-- Vaste hoeveelheid-tegels -->
+                <div id="amount-tiles-grid" class="grid grid-cols-3 gap-2.5 mb-4"></div>
+
+                <!-- Nieuwe vaste hoeveelheid-tegel toevoegen -->
+                <div class="flex gap-2">
+                  <input id="new-amount-ml" type="number" min="5" step="5" placeholder="Nieuwe ml (bijv. 125)"
+                    class="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                  <button id="add-amount-tile-btn" type="button"
+                    class="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium transition cursor-pointer shrink-0">
+                    + Tegel
+                  </button>
+                </div>
+              </div>
+
+              <!-- Handmatige ml invoer -->
+              <div class="pt-4 border-t border-slate-100">
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Of vul een exacte hoeveelheid in (ml)</label>
+                <div class="flex gap-2">
+                  <input id="custom-intake-ml" type="number" min="1" step="1" placeholder="Bijv. 180 ml"
+                    class="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
+                  <button id="log-custom-ml-btn" type="button"
+                    class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition cursor-pointer shrink-0">
+                    Toevoegen
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. LOGBOEK LAATSTE 48 UUR -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-base font-bold text-slate-900">Innames (laatste 48 uur)</h3>
+                <p class="text-xs text-slate-500">Alle geregistreerde vochtinnames op jouw account.</p>
+              </div>
+            </div>
+
+            <div id="intake-log-list" class="divide-y divide-slate-100 text-sm">
+              <p class="text-slate-400 py-4 text-center">Nog geen vochtinnames geregistreerd.</p>
+            </div>
+          </div>
+
         </div>
       </main>
     </div>
@@ -173,7 +340,6 @@
         <input id="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required
           placeholder="••••"
           class="w-full text-center text-2xl tracking-[0.6em] font-bold py-3 px-4 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-        
         <button id="pin-submit-btn" type="submit"
           class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition cursor-pointer">
           Ontgrendelen
@@ -192,7 +358,7 @@
   </div>
 
   <!-- ========================================================= -->
-  <!-- BLOK D: DE WERKING (Firebase, Tijd, Fullscreen, Pincode)  -->
+  <!-- BLOK D: DE WERKING (Auth, Tijd, Pincode & Vochtintake)   -->
   <!-- ========================================================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -227,19 +393,12 @@
     // ---------------------------------------------------------
     function updateClock() {
       const now = new Date();
-      const timeStr = now.toLocaleTimeString('nl-NL', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
+      document.getElementById('live-time').textContent = now.toLocaleTimeString('nl-NL', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
       });
-      const dateStr = now.toLocaleDateString('nl-NL', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
+      document.getElementById('live-date').textContent = now.toLocaleDateString('nl-NL', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
       });
-      document.getElementById('live-time').textContent = timeStr;
-      document.getElementById('live-date').textContent = dateStr;
     }
     updateClock();
     setInterval(updateClock, 1000);
@@ -259,9 +418,7 @@
     });
 
     document.addEventListener('fullscreenchange', () => {
-      fullscreenLabel.textContent = document.fullscreenElement
-        ? 'Normaal beeld'
-        : 'Volledig beeld';
+      fullscreenLabel.textContent = document.fullscreenElement ? 'Normaal beeld' : 'Volledig beeld';
     });
 
     // ---------------------------------------------------------
@@ -302,7 +459,6 @@
     }
 
     document.getElementById('lock-btn').addEventListener('click', () => openLockScreen(false));
-
     document.getElementById('reset-pin-btn').addEventListener('click', () => {
       localStorage.removeItem(getPinStorageKey());
       openLockScreen(true);
@@ -339,7 +495,406 @@
     });
 
     // ---------------------------------------------------------
-    // 4. INLOGGEN & UITLOGGEN (FIREBASE)
+    // 4. BIBLIOTHEEK MET AFBEELDINGEN VAN ALLERLEI SOORTEN DRINKEN
+    // ---------------------------------------------------------
+    const DRINK_LIBRARY = [
+      { id: 'water', label: 'Water', bg: 'bg-sky-50', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><path d="M32 8C32 8 14 29 14 41C14 50.94 22.06 59 32 59C41.94 59 50 50.94 50 41C50 29 32 8 32 8Z" fill="#0ea5e9"/><path d="M23 41C23 36 26 32 28 30" stroke="#bae6fd" stroke-width="3" stroke-linecap="round"/></svg>` },
+      { id: 'koffie', label: 'Koffie', bg: 'bg-amber-50', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><rect x="12" y="22" width="32" height="28" rx="6" fill="#78350f"/><path d="M44 27H50C53.3 27 56 29.7 56 33V36C56 39.3 53.3 42 50 42H44" stroke="#78350f" stroke-width="4" fill="none"/><rect x="10" y="52" width="36" height="4" rx="2" fill="#d97706"/><path d="M22 15C22 12 25 11 25 8M32 15C32 12 35 11 35 8" stroke="#a8a29e" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>` },
+      { id: 'thee', label: 'Thee', bg: 'bg-emerald-50', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><path d="M14 26H46V42C46 49.7 39.7 56 32 56H28C20.3 56 14 49.7 14 42V26Z" fill="#10b981"/><path d="M46 30H51C53.8 30 56 32.2 56 35V38C56 40.8 53.8 43 51 43H46" stroke="#059669" stroke-width="3.5" fill="none"/><line x1="30" y1="26" x2="30" y2="14" stroke="#64748b" stroke-width="2"/><rect x="25" y="10" width="10" height="8" rx="1.5" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/></svg>` },
+      { id: 'sap', label: 'Vruchtensap', bg: 'bg-orange-50', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><polygon points="18,16 46,16 41,54 23,54" fill="#fb923c"/><polygon points="20,24 44,24 40,52 24,52" fill="#facc15"/><line x1="38" y1="16" x2="46" y2="7" stroke="#16a34a" stroke-width="3.5" stroke-linecap="round"/></svg>` },
+      { id: 'melk', label: 'Melk / Zuivel', bg: 'bg-indigo-50', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><polygon points="20,18 44,18 48,54 16,54" fill="#ffffff" stroke="#94a3b8" stroke-width="2.5"/><rect x="18" y="28" width="28" height="14" fill="#bfdbfe"/><path d="M25 18L30 10H34L39 18" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/></svg>` },
+      { id: 'frisdrank', label: 'Frisdrank', bg: 'bg-rose-50', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><rect x="19" y="14" width="26" height="40" rx="6" fill="#e11d48"/><rect x="19" y="24" width="26" height="16" fill="#fda4af" opacity="0.4"/><circle cx="28" cy="19" r="2" fill="#fff"/><circle cx="36" cy="21" r="1.5" fill="#fff"/></svg>` },
+      { id: 'limonade', label: 'Limonade', bg: 'bg-lime-50', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><rect x="18" y="16" width="28" height="38" rx="5" fill="#ecfccb" stroke="#65a30d" stroke-width="2.5"/><rect x="20" y="26" width="24" height="26" rx="3" fill="#a3e635" opacity="0.65"/><circle cx="38" cy="22" r="7" fill="#fde047" stroke="#eab308" stroke-width="2"/></svg>` },
+      { id: 'soep', label: 'Soep / Bouillon', bg: 'bg-yellow-50', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><path d="M12 32H52C52 44.2 43.1 52 32 52C20.9 52 12 44.2 12 32Z" fill="#ea580c"/><ellipse cx="32" cy="32" rx="20" ry="5" fill="#fbbf24"/><path d="M24 22C24 19 26 18 26 15M32 22C32 19 34 18 34 15M40 22C40 19 42 18 42 15" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>` },
+      { id: 'ijswater', label: 'Koud water / IJs', bg: 'bg-cyan-50', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><rect x="18" y="14" width="28" height="40" rx="4" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.5"/><rect x="23" y="22" width="10" height="10" rx="2" fill="#7dd3fc" transform="rotate(-10 28 27)"/><rect x="31" y="28" width="10" height="10" rx="2" fill="#38bdf8" transform="rotate(12 36 33)"/></svg>` },
+      { id: 'sportdrank', label: 'Sport / ORS', bg: 'bg-teal-50', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><path d="M22 22H42L45 54H19L22 22Z" fill="#14b8a6"/><rect x="26" y="12" width="12" height="10" rx="2" fill="#0f766e"/><path d="M27 12L32 6L37 12" fill="#2dd4bf"/></svg>` },
+      { id: 'chocolademelk', label: 'Chocolademelk', bg: 'bg-stone-100', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><rect x="15" y="22" width="30" height="30" rx="7" fill="#451a03"/><path d="M45 27H50C52.8 27 55 29.2 55 32V36C55 38.8 52.8 41 50 41H45" stroke="#451a03" stroke-width="4" fill="none"/><path d="M18 23C18 18 24 16 30 18C36 16 42 18 42 23Z" fill="#f8fafc"/></svg>` },
+      { id: 'smoothie', label: 'Smoothie / Shake', bg: 'bg-purple-50', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><polygon points="19,20 45,20 41,54 23,54" fill="#c084fc"/><line x1="34" y1="20" x2="43" y2="7" stroke="#9333ea" stroke-width="3.5" stroke-linecap="round"/><circle cx="32" cy="18" r="5" fill="#f472b6"/></svg>` }
+    ];
+
+    const DEFAULT_PRODUCTS = [
+      { id: 'p_water', name: 'Water', iconId: 'water', defaultMl: 200 },
+      { id: 'p_koffie', name: 'Koffie', iconId: 'koffie', defaultMl: 150 },
+      { id: 'p_thee', name: 'Thee', iconId: 'thee', defaultMl: 200 },
+      { id: 'p_sap', name: 'Sap', iconId: 'sap', defaultMl: 150 },
+      { id: 'p_melk', name: 'Melk', iconId: 'melk', defaultMl: 150 }
+    ];
+
+    const DEFAULT_AMOUNTS = [100, 150, 200, 250];
+
+    let selectedLibraryIconId = 'water';
+    let selectedProductId = 'p_water';
+
+    // Account-specifieke opslag helper (alleen voor ingelogde gebruiker)
+    function userKey(suffix) {
+      return `datapoortalen_${currentUserUid}_${suffix}`;
+    }
+
+    function getVochtState() {
+      const defaultState = {
+        limit24h: 1500,
+        limit48h: 3000,
+        products: DEFAULT_PRODUCTS,
+        amounts: DEFAULT_AMOUNTS,
+        intakes: [] // { id, productId, productName, iconId, amountMl, timestamp }
+      };
+      try {
+        const raw = localStorage.getItem(userKey('vochtintake_v1'));
+        if (!raw) return defaultState;
+        const parsed = JSON.parse(raw);
+        return {
+          limit24h: Number(parsed.limit24h) || 1500,
+          limit48h: Number(parsed.limit48h) || 3000,
+          products: Array.isArray(parsed.products) ? parsed.products : DEFAULT_PRODUCTS,
+          amounts: Array.isArray(parsed.amounts) ? parsed.amounts : DEFAULT_AMOUNTS,
+          intakes: Array.isArray(parsed.intakes) ? parsed.intakes : []
+        };
+      } catch {
+        return defaultState;
+      }
+    }
+
+    function saveVochtState(state) {
+      localStorage.setItem(userKey('vochtintake_v1'), JSON.stringify(state));
+      renderVochtintake();
+    }
+
+    function getDrinkById(iconId) {
+      return DRINK_LIBRARY.find((d) => d.id === iconId) || DRINK_LIBRARY[0];
+    }
+
+    // Bibliotheek met afbeeldingen renderen
+    function renderDrinkLibrary() {
+      const grid = document.getElementById('drink-library-grid');
+      grid.innerHTML = DRINK_LIBRARY.map((item) => {
+        const active = item.id === selectedLibraryIconId;
+        return `
+          <button type="button" data-lib-id="${item.id}"
+            class="lib-item p-2 rounded-xl border text-center transition cursor-pointer ${
+              active
+                ? 'border-blue-600 bg-white ring-2 ring-blue-600/30'
+                : 'border-slate-200 bg-white hover:border-blue-300'
+            }">
+            <div class="${item.bg} rounded-lg py-1.5 mb-1">${item.svg}</div>
+            <span class="block text-[10px] font-semibold text-slate-700 truncate">${item.label}</span>
+          </button>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('.lib-item').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          selectedLibraryIconId = btn.getAttribute('data-lib-id');
+          const nameInput = document.getElementById('new-product-name');
+          if (!nameInput.value.trim()) {
+            const chosen = getDrinkById(selectedLibraryIconId);
+            nameInput.value = chosen.label;
+          }
+          renderDrinkLibrary();
+        });
+      });
+    }
+
+    // Vochtintake volledig renderen
+    function renderVochtintake() {
+      if (!currentUserUid) return;
+      const state = getVochtState();
+      const now = Date.now();
+      const ms24h = 24 * 60 * 60 * 1000;
+      const ms48h = 48 * 60 * 60 * 1000;
+
+      // Limiet inputs synchroniseren zonder cursor-verstoring
+      const limit24Input = document.getElementById('limit-24h-input');
+      const limit48Input = document.getElementById('limit-48h-input');
+      if (document.activeElement !== limit24Input) limit24Input.value = state.limit24h;
+      if (document.activeElement !== limit48Input) limit48Input.value = state.limit48h;
+
+      // Innames filteren op 24u en 48u
+      const intakes48h = state.intakes.filter((item) => now - item.timestamp <= ms48h);
+      const intakes24h = intakes48h.filter((item) => now - item.timestamp <= ms24h);
+
+      const total24h = intakes24h.reduce((sum, item) => sum + Number(item.amountMl), 0);
+      const total48h = intakes48h.reduce((sum, item) => sum + Number(item.amountMl), 0);
+
+      // Progress 24u
+      const pct24 = Math.min(100, Math.round((total24h / state.limit24h) * 100));
+      const bar24 = document.getElementById('bar-24h');
+      bar24.style.width = `${pct24}%`;
+      bar24.className = `h-full transition-all duration-300 ${
+        total24h > state.limit24h ? 'bg-red-600' : pct24 >= 80 ? 'bg-amber-500' : 'bg-emerald-500'
+      }`;
+      document.getElementById('stats-24h').textContent = `${total24h} / ${state.limit24h} ml (${pct24}%)`;
+      const rem24 = state.limit24h - total24h;
+      document.getElementById('remain-24h').textContent = rem24 >= 0
+        ? `Nog ${rem24} ml beschikbaar binnen 24 uur.`
+        : `Limiet met ${Math.abs(rem24)} ml overschreden in de laatste 24 uur.`;
+
+      // Progress 48u (tussen dialyses)
+      const pct48 = Math.min(100, Math.round((total48h / state.limit48h) * 100));
+      const bar48 = document.getElementById('bar-48h');
+      bar48.style.width = `${pct48}%`;
+      bar48.className = `h-full transition-all duration-300 ${
+        total48h > state.limit48h ? 'bg-red-600' : pct48 >= 80 ? 'bg-amber-500' : 'bg-blue-600'
+      }`;
+      document.getElementById('stats-48h').textContent = `${total48h} / ${state.limit48h} ml (${pct48}%)`;
+      const rem48 = state.limit48h - total48h;
+      document.getElementById('remain-48h').textContent = rem48 >= 0
+        ? `Nog ${rem48} ml beschikbaar over 48 uur (tussen dialyses).`
+        : `48u-limiet met ${Math.abs(rem48)} ml overschreden.`;
+
+      // Actief geselecteerd product bepalen
+      if (!state.products.some((p) => p.id === selectedProductId)) {
+        selectedProductId = state.products[0]?.id || null;
+      }
+      const activeProd = state.products.find((p) => p.id === selectedProductId);
+      const activeDrink = getDrinkById(activeProd?.iconId);
+      document.getElementById('selected-product-icon').innerHTML = activeDrink.svg;
+      document.getElementById('selected-product-icon').firstElementChild.className = 'w-7 h-7';
+      document.getElementById('selected-product-label').textContent = activeProd ? activeProd.name : 'Geen product';
+
+      // Product-tegels renderen (met verwijderknop)
+      const prodGrid = document.getElementById('product-tiles-grid');
+      if (state.products.length === 0) {
+        prodGrid.innerHTML = `<p class="col-span-full text-xs text-slate-400 py-4 text-center">Geen product-tegels. Klik op "+ Product / Bibliotheek" om er een te maken.</p>`;
+      } else {
+        prodGrid.innerHTML = state.products.map((prod) => {
+          const drink = getDrinkById(prod.iconId);
+          const isSelected = prod.id === selectedProductId;
+          return `
+            <div class="relative group rounded-xl border p-3 transition ${
+              isSelected
+                ? 'border-blue-600 bg-blue-50/60 ring-2 ring-blue-600/20'
+                : 'border-slate-200 bg-white hover:border-blue-300'
+            }">
+              <button type="button" data-del-prod="${prod.id}" title="Verwijder product-tegel"
+                class="del-prod-btn absolute top-2 right-2 w-6 h-6 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 flex items-center justify-center text-xs font-bold cursor-pointer">
+                ✕
+              </button>
+              <button type="button" data-select-prod="${prod.id}" class="select-prod-btn w-full text-center cursor-pointer pt-1">
+                <div class="${drink.bg} rounded-xl py-2.5 mb-2">${drink.svg}</div>
+                <span class="block text-sm font-bold text-slate-800 truncate">${escapeHtml(prod.name)}</span>
+                ${prod.defaultMl ? `<span class="block text-[11px] text-slate-500 mt-0.5">${prod.defaultMl} ml</span>` : ''}
+              </button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Events op product-tegels
+      prodGrid.querySelectorAll('.select-prod-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          selectedProductId = btn.getAttribute('data-select-prod');
+          const prod = state.products.find((p) => p.id === selectedProductId);
+          if (prod?.defaultMl) {
+            document.getElementById('custom-intake-ml').value = prod.defaultMl;
+          }
+          renderVochtintake();
+        });
+      });
+
+      prodGrid.querySelectorAll('.del-prod-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const delId = btn.getAttribute('data-del-prod');
+          const next = getVochtState();
+          next.products = next.products.filter((p) => p.id !== delId);
+          saveVochtState(next);
+        });
+      });
+
+      // Vaste hoeveelheid-tegels renderen (met verwijderknop)
+      const amtGrid = document.getElementById('amount-tiles-grid');
+      if (state.amounts.length === 0) {
+        amtGrid.innerHTML = `<p class="col-span-3 text-xs text-slate-400 py-2 text-center">Geen hoeveelheid-tegels.</p>`;
+      } else {
+        amtGrid.innerHTML = state.amounts.map((ml) => `
+          <div class="relative rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 transition">
+            <button type="button" data-del-amt="${ml}" title="Verwijder ${ml} ml tegel"
+              class="del-amt-btn absolute -top-2 -right-2 w-5 h-5 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-300 text-[10px] font-bold flex items-center justify-center shadow-sm cursor-pointer">
+              ✕
+            </button>
+            <button type="button" data-amt-ml="${ml}" class="amt-tile-btn w-full py-3 px-2 text-center cursor-pointer">
+              <span class="block text-sm font-bold text-slate-900 tabular-nums">+${ml} ml</span>
+            </button>
+          </div>
+        `).join('');
+      }
+
+      amtGrid.querySelectorAll('.amt-tile-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const ml = Number(btn.getAttribute('data-amt-ml'));
+          addIntakeEntry(ml);
+        });
+      });
+
+      amtGrid.querySelectorAll('.del-amt-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const ml = Number(btn.getAttribute('data-del-amt'));
+          const next = getVochtState();
+          next.amounts = next.amounts.filter((a) => Number(a) !== ml);
+          saveVochtState(next);
+        });
+      });
+
+      // Logboek laatste 48 uur renderen
+      const logList = document.getElementById('intake-log-list');
+      if (intakes48h.length === 0) {
+        logList.innerHTML = `<p class="text-slate-400 py-4 text-center">Nog geen vochtinnames in de laatste 48 uur.</p>`;
+      } else {
+        const sorted = [...intakes48h].sort((a, b) => b.timestamp - a.timestamp);
+        logList.innerHTML = sorted.map((entry) => {
+          const drink = getDrinkById(entry.iconId);
+          const dt = new Date(entry.timestamp);
+          const timeLabel = dt.toLocaleString('nl-NL', {
+            weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+          });
+          return `
+            <div class="py-3 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="${drink.bg} w-9 h-9 rounded-lg flex items-center justify-center shrink-0">
+                  <span class="scale-75">${drink.svg}</span>
+                </div>
+                <div class="truncate">
+                  <p class="font-semibold text-slate-900 truncate">${escapeHtml(entry.productName)}</p>
+                  <p class="text-xs text-slate-500">${timeLabel}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 shrink-0">
+                <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs tabular-nums">
+                  ${entry.amountMl} ml
+                </span>
+                <button type="button" data-del-log="${entry.id}" title="Verwijder inname"
+                  class="del-log-btn text-xs text-slate-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50 cursor-pointer">
+                  Verwijder
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        logList.querySelectorAll('.del-log-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const logId = btn.getAttribute('data-del-log');
+            const next = getVochtState();
+            next.intakes = next.intakes.filter((i) => i.id !== logId);
+            saveVochtState(next);
+          });
+        });
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function addIntakeEntry(amountMl) {
+      if (!currentUserUid) return;
+      const cleanMl = Number(amountMl);
+      if (!cleanMl || cleanMl <= 0) return;
+
+      const state = getVochtState();
+      const activeProd = state.products.find((p) => p.id === selectedProductId);
+      const productName = activeProd ? activeProd.name : 'Vocht';
+      const iconId = activeProd ? activeProd.iconId : 'water';
+
+      state.intakes.push({
+        id: `in_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        productId: activeProd?.id || 'custom',
+        productName,
+        iconId,
+        amountMl: cleanMl,
+        timestamp: Date.now()
+      });
+
+      saveVochtState(state);
+    }
+
+    // Paneel openen/sluiten voor nieuw product + bibliotheek
+    const addProductPanel = document.getElementById('add-product-panel');
+    document.getElementById('toggle-add-product-btn').addEventListener('click', () => {
+      addProductPanel.classList.toggle('hidden');
+      renderDrinkLibrary();
+    });
+    document.getElementById('close-add-product-btn').addEventListener('click', () => {
+      addProductPanel.classList.add('hidden');
+    });
+
+    // Nieuw product opslaan in eigen account
+    document.getElementById('save-new-product-btn').addEventListener('click', () => {
+      if (!currentUserUid) return;
+      const nameInput = document.getElementById('new-product-name');
+      const mlInput = document.getElementById('new-product-ml');
+      const name = nameInput.value.trim();
+      if (!name) return;
+
+      const defaultMl = mlInput.value ? Number(mlInput.value) : null;
+      const state = getVochtState();
+      const newId = `p_${Date.now()}`;
+
+      state.products.push({
+        id: newId,
+        name,
+        iconId: selectedLibraryIconId,
+        defaultMl: defaultMl && defaultMl > 0 ? defaultMl : null
+      });
+
+      selectedProductId = newId;
+      nameInput.value = '';
+      mlInput.value = '';
+      addProductPanel.classList.add('hidden');
+      saveVochtState(state);
+    });
+
+    // Nieuwe vaste hoeveelheid-tegel toevoegen
+    document.getElementById('add-amount-tile-btn').addEventListener('click', () => {
+      if (!currentUserUid) return;
+      const input = document.getElementById('new-amount-ml');
+      const ml = Number(input.value);
+      if (!ml || ml <= 0) return;
+
+      const state = getVochtState();
+      if (!state.amounts.includes(ml)) {
+        state.amounts.push(ml);
+        state.amounts.sort((a, b) => a - b);
+      }
+      input.value = '';
+      saveVochtState(state);
+    });
+
+    // Handmatige ml boeken
+    document.getElementById('log-custom-ml-btn').addEventListener('click', () => {
+      const input = document.getElementById('custom-intake-ml');
+      const ml = Number(input.value);
+      if (!ml || ml <= 0) return;
+      addIntakeEntry(ml);
+      input.value = '';
+    });
+
+    // Limieten 24u en 48u opslaan
+    document.getElementById('limit-24h-input').addEventListener('change', (e) => {
+      if (!currentUserUid) return;
+      const val = Number(e.target.value);
+      if (!val || val < 50) return;
+      const state = getVochtState();
+      state.limit24h = val;
+      saveVochtState(state);
+    });
+
+    document.getElementById('limit-48h-input').addEventListener('change', (e) => {
+      if (!currentUserUid) return;
+      const val = Number(e.target.value);
+      if (!val || val < 50) return;
+      const state = getVochtState();
+      state.limit48h = val;
+      saveVochtState(state);
+    });
+
+    // ---------------------------------------------------------
+    // 5. INLOGGEN & UITLOGGEN (FIREBASE)
     // ---------------------------------------------------------
     const loginScreen = document.getElementById('login-screen');
     const appShell = document.getElementById('app-shell');
@@ -403,6 +958,7 @@
         loginScreen.classList.add('hidden');
         appShell.classList.remove('hidden');
         document.getElementById('user-email-display').textContent = user.email;
+        renderVochtintake();
 
         if (sessionStorage.getItem('datapoortalen_locked') === 'true') {
           openLockScreen(false);
@@ -416,16 +972,19 @@
     });
 
     // ---------------------------------------------------------
-    // 5. MENU KNOPPEN
+    // 6. MENU KNOPPEN
     // ---------------------------------------------------------
     const tabTexts = {
       start: ['Start', 'Welkom bij DataPoortalen. Kies links een onderdeel.'],
-      vochtintake: ['Vochtintake', 'Hier komt straks de Vochtmonitor.'],
+      vochtintake: ['Vochtintake', 'Vochtmonitor voor 24 uur en 48 uur.'],
       ritten: ['Ritten', 'Hier voer je straks je ritten in (deze komen automatisch in de Agenda).'],
       dialyse: ['Dialyse', 'Hier voer je straks je dialyses in (deze komen automatisch in de Agenda).'],
       brieven: ['Brieven', 'Hier komt straks het overzicht van je brieven.'],
       agenda: ['Agenda', 'Hier verschijnen straks al je ritten en dialyses in één overzicht.']
     };
+
+    const vochtView = document.getElementById('vochtintake-view');
+    const otherView = document.getElementById('other-tab-view');
 
     document.querySelectorAll('.menu-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -438,8 +997,16 @@
         btn.classList.add('bg-blue-600', 'text-white');
         btn.classList.remove('text-slate-300', 'hover:bg-slate-800');
 
-        document.getElementById('page-title').textContent = tabTexts[tab][0];
-        document.getElementById('page-description').textContent = tabTexts[tab][1];
+        if (tab === 'vochtintake') {
+          otherView.classList.add('hidden');
+          vochtView.classList.remove('hidden');
+          renderVochtintake();
+        } else {
+          vochtView.classList.add('hidden');
+          otherView.classList.remove('hidden');
+          document.getElementById('page-title').textContent = tabTexts[tab][0];
+          document.getElementById('page-description').textContent = tabTexts[tab][1];
+        }
       });
     });
   </script>
