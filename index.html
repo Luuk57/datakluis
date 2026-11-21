@@ -566,7 +566,12 @@
 
             <!-- Overzicht gereden ritten -->
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
-              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Overzicht ritten</h4>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Overzicht ritten</h4>
+                <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                  Volgorde: Vandaag → Morgen → Verder oplopend
+                </span>
+              </div>
               <div id="ritten-list-container" class="space-y-2.5">
                 <p class="text-xs text-slate-400 py-4 text-center">Nog geen ritten opgeslagen.</p>
               </div>
@@ -1009,7 +1014,7 @@
     });
 
     // ---------------------------------------------------------
-    // RITTEN LOGICA (HERHALING, GELDIGHEID, BEWERKEN & TIJDKNOPPEN)
+    // RITTEN LOGICA (SLUITENDE PLANNING: VANDAAG -> MORGEN -> VERDER)
     // ---------------------------------------------------------
     const geldigTypeEl = document.getElementById('rit-geldig-type');
     const einddatumWrapEl = document.getElementById('rit-einddatum-wrap');
@@ -1128,6 +1133,80 @@
     document.getElementById('rit-start').addEventListener('change', updateRitDuurAuto);
     document.getElementById('rit-eind').addEventListener('change', updateRitDuurAuto);
 
+    function formatDateISO(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function getTodayISO() {
+      return formatDateISO(new Date());
+    }
+
+    function getTomorrowISO() {
+      const d = new Date();
+      d.setDate(d.getDate() + 1);
+      return formatDateISO(d);
+    }
+
+    function parseRitDateTimeParts(rit) {
+      const raw = String(rit.afspraak || rit.tijd || '').trim();
+      let dateISO = '';
+      let timeHHMM = '00:00';
+
+      if (raw.includes('T')) {
+        const [dPart, tPart] = raw.split('T');
+        dateISO = (dPart || '').slice(0, 10);
+        const cleanT = (tPart || '').slice(0, 5);
+        if (/^\d{2}:\d{2}$/.test(cleanT)) timeHHMM = cleanT;
+      } else if (/^\d{4}-\d{2}-\d{2}/.test(raw)) {
+        dateISO = raw.slice(0, 10);
+      }
+
+      if (!dateISO && rit.startTijd && /^\d{2}:\d{2}$/.test(rit.startTijd.slice(0, 5))) {
+        dateISO = getTodayISO();
+        timeHHMM = rit.startTijd.slice(0, 5);
+      }
+
+      return { dateISO, timeHHMM };
+    }
+
+    function getDayCategory(dateISO, todayISO, tomorrowISO) {
+      if (!dateISO) return { bucket: 3, label: 'Geen datum' };
+      if (dateISO === todayISO) return { bucket: 0, label: 'Vandaag' };
+      if (dateISO === tomorrowISO) return { bucket: 1, label: 'Morgen' };
+      if (dateISO > tomorrowISO) return { bucket: 2, label: dateISO };
+      return { bucket: 3, label: dateISO };
+    }
+
+    // Sluitende sorteerfunctie:
+    // 1. Vandaag (op afspraaktijd oplopend)
+    // 2. Morgen (op afspraaktijd oplopend)
+    // 3. Verdere dagen in de toekomst (op datum en afspraaktijd oplopend)
+    // 4. Eerdere dagen (op datum en afspraaktijd oplopend)
+    function sortRittenPlanning(rittenList) {
+      const todayISO = getTodayISO();
+      const tomorrowISO = getTomorrowISO();
+
+      return (Array.isArray(rittenList) ? [...rittenList] : [])
+        .map((rit, origIdx) => {
+          const { dateISO, timeHHMM } = parseRitDateTimeParts(rit);
+          const dayInfo = getDayCategory(dateISO, todayISO, tomorrowISO);
+          const sortKey = `${dateISO || '9999-99-99'}T${timeHHMM}`;
+          return { rit, origIdx, dateISO, timeHHMM, dayInfo, sortKey };
+        })
+        .sort((a, b) => {
+          if (a.dayInfo.bucket !== b.dayInfo.bucket) {
+            return a.dayInfo.bucket - b.dayInfo.bucket;
+          }
+          if (a.sortKey !== b.sortKey) {
+            return a.sortKey.localeCompare(b.sortKey);
+          }
+          return a.origIdx - b.origIdx;
+        });
+    }
+
     function evaluateRitPunctuality(rit) {
       const afspraakStr = rit.afspraak || '';
       const eindStr = rit.eindTijd || '';
@@ -1180,13 +1259,6 @@
       const pctLate = evaluated > 0 ? Math.round((late / evaluated) * 100) : 0;
 
       return { total: list.length, evaluated, onTime, early, late, pctOnTime, pctEarly, pctLate };
-    }
-
-    function formatDateISO(d) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
     }
 
     function generateOccurrenceDates(startDateStr, herhaling, geldigType, einddatumStr) {
@@ -1959,6 +2031,7 @@
 
       const vochtStats = computeVochtStats(sharedData.vochtEntries, sharedData.vochtLimit24, sharedData.vochtLimit48);
       const ritten = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
+      const sortedPlanning = sortRittenPlanning(ritten);
       const rittenStats = computeRittenStats(ritten);
       const brieven = Array.isArray(sharedData.brieven) ? sharedData.brieven : [];
       const dialyseStatus = sharedData.dialyseStatus || 'Geen sessie';
@@ -1969,9 +2042,9 @@
 
       document.getElementById('tile-ritten-count').textContent = `${ritten.length} ${ritten.length === 1 ? 'rit' : 'ritten'}`;
       document.getElementById('tile-ritten-ontime').textContent = `${rittenStats.pctOnTime}% op tijd`;
-      const lastRit = ritten[ritten.length - 1];
-      document.getElementById('tile-ritten-last').textContent = lastRit
-        ? `${lastRit.van || ''} → ${lastRit.naar || lastRit.titel || ''}`
+      const nextPlanned = sortedPlanning[0]?.rit;
+      document.getElementById('tile-ritten-last').textContent = nextPlanned
+        ? `${nextPlanned.van || ''} → ${nextPlanned.naar || nextPlanned.titel || ''}`
         : 'Nog geen rit';
 
       document.getElementById('tile-dialyse-status').textContent = dialyseStatus;
@@ -1982,7 +2055,7 @@
         : 'Geen brief';
 
       const agendaItems = [
-        ...ritten.map((r) => ({
+        ...sortedPlanning.map(({ rit: r }) => ({
           type: 'Rit',
           titel: r.van && r.naar ? `${r.van} → ${r.naar}${r.firma ? ` (${r.firma})` : ''}` : (r.titel || 'Rit'),
           tijd: r.afspraak ? formatAfspraakLabel(r.afspraak) : (r.tijd || 'Vandaag')
@@ -1996,7 +2069,7 @@
       if (agendaItems.length === 0) {
         agendaPreview.innerHTML = `<p class="text-slate-400 dark:text-slate-500">Nog geen agenda-items uit Ritten of Dialyse.</p>`;
       } else {
-        agendaPreview.innerHTML = agendaItems.slice(-3).reverse().map((item) => `
+        agendaPreview.innerHTML = agendaItems.slice(0, 3).map((item) => `
           <div class="flex items-center justify-between py-1 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/70">
             <span class="font-semibold text-slate-800 dark:text-slate-200 truncate">[${item.type}] ${escapeHtml(item.titel)}</span>
             <span class="text-[11px] text-slate-500 dark:text-slate-400 shrink-0 ml-2">${escapeHtml(item.tijd)}</span>
@@ -2101,17 +2174,22 @@
       document.getElementById('bar-rit-late').style.width = `${rittenStats.pctLate}%`;
 
       const rittenContainer = document.getElementById('ritten-list-container');
-      if (ritten.length === 0) {
+      if (sortedPlanning.length === 0) {
         rittenContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen ritten opgeslagen.</p>`;
       } else {
-        rittenContainer.innerHTML = [...ritten].map((r, idx) => {
-          const ritId = String(r.id || idx);
+        rittenContainer.innerHTML = sortedPlanning.map(({ rit: r, origIdx, dayInfo }) => {
+          const ritId = String(r.id || origIdx);
           const punct = evaluateRitPunctuality(r);
 
           let badgeClass = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
           if (punct.status === 'optijd') badgeClass = 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
           if (punct.status === 'tevroeg') badgeClass = 'bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300';
           if (punct.status === 'telaat') badgeClass = 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300';
+
+          let dayBadgeClass = 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
+          if (dayInfo.bucket === 0) dayBadgeClass = 'bg-emerald-600 text-white';
+          if (dayInfo.bucket === 1) dayBadgeClass = 'bg-blue-600 text-white';
+          if (dayInfo.bucket === 2) dayBadgeClass = 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300';
 
           const routeLabel = r.van && r.naar ? `${r.van} → ${r.naar}` : (r.titel || 'Rit');
           const duurLabel = r.duurMin !== null && r.duurMin !== undefined && r.duurMin !== '' ? `${r.duurMin} min` : '-';
@@ -2120,6 +2198,7 @@
             <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
               <div class="space-y-1 min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider ${dayBadgeClass}">${escapeHtml(dayInfo.label)}</span>
                   <span class="text-sm font-bold text-slate-900 dark:text-white">${escapeHtml(routeLabel)}</span>
                   <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${badgeClass}">${escapeHtml(punct.label)}</span>
                   ${r.herhaling && r.herhaling !== '1Malig' ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${escapeHtml(r.herhaling)}</span>` : ''}
