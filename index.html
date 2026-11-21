@@ -835,7 +835,41 @@
     </main>
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signInWithRedirect,
+      getRedirectResult,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      set,
+      onValue
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBzvMLTybV4bKEWRUA2WEuye4lfNeoHfew",
+      authDomain: "datakluis-695b5.firebaseapp.com",
+      databaseURL: "https://datakluis-695b5-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "datakluis-695b5",
+      storageBucket: "datakluis-695b5.firebasestorage.app",
+      messagingSenderId: "48982908762",
+      appId: "1:48982908762:web:013a61446ffc2d739f9d63"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    const googleProvider = new GoogleAuthProvider();
+
     const STORAGE_KEY = "datakluis_state_v1";
     const DRINK_OPTIONS = [
       { id: "water", name: "Water", hint: "Standaard vocht" },
@@ -853,6 +887,7 @@
     let authMode = "login";
     let selectedDrinkId = "water";
     let selectedMl = 150;
+    let activeDbUnsubscribe = null;
 
     function loadState() {
       try {
@@ -862,7 +897,6 @@
             night: false,
             activeModule: "intake",
             session: null,
-            users: {},
             dataByUser: {}
           };
         }
@@ -871,7 +905,6 @@
           night: Boolean(parsed.night),
           activeModule: parsed.activeModule === "agenda" ? "agenda" : "intake",
           session: parsed.session || null,
-          users: parsed.users || {},
           dataByUser: parsed.dataByUser || {}
         };
       } catch (_) {
@@ -879,7 +912,6 @@
           night: false,
           activeModule: "intake",
           session: null,
-          users: {},
           dataByUser: {}
         };
       }
@@ -895,19 +927,85 @@
 
     function getUserKey(session) {
       if (!session) return null;
-      return `${session.provider}:${session.email || session.id}`;
+      return session.uid || `${session.provider}:${session.email || session.id || "gast"}`;
+    }
+
+    function sanitizePathKey(key) {
+      return String(key || "gast").replace(/[.#$[\]]/g, "_");
+    }
+
+    function createDefaultUserData() {
+      return {
+        limitMode: "24h",
+        period48Start: new Date().toISOString().slice(0, 16),
+        intakeLogs: [],
+        agendaItems: []
+      };
     }
 
     function ensureUserData(key) {
       if (!state.dataByUser[key]) {
-        state.dataByUser[key] = {
-          limitMode: "24h",
-          period48Start: new Date().toISOString().slice(0, 16),
-          intakeLogs: [],
-          agendaItems: []
-        };
+        state.dataByUser[key] = createDefaultUserData();
+      } else {
+        state.dataByUser[key].intakeLogs = Array.isArray(state.dataByUser[key].intakeLogs)
+          ? state.dataByUser[key].intakeLogs
+          : [];
+        state.dataByUser[key].agendaItems = Array.isArray(state.dataByUser[key].agendaItems)
+          ? state.dataByUser[key].agendaItems
+          : [];
       }
       return state.dataByUser[key];
+    }
+
+    function syncUserDataToCloud(session, userData) {
+      if (!session || session.provider === "guest" || !session.uid) return;
+      const safeKey = sanitizePathKey(session.uid);
+      set(ref(db, `users/${safeKey}/datakluis`), {
+        limitMode: userData.limitMode || "24h",
+        period48Start: userData.period48Start || new Date().toISOString().slice(0, 16),
+        intakeLogs: userData.intakeLogs || [],
+        agendaItems: userData.agendaItems || [],
+        updatedAt: Date.now()
+      }).catch(() => {});
+    }
+
+    function attachCloudListener(session) {
+      if (activeDbUnsubscribe) {
+        activeDbUnsubscribe();
+        activeDbUnsubscribe = null;
+      }
+      if (!session || session.provider === "guest" || !session.uid) return;
+
+      const key = getUserKey(session);
+      const userData = ensureUserData(key);
+      const userRef = ref(db, `users/${sanitizePathKey(session.uid)}/datakluis`);
+
+      activeDbUnsubscribe = onValue(userRef, (snapshot) => {
+        const val = snapshot.val();
+        if (!val) {
+          syncUserDataToCloud(session, userData);
+          return;
+        }
+        state.dataByUser[key] = {
+          limitMode: val.limitMode === "48h" ? "48h" : "24h",
+          period48Start: val.period48Start || new Date().toISOString().slice(0, 16),
+          intakeLogs: Array.isArray(val.intakeLogs) ? val.intakeLogs : [],
+          agendaItems: Array.isArray(val.agendaItems) ? val.agendaItems : []
+        };
+        saveState();
+        if (state.session && getUserKey(state.session) === key) {
+          renderIntakeOverview();
+          renderAgenda();
+        }
+      }, () => {});
+    }
+
+    function persistCurrentUserData() {
+      const key = getUserKey(state.session);
+      if (!key) return;
+      const userData = ensureUserData(key);
+      saveState();
+      syncUserDataToCloud(state.session, userData);
     }
 
     function showBanner(el, message, type = "info") {
@@ -968,13 +1066,25 @@
       state.session = sessionObj;
       ensureUserData(getUserKey(sessionObj));
       saveState();
+      attachCloudListener(sessionObj);
       renderApp();
       if (welcomeText) {
         showBanner(document.getElementById("intakeFeedback"), welcomeText, "success");
       }
     }
 
-    function handleEmailAuth(e) {
+    function mapFirebaseUserToSession(fbUser) {
+      const email = fbUser.email || "";
+      const name = fbUser.displayName || (email ? email.split("@")[0] : "Gebruiker");
+      return {
+        uid: fbUser.uid,
+        email,
+        name,
+        provider: "firebase"
+      };
+    }
+
+    async function handleEmailAuth(e) {
       e.preventDefault();
       const statusEl = document.getElementById("authStatus");
       const email = document.getElementById("emailInput").value.trim().toLowerCase();
@@ -989,72 +1099,92 @@
         return;
       }
 
-      const existing = state.users[email];
+      hideBanner(statusEl);
+      try {
+        const cred = authMode === "register"
+          ? await createUserWithEmailAndPassword(auth, email, password)
+          : await signInWithEmailAndPassword(auth, email, password);
 
-      if (authMode === "register") {
-        if (existing) {
-          showBanner(statusEl, "Dit e-mailadres is al geregistreerd. Kies Inloggen.", "error");
-          return;
-        }
-        state.users[email] = {
-          email,
-          name: email.split("@")[0],
-          password
-        };
-        saveState();
+        const sess = mapFirebaseUserToSession(cred.user);
         completeLogin(
-          { id: email, email, name: email.split("@")[0], provider: "email" },
-          `Account aangemaakt en ingelogd als ${email}.`
+          sess,
+          authMode === "register"
+            ? `Account aangemaakt en ingelogd als ${sess.email}.`
+            : `Welkom terug, ${sess.email}.`
         );
-      } else {
-        if (!existing) {
-          state.users[email] = {
-            email,
-            name: email.split("@")[0],
-            password
-          };
-          saveState();
-          completeLogin(
-            { id: email, email, name: email.split("@")[0], provider: "email" },
-            `Ingelogd als ${email}.`
-          );
-          return;
+      } catch (err) {
+        const code = err && err.code ? err.code : "";
+        let msg = "Inloggen met e-mail is niet gelukt.";
+        if (code === "auth/email-already-in-use") msg = "Dit e-mailadres is al geregistreerd. Kies Inloggen.";
+        else if (code === "auth/invalid-credential" || code === "auth/wrong-password" || code === "auth/user-not-found") {
+          msg = "Ongeldig e-mailadres of wachtwoord.";
+        } else if (code === "auth/weak-password") {
+          msg = "Kies een wachtwoord van minimaal 6 tekens.";
         }
-        if (existing.password !== password) {
-          showBanner(statusEl, "Onjuist wachtwoord voor dit e-mailadres.", "error");
-          return;
-        }
-        completeLogin(
-          { id: email, email, name: existing.name || email.split("@")[0], provider: "email" },
-          `Welkom terug, ${email}.`
-        );
+        showBanner(statusEl, msg, "error");
       }
     }
 
-    function handleGoogleLogin() {
+    async function handleGoogleLogin() {
       const statusEl = document.getElementById("authStatus");
-      const enteredEmail = document.getElementById("emailInput").value.trim().toLowerCase();
-      const googleEmail = enteredEmail && enteredEmail.includes("@") ? enteredEmail : "google.gebruiker@gmail.com";
-      const displayName = googleEmail.split("@")[0];
-
-      completeLogin(
-        { id: googleEmail, email: googleEmail, name: displayName, provider: "google" },
-        `Ingelogd via Google als ${googleEmail}.`
-      );
       hideBanner(statusEl);
+
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const sess = mapFirebaseUserToSession(result.user);
+        completeLogin(
+          sess,
+          `Ingelogd met Google als ${sess.email || sess.name}.`
+        );
+      } catch (err) {
+        const code = err && err.code ? err.code : "";
+        if (code === "auth/popup-blocked" || code === "auth/operation-not-supported-in-this-environment") {
+          try {
+            showBanner(statusEl, "Omleiden naar Google-aanmelding...", "info");
+            await signInWithRedirect(auth, googleProvider);
+            return;
+          } catch (redirErr) {
+            showBanner(statusEl, `Google-inloggen lukt niet: ${redirErr.message || code}`, "error");
+            return;
+          }
+        }
+        if (code === "auth/unauthorized-domain") {
+          showBanner(
+            statusEl,
+            "Dit domein staat nog niet bij Authorized domains in Firebase Authentication.",
+            "error"
+          );
+          return;
+        }
+        if (code === "auth/popup-closed-by-user") {
+          showBanner(statusEl, "Het Google-venster is gesloten vóór het inloggen.", "info");
+          return;
+        }
+        showBanner(statusEl, `Google-inloggen mislukt (${code || "onbekende fout"}).`, "error");
+      }
     }
 
     function handleGuestLogin() {
       completeLogin(
-        { id: "gast", email: "", name: "Gast", provider: "guest" },
+        { uid: "guest_local", id: "gast", email: "", name: "Gast", provider: "guest" },
         "U bent ingelogd via Gasttoegang."
       );
     }
 
-    function handleLogout() {
+    async function handleLogout() {
+      if (activeDbUnsubscribe) {
+        activeDbUnsubscribe();
+        activeDbUnsubscribe = null;
+      }
+      const wasFirebase = state.session && state.session.provider === "firebase";
       state.session = null;
       saveState();
       renderApp();
+      if (wasFirebase) {
+        try {
+          await signOut(auth);
+        } catch (_) {}
+      }
     }
 
     /* Navigatie */
@@ -1138,7 +1268,7 @@
         timestamp: new Date().toISOString()
       });
 
-      saveState();
+      persistCurrentUserData();
       renderIntakeOverview();
       showBanner(feedbackEl, `${label} (${mlAmount} ml) toegevoegd.`, "success");
     }
@@ -1223,7 +1353,7 @@
         delBtn.textContent = "Verwijder";
         delBtn.addEventListener("click", () => {
           userData.intakeLogs = userData.intakeLogs.filter((x) => x.id !== entry.id);
-          saveState();
+          persistCurrentUserData();
           renderIntakeOverview();
         });
 
@@ -1311,7 +1441,7 @@
         delBtn.textContent = "Verwijder";
         delBtn.addEventListener("click", () => {
           userData.agendaItems = userData.agendaItems.filter((x) => x.id !== item.id);
-          saveState();
+          persistCurrentUserData();
           renderAgenda();
         });
 
@@ -1364,7 +1494,7 @@
       const key = getUserKey(state.session);
       if (!key) return;
       ensureUserData(key).limitMode = "24h";
-      saveState();
+      persistCurrentUserData();
       renderIntakeOverview();
     });
 
@@ -1376,7 +1506,7 @@
       if (!d.period48Start) {
         d.period48Start = new Date().toISOString().slice(0, 16);
       }
-      saveState();
+      persistCurrentUserData();
       renderIntakeOverview();
     });
 
@@ -1384,7 +1514,7 @@
       const key = getUserKey(state.session);
       if (!key) return;
       ensureUserData(key).period48Start = e.target.value;
-      saveState();
+      persistCurrentUserData();
       renderIntakeOverview();
     });
 
@@ -1392,7 +1522,7 @@
       const key = getUserKey(state.session);
       if (!key) return;
       ensureUserData(key).period48Start = new Date().toISOString().slice(0, 16);
-      saveState();
+      persistCurrentUserData();
       renderIntakeOverview();
     });
 
@@ -1428,12 +1558,39 @@
         });
       }
 
-      saveState();
+      persistCurrentUserData();
       resetAgendaForm();
       renderAgenda();
     });
 
     document.getElementById("agendaCancelBtn").addEventListener("click", resetAgendaForm);
+
+    /* Firebase auth status & redirect resultaat */
+    getRedirectResult(auth)
+      .then((res) => {
+        if (res && res.user) {
+          const sess = mapFirebaseUserToSession(res.user);
+          completeLogin(sess, `Ingelogd met Google als ${sess.email || sess.name}.`);
+        }
+      })
+      .catch(() => {});
+
+    onAuthStateChanged(auth, (fbUser) => {
+      if (fbUser) {
+        const sess = mapFirebaseUserToSession(fbUser);
+        if (!state.session || state.session.uid !== sess.uid) {
+          state.session = sess;
+          ensureUserData(getUserKey(sess));
+          saveState();
+          renderApp();
+        }
+        attachCloudListener(sess);
+      } else if (state.session && state.session.provider === "firebase") {
+        state.session = null;
+        saveState();
+        renderApp();
+      }
+    });
 
     /* Initialisatie */
     applyTheme();
@@ -1441,6 +1598,9 @@
     setInterval(updateClock, 1000);
     resetAgendaForm();
     renderApp();
+    if (state.session && state.session.provider !== "guest") {
+      attachCloudListener(state.session);
+    }
   </script>
 </body>
 </html>
