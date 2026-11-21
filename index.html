@@ -24,7 +24,7 @@
           <h1 id="auth-title" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">Inloggen</h1>
           <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Realtime verbonden met jouw account.</p>
         </div>
-        <button id="login-theme-btn" type="button" title="Dag / Nacht modus"
+        <button id="login-theme-btn" type="button" title="Dag / Nacht modus (dit toestel)"
           class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer">
           <span class="theme-label">Nachtmodus</span>
         </button>
@@ -124,13 +124,14 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <!-- Geluid aan/uit voor chat -->
-          <button id="sound-toggle" type="button" title="Chat geluid aan of uit"
+          <!-- Geluid aan/uit (alleen voor dit toestel) -->
+          <button id="sound-toggle" type="button" title="Chat geluid aan of uit (dit toestel)"
             class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
             <span id="sound-label">Geluid: Aan</span>
           </button>
 
-          <button id="theme-toggle" type="button" title="Wissel tussen Dag- en Nachtmodus"
+          <!-- Dag / Nacht modus (alleen voor dit toestel) -->
+          <button id="theme-toggle" type="button" title="Dag / Nacht modus (alleen dit toestel)"
             class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
@@ -138,6 +139,7 @@
             <span class="theme-label">Nachtmodus</span>
           </button>
 
+          <!-- Volledig beeld (alleen voor dit toestel) -->
           <button id="fullscreen-toggle" type="button" title="Volledig beeld"
             class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -146,7 +148,8 @@
             <span id="fullscreen-text">Volledig beeld</span>
           </button>
 
-          <button id="lock-trigger" type="button" title="Vergrendelen met pincode"
+          <!-- Vergrendelen met pincode (alleen voor dit toestel) -->
+          <button id="lock-trigger" type="button" title="Vergrendelen met pincode (dit toestel)"
             class="px-3 py-2 rounded-xl border border-amber-200 dark:border-amber-800/70 bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -154,6 +157,7 @@
             <span>Vergrendel</span>
           </button>
 
+          <!-- Uitloggen -->
           <button id="logout-header" type="button" title="Uitloggen"
             class="px-3 py-2 rounded-xl border border-red-200 dark:border-red-900/70 bg-red-50 dark:bg-red-950/50 hover:bg-red-600 text-red-700 dark:text-red-300 hover:text-white text-xs font-semibold transition cursor-pointer">
             Uitloggen
@@ -168,11 +172,11 @@
           <!-- Kopregel & Realtime sync indicator -->
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Realtime Dashboard</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">DataPoortalen</span>
               <h2 id="active-tab-title" class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">Start</h2>
             </div>
             <div class="text-right">
-              <span class="text-xs text-slate-400 dark:text-slate-500 block">Laatste live update</span>
+              <span class="text-xs text-slate-400 dark:text-slate-500 block">Laatste data-update</span>
               <span id="last-sync-time" class="text-xs font-bold text-slate-700 dark:text-slate-200 tabular-nums">Nog geen wijziging</span>
             </div>
           </div>
@@ -190,7 +194,7 @@
                   <span class="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse"></span>
                 </div>
                 <p id="tile-vocht-value" class="text-3xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 ml</p>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Live vochtstand over je apparaten</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Live vochtstand op je account</p>
               </div>
               <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                 <div class="flex gap-1.5">
@@ -320,7 +324,6 @@
               </div>
             </div>
 
-            <!-- Doel kiezen: eigen apparaten of andere gebruiker -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
               <div>
                 <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Versturen naar</label>
@@ -342,12 +345,10 @@
               </div>
             </div>
 
-            <!-- Berichtenlijst -->
             <div id="chat-messages-box" class="h-72 overflow-y-auto p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-3">
               <p class="text-xs text-slate-400 text-center py-8">Nog geen berichten in dit gesprek.</p>
             </div>
 
-            <!-- Bericht invoer -->
             <form id="chat-send-form" class="flex gap-2">
               <input id="chat-message-input" type="text" required placeholder="Typ een bericht en druk op Versturen..."
                 class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
@@ -400,7 +401,7 @@
   </div>
 
   <!-- ========================================================= -->
-  <!-- 4. PINCODE VERGRENDELING                                -->
+  <!-- 4. PINCODE VERGRENDELING (ALLEEN OP DIT TOESTEL)           -->
   <!-- ========================================================= -->
   <div id="pin-modal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="w-full max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-8 text-center">
@@ -427,7 +428,7 @@
   </div>
 
   <!-- ========================================================= -->
-  <!-- 5. REALTIME ENGINE (AUTH + REALTIME DB + CHAT + AUDIO)    -->
+  <!-- 5. REALTIME ENGINE (AUTH + REALTIME DB + LOKALE UI)       -->
   <!-- ========================================================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -467,14 +468,21 @@
     let userEmail = '';
     let dbUnsub = null;
     let chatUnsub = null;
-    let soundEnabled = true;
     let knownMessageIds = new Set();
     let initialChatLoaded = false;
     let unreadCount = 0;
 
-    let liveData = {
-      activeTab: 'start',
-      theme: 'light',
+    // ---------------------------------------------------------
+    // LOKALE TOESTEL-INSTELLINGEN (worden NIET op andere toestellen aangepast)
+    // ---------------------------------------------------------
+    let localTheme = localStorage.getItem('dp_device_theme') || 'light';
+    let localActiveTab = 'start';
+    let soundEnabled = localStorage.getItem('dp_device_sound') !== '0';
+
+    // ---------------------------------------------------------
+    // GEDEELDE ACCOUNT-DATA (wordt WEL live over toestellen gesynchroniseerd)
+    // ---------------------------------------------------------
+    let sharedData = {
       vochtMl: 0,
       ritten: [],
       dialyseStatus: 'Geen sessie',
@@ -483,7 +491,35 @@
       updatedAt: ''
     };
 
-    // Audio melding bij nieuw bericht (Web Audio API)
+    // Dag / Nacht modus (alleen dit toestel)
+    function applyTheme(theme) {
+      localTheme = theme === 'dark' ? 'dark' : 'light';
+      localStorage.setItem('dp_device_theme', localTheme);
+      const isDark = localTheme === 'dark';
+      document.documentElement.classList.toggle('dark', isDark);
+      document.querySelectorAll('.theme-label').forEach((el) => {
+        el.textContent = isDark ? 'Dagmodus' : 'Nachtmodus';
+      });
+    }
+
+    function toggleTheme() {
+      applyTheme(localTheme === 'dark' ? 'light' : 'dark');
+    }
+
+    applyTheme(localTheme);
+    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+    document.getElementById('login-theme-btn').addEventListener('click', toggleTheme);
+
+    // Geluid aan/uit (alleen dit toestel)
+    document.getElementById('sound-label').textContent = soundEnabled ? 'Geluid: Aan' : 'Geluid: Uit';
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem('dp_device_sound', soundEnabled ? '1' : '0');
+      document.getElementById('sound-label').textContent = soundEnabled ? 'Geluid: Aan' : 'Geluid: Uit';
+      if (soundEnabled) playNotificationSound();
+    });
+
+    // Audio melding bij nieuw bericht
     function playNotificationSound() {
       if (!soundEnabled) return;
       try {
@@ -494,7 +530,7 @@
         const osc1 = ctx.createOscillator();
         const gain1 = ctx.createGain();
         osc1.type = 'sine';
-        osc1.frequency.setValueAtTime(784, now); // G5
+        osc1.frequency.setValueAtTime(784, now);
         gain1.gain.setValueAtTime(0.001, now);
         gain1.gain.exponentialRampToValueAtTime(0.18, now + 0.02);
         gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
@@ -506,7 +542,7 @@
         const osc2 = ctx.createOscillator();
         const gain2 = ctx.createGain();
         osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(1046.5, now + 0.14); // C6
+        osc2.frequency.setValueAtTime(1046.5, now + 0.14);
         gain2.gain.setValueAtTime(0.001, now + 0.14);
         gain2.gain.exponentialRampToValueAtTime(0.18, now + 0.16);
         gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
@@ -517,11 +553,6 @@
       } catch {}
     }
 
-    document.getElementById('sound-toggle').addEventListener('click', () => {
-      soundEnabled = !soundEnabled;
-      document.getElementById('sound-label').textContent = soundEnabled ? 'Geluid: Aan' : 'Geluid: Uit';
-      if (soundEnabled) playNotificationSound();
-    });
     document.getElementById('test-sound-btn').addEventListener('click', playNotificationSound);
 
     // Toast melding op elk scherm
@@ -543,18 +574,24 @@
     });
     document.getElementById('toast-open-chat-btn').addEventListener('click', () => {
       toastEl.classList.add('hidden');
-      pushRealtime({ activeTab: 'chat' });
+      switchLocalTab('chat');
     });
 
     function updateUnreadBadge() {
       const badge = document.getElementById('chat-unread-badge');
-      if (unreadCount > 0 && liveData.activeTab !== 'chat') {
+      if (unreadCount > 0 && localActiveTab !== 'chat') {
         badge.textContent = String(unreadCount);
         badge.classList.remove('hidden');
       } else {
         unreadCount = 0;
         badge.classList.add('hidden');
       }
+    }
+
+    // Lokaal tabblad wisselen (beïnvloedt alleen dit toestel)
+    function switchLocalTab(tab) {
+      localActiveTab = tab || 'start';
+      renderAll();
     }
 
     // Chat doel (eigen apparaten vs andere gebruiker)
@@ -600,7 +637,6 @@
         }
         all.sort((a, b) => Number(a.timestamp || 0) - Number(b.timestamp || 0));
 
-        // Controleer op nieuwe berichten die relevant zijn voor mij
         let hasNewForMe = false;
         let latestRelevant = null;
 
@@ -625,7 +661,7 @@
           playNotificationSound();
           const senderLabel = latestRelevant.senderEmail || 'Bericht';
           showIncomingToast(senderLabel, latestRelevant.text || '');
-          if (liveData.activeTab !== 'chat') {
+          if (localActiveTab !== 'chat') {
             unreadCount += 1;
             updateUnreadBadge();
           }
@@ -713,24 +749,6 @@
       }
     });
 
-    // Dag / Nacht modus
-    function applyTheme(theme) {
-      const isDark = theme === 'dark';
-      document.documentElement.classList.toggle('dark', isDark);
-      document.querySelectorAll('.theme-label').forEach((el) => {
-        el.textContent = isDark ? 'Dagmodus' : 'Nachtmodus';
-      });
-    }
-
-    function toggleTheme() {
-      const nextTheme = liveData.theme === 'dark' ? 'light' : 'dark';
-      applyTheme(nextTheme);
-      pushRealtime({ theme: nextTheme });
-    }
-
-    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-    document.getElementById('login-theme-btn').addEventListener('click', toggleTheme);
-
     // Live tijd & datum
     function tickClock() {
       const now = new Date();
@@ -742,7 +760,7 @@
     tickClock();
     setInterval(tickClock, 1000);
 
-    // Volledig beeld
+    // Volledig beeld (alleen dit toestel)
     const fsBtn = document.getElementById('fullscreen-toggle');
     const fsText = document.getElementById('fullscreen-text');
     fsBtn.addEventListener('click', () => {
@@ -756,7 +774,7 @@
       fsText.textContent = document.fullscreenElement ? 'Normaal beeld' : 'Volledig beeld';
     });
 
-    // Pincode vergrendeling
+    // Pincode vergrendeling (alleen dit toestel)
     const pinModal = document.getElementById('pin-modal');
     const pinHeading = document.getElementById('pin-heading');
     const pinSubtext = document.getElementById('pin-subtext');
@@ -814,25 +832,23 @@
       }
     });
 
-    // Realtime schrijf & lees functies
-    async function pushRealtime(patch) {
+    // Realtime schrijf & lees functies (alleen voor gedeelde data, niet voor lokale weergave-instellingen)
+    async function pushSharedData(patch) {
       if (!uid) return;
-      liveData = {
-        ...liveData,
+      sharedData = {
+        ...sharedData,
         ...patch,
         updatedAt: new Date().toLocaleTimeString('nl-NL')
       };
       try {
-        await set(ref(db, `users/${uid}/state`), liveData);
+        await set(ref(db, `users/${uid}/data`), sharedData);
         document.getElementById('rt-status-label').textContent = 'Realtime verbonden';
       } catch {
         document.getElementById('rt-status-label').textContent = 'Database regel blokkeert schrijven';
       }
     }
 
-    function applyUI(data) {
-      applyTheme(data.theme || 'light');
-
+    function renderAll() {
       const tabNames = {
         start: 'Start',
         vochtintake: 'Vochtintake',
@@ -842,7 +858,7 @@
         agenda: 'Agenda',
         chat: 'Chat'
       };
-      const tab = data.activeTab || 'start';
+      const tab = localActiveTab;
       if (tab === 'chat') {
         unreadCount = 0;
       }
@@ -857,11 +873,11 @@
           : 'nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between';
       });
 
-      const ritten = Array.isArray(data.ritten) ? data.ritten : [];
-      const brieven = Array.isArray(data.brieven) ? data.brieven : [];
-      const vochtMl = Number(data.vochtMl || 0);
-      const dialyseStatus = data.dialyseStatus || 'Geen sessie';
-      const dialyseSub = data.dialyseSub || 'Klaar voor planning';
+      const ritten = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
+      const brieven = Array.isArray(sharedData.brieven) ? sharedData.brieven : [];
+      const vochtMl = Number(sharedData.vochtMl || 0);
+      const dialyseStatus = sharedData.dialyseStatus || 'Geen sessie';
+      const dialyseSub = sharedData.dialyseSub || 'Klaar voor planning';
 
       document.getElementById('tile-vocht-value').textContent = `${vochtMl} ml`;
       document.getElementById('tile-ritten-count').textContent = `${ritten.length} ${ritten.length === 1 ? 'rit' : 'ritten'}`;
@@ -909,11 +925,11 @@
       } else {
         moduleBox.classList.remove('hidden');
         document.getElementById('module-heading').textContent = tabNames[tab];
-        document.getElementById('module-desc').textContent = `Onderdeel ${tabNames[tab]} — live gesynchroniseerd over je toestellen.`;
-        document.getElementById('module-content').innerHTML = renderModuleBody(tab, data, agendaItems);
+        document.getElementById('module-desc').textContent = `Onderdeel ${tabNames[tab]} — inhoud wordt live gesynchroniseerd tussen je toestellen.`;
+        document.getElementById('module-content').innerHTML = renderModuleBody(tab, sharedData, agendaItems);
       }
 
-      document.getElementById('last-sync-time').textContent = data.updatedAt || 'Zojuist verbonden';
+      document.getElementById('last-sync-time').textContent = sharedData.updatedAt || 'Zojuist verbonden';
     }
 
     function renderModuleBody(tab, data, agendaItems) {
@@ -942,18 +958,19 @@
       return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    // Snelle data-acties (wel live over toestellen)
     document.getElementById('tile-vocht-plus150').addEventListener('click', () => {
-      pushRealtime({ vochtMl: Number(liveData.vochtMl || 0) + 150 });
+      pushSharedData({ vochtMl: Number(sharedData.vochtMl || 0) + 150 });
     });
     document.getElementById('tile-vocht-reset').addEventListener('click', () => {
-      pushRealtime({ vochtMl: 0 });
+      pushSharedData({ vochtMl: 0 });
     });
     document.getElementById('tile-rit-quick').addEventListener('click', () => {
-      const ritten = Array.isArray(liveData.ritten) ? [...liveData.ritten] : [];
+      const ritten = Array.isArray(sharedData.ritten) ? [...sharedData.ritten] : [];
       const nr = ritten.length + 1;
       const tijd = new Date().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
       ritten.push({ titel: `Ziekenhuisrit #${nr}`, tijd });
-      pushRealtime({ ritten });
+      pushSharedData({ ritten });
     });
     const dialyseStates = [
       ['Geen sessie', 'Klaar voor planning'],
@@ -961,37 +978,38 @@
       ['Dialyse actief', 'Bezig op apparaat']
     ];
     document.getElementById('tile-dialyse-cycle').addEventListener('click', () => {
-      const idx = dialyseStates.findIndex(([st]) => st === liveData.dialyseStatus);
+      const idx = dialyseStates.findIndex(([st]) => st === sharedData.dialyseStatus);
       const [nextStatus, nextSub] = dialyseStates[(idx + 1) % dialyseStates.length];
-      pushRealtime({ dialyseStatus: nextStatus, dialyseSub: nextSub });
+      pushSharedData({ dialyseStatus: nextStatus, dialyseSub: nextSub });
     });
     document.getElementById('tile-brief-quick').addEventListener('click', () => {
-      const brieven = Array.isArray(liveData.brieven) ? [...liveData.brieven] : [];
+      const brieven = Array.isArray(sharedData.brieven) ? [...sharedData.brieven] : [];
       const nr = brieven.length + 1;
       brieven.push({ titel: `Brief #${nr} (${new Date().toLocaleDateString('nl-NL')})` });
-      pushRealtime({ brieven });
+      pushSharedData({ brieven });
     });
 
+    // Tab-navigatie (blijft lokaal op het toestel waarop je klikt)
     document.querySelectorAll('.open-tab-link').forEach((btn) => {
       btn.addEventListener('click', () => {
-        pushRealtime({ activeTab: btn.getAttribute('data-open-tab') });
+        switchLocalTab(btn.getAttribute('data-open-tab'));
       });
     });
     document.querySelectorAll('.nav-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
-        pushRealtime({ activeTab: btn.getAttribute('data-tab') });
+        switchLocalTab(btn.getAttribute('data-tab'));
       });
     });
 
     function startRealtime(userId) {
       if (dbUnsub) dbUnsub();
-      const stateRef = ref(db, `users/${userId}/state`);
-      dbUnsub = onValue(stateRef, (snap) => {
+      const dataRef = ref(db, `users/${userId}/data`);
+      dbUnsub = onValue(dataRef, (snap) => {
         document.getElementById('rt-status-label').textContent = 'Realtime live';
         if (snap.exists()) {
-          liveData = { ...liveData, ...snap.val() };
+          sharedData = { ...sharedData, ...snap.val() };
         }
-        applyUI(liveData);
+        renderAll();
       }, () => {
         document.getElementById('rt-status-label').textContent = 'Geen toegang tot Realtime DB';
       });
@@ -1062,6 +1080,7 @@
         loginScreen.classList.add('hidden');
         appShell.classList.remove('hidden');
         document.getElementById('user-email-label').textContent = user.email;
+        renderAll();
         startRealtime(user.uid);
         if (sessionStorage.getItem('dp_locked') === '1') {
           openPin(false);
