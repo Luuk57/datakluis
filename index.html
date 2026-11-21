@@ -185,11 +185,11 @@
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between hover:border-sky-400 dark:hover:border-sky-500 transition">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">Vochtintake</span>
+                  <span class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">Vochtintake (24u)</span>
                   <span class="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse"></span>
                 </div>
                 <p id="tile-vocht-value" class="text-3xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 ml</p>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Live vochtstand op je account</p>
+                <p id="tile-vocht-48u" class="text-xs text-slate-500 dark:text-slate-400 mt-1 tabular-nums">48u: 0 ml</p>
               </div>
               <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                 <div class="flex gap-1.5">
@@ -197,9 +197,9 @@
                     class="px-2.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold cursor-pointer">
                     +150 ml
                   </button>
-                  <button id="tile-vocht-reset" type="button"
-                    class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold cursor-pointer">
-                    Reset
+                  <button type="button" data-open-tab="vochtintake"
+                    class="open-tab-link px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold cursor-pointer">
+                    POS
                   </button>
                 </div>
                 <button type="button" data-open-tab="vochtintake"
@@ -298,6 +298,134 @@
           </div>
 
           <!-- ===================================================== -->
+          <!-- VOCHTINTAKE POS + 24U & 48U PROGRESS BARS             -->
+          <!-- ===================================================== -->
+          <div id="vocht-view" class="hidden space-y-6">
+
+            <!-- 24U & 48U PROGRESS KAARTEN -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <!-- 24 UUR -->
+              <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">24-uurs Voortgang</span>
+                  <span id="bar-24-pct" class="text-xs font-extrabold tabular-nums text-slate-700 dark:text-slate-200">0%</span>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <span id="bar-24-label" class="text-2xl font-extrabold tabular-nums">0 ml</span>
+                  <span id="bar-24-limit-label" class="text-xs text-slate-500 dark:text-slate-400 tabular-nums">van 1500 ml</span>
+                </div>
+                <div class="w-full h-4 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                  <div id="bar-24-fill" class="h-full bg-sky-500 transition-all duration-300 rounded-full" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <!-- 48 UUR -->
+              <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">48-uurs Voortgang</span>
+                  <span id="bar-48-pct" class="text-xs font-extrabold tabular-nums text-slate-700 dark:text-slate-200">0%</span>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <span id="bar-48-label" class="text-2xl font-extrabold tabular-nums">0 ml</span>
+                  <span id="bar-48-limit-label" class="text-xs text-slate-500 dark:text-slate-400 tabular-nums">van 3000 ml</span>
+                </div>
+                <div class="w-full h-4 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                  <div id="bar-48-fill" class="h-full bg-indigo-500 transition-all duration-300 rounded-full" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- POS KASSA + BON OVERZICHT -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+              <!-- Linker 2 kolommen: POS Tegels & Eigen invoer -->
+              <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+                  <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">POS Vocht-Kassa</span>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Snelle invoer</h3>
+                  </div>
+                  <button type="button" data-open-tab="start"
+                    class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
+                    ← Start
+                  </button>
+                </div>
+
+                <!-- Drankkeuze -->
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Dranktype</label>
+                  <div id="pos-drink-buttons" class="flex flex-wrap gap-2">
+                    <button type="button" data-drink="Water" class="pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-sky-600 text-white cursor-pointer">Water</button>
+                    <button type="button" data-drink="Koffie" class="pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer">Koffie</button>
+                    <button type="button" data-drink="Thee" class="pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer">Thee</button>
+                    <button type="button" data-drink="Soep" class="pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer">Soep</button>
+                    <button type="button" data-drink="Frisdrank" class="pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer">Frisdrank</button>
+                  </div>
+                </div>
+
+                <!-- Grote POS ml-knoppen -->
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Tik op hoeveelheid (ml)</label>
+                  <div class="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
+                    <button type="button" data-ml="100" class="pos-ml-btn py-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-600 text-sky-900 dark:text-sky-200 hover:text-white border border-sky-200 dark:border-sky-800 font-extrabold text-sm tabular-nums transition cursor-pointer">+100 ml</button>
+                    <button type="button" data-ml="150" class="pos-ml-btn py-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-600 text-sky-900 dark:text-sky-200 hover:text-white border border-sky-200 dark:border-sky-800 font-extrabold text-sm tabular-nums transition cursor-pointer">+150 ml</button>
+                    <button type="button" data-ml="200" class="pos-ml-btn py-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-600 text-sky-900 dark:text-sky-200 hover:text-white border border-sky-200 dark:border-sky-800 font-extrabold text-sm tabular-nums transition cursor-pointer">+200 ml</button>
+                    <button type="button" data-ml="250" class="pos-ml-btn py-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-600 text-sky-900 dark:text-sky-200 hover:text-white border border-sky-200 dark:border-sky-800 font-extrabold text-sm tabular-nums transition cursor-pointer">+250 ml</button>
+                    <button type="button" data-ml="330" class="pos-ml-btn py-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-600 text-sky-900 dark:text-sky-200 hover:text-white border border-sky-200 dark:border-sky-800 font-extrabold text-sm tabular-nums transition cursor-pointer">+330 ml</button>
+                    <button type="button" data-ml="500" class="pos-ml-btn py-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-600 text-sky-900 dark:text-sky-200 hover:text-white border border-sky-200 dark:border-sky-800 font-extrabold text-sm tabular-nums transition cursor-pointer">+500 ml</button>
+                  </div>
+                </div>
+
+                <!-- Eigen ml + drank toevoegen -->
+                <form id="pos-custom-form" class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <input id="pos-custom-drink" type="text" placeholder="Eigen drank (optioneel)"
+                    class="px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm" />
+                  <input id="pos-custom-ml" type="number" min="1" max="5000" required placeholder="Aantal ml"
+                    class="px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm tabular-nums" />
+                  <button type="submit"
+                    class="py-2 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold cursor-pointer">
+                    Toevoegen aan bon
+                  </button>
+                </form>
+
+                <!-- Limieten 24u / 48u instellen -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">24u Limiet (ml)</label>
+                    <input id="limit-24-input" type="number" min="250" step="50" value="1500"
+                      class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">48u Limiet (ml)</label>
+                    <input id="limit-48-input" type="number" min="500" step="50" value="3000"
+                      class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rechter kolom: Live POS Bon / Logboek -->
+              <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
+                    <h4 class="font-bold text-sm uppercase tracking-wider text-slate-700 dark:text-slate-300">Intake Bon (48u)</h4>
+                    <button id="pos-clear-btn" type="button" class="text-xs text-red-600 dark:text-red-400 hover:underline cursor-pointer">
+                      Wis alles
+                    </button>
+                  </div>
+                  <div id="pos-receipt-list" class="space-y-2 max-h-80 overflow-y-auto text-xs">
+                    <p class="text-slate-400 text-center py-6">Nog geen vocht geregistreerd.</p>
+                  </div>
+                </div>
+                <div class="pt-3 mt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-sm font-bold">
+                  <span>Totaal 24u</span>
+                  <span id="pos-receipt-total24" class="tabular-nums text-sky-600 dark:text-sky-400">0 ml</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ===================================================== -->
           <!-- CHAT-WEERGAVE (TEKST + SPRAAKBERICHT + DICTEREN)       -->
           <!-- ===================================================== -->
           <div id="chat-view" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-5">
@@ -340,12 +468,10 @@
               </div>
             </div>
 
-            <!-- Berichtenlijst -->
             <div id="chat-messages-box" class="h-72 overflow-y-auto p-4 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-3">
               <p class="text-xs text-slate-400 text-center py-8">Nog geen berichten in dit gesprek.</p>
             </div>
 
-            <!-- Statusbalk voor spraakopname -->
             <div id="voice-status-bar" class="hidden px-4 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 flex items-center justify-between text-xs font-semibold text-rose-700 dark:text-rose-300">
               <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping"></span>
@@ -356,12 +482,10 @@
               </button>
             </div>
 
-            <!-- Bericht invoer + Spraakbericht + Dicteren -->
             <form id="chat-send-form" class="flex flex-wrap gap-2">
               <input id="chat-message-input" type="text" placeholder="Typ een bericht of spreek in..."
                 class="flex-1 min-w-[200px] px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
 
-              <!-- Spraakbericht opnemen & versturen (audio-clip) -->
               <button id="voice-record-btn" type="button" title="Spraakbericht opnemen en versturen"
                 class="px-3.5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -370,7 +494,6 @@
                 <span id="voice-record-label">Spraakbericht</span>
               </button>
 
-              <!-- Spraak-naar-tekst (dicteren) -->
               <button id="dictate-btn" type="button" title="Spreek tekst in (dicteren)"
                 class="px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold transition cursor-pointer shrink-0">
                 <span id="dictate-label">Dicteer</span>
@@ -452,7 +575,7 @@
   </div>
 
   <!-- ========================================================= -->
-  <!-- 5. REALTIME ENGINE (AUTH + REALTIME DB + SPRAAK CHAT)     -->
+  <!-- 5. REALTIME ENGINE (AUTH + REALTIME DB + POS VOCHT + CHAT) -->
   <!-- ========================================================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -500,10 +623,13 @@
     let localTheme = localStorage.getItem('dp_device_theme') || 'light';
     let localActiveTab = 'start';
     let soundEnabled = localStorage.getItem('dp_device_sound') !== '0';
+    let selectedDrink = 'Water';
 
     // Gedeelde account-data
     let sharedData = {
-      vochtMl: 0,
+      vochtEntries: [],
+      vochtLimit24: 1500,
+      vochtLimit48: 3000,
       ritten: [],
       dialyseStatus: 'Geen sessie',
       dialyseSub: 'Klaar voor planning',
@@ -539,7 +665,6 @@
       if (soundEnabled) playNotificationSound();
     });
 
-    // Audio melding bij nieuw bericht
     function playNotificationSound() {
       if (!soundEnabled) return;
       try {
@@ -575,7 +700,7 @@
 
     document.getElementById('test-sound-btn').addEventListener('click', playNotificationSound);
 
-    // Toast melding op elk scherm
+    // Toast melding
     const toastEl = document.getElementById('incoming-toast');
     let toastTimer = null;
 
@@ -613,7 +738,110 @@
       renderAll();
     }
 
-    // Chat doel
+    // ---------------------------------------------------------
+    // VOCHTINTAKE BEREKENINGEN (24U & 48U) + POS ACTIES
+    // ---------------------------------------------------------
+    function computeVochtStats(entries, limit24, limit48) {
+      const now = Date.now();
+      const h24 = 24 * 60 * 60 * 1000;
+      const h48 = 48 * 60 * 60 * 1000;
+      const list = Array.isArray(entries) ? entries : [];
+
+      let total24 = 0;
+      let total48 = 0;
+      const valid48 = [];
+
+      list.forEach((item) => {
+        const ts = Number(item.timestamp || 0);
+        const ml = Number(item.ml || 0);
+        if (ts >= now - h48) {
+          total48 += ml;
+          valid48.push(item);
+        }
+        if (ts >= now - h24) {
+          total24 += ml;
+        }
+      });
+
+      const lim24 = Math.max(100, Number(limit24 || 1500));
+      const lim48 = Math.max(200, Number(limit48 || 3000));
+      const pct24 = Math.min(100, Math.round((total24 / lim24) * 100));
+      const pct48 = Math.min(100, Math.round((total48 / lim48) * 100));
+
+      return { total24, total48, lim24, lim48, pct24, pct48, valid48 };
+    }
+
+    async function addVochtEntry(ml, drinkName) {
+      const amount = Number(ml || 0);
+      if (amount <= 0) return;
+      const current = Array.isArray(sharedData.vochtEntries) ? [...sharedData.vochtEntries] : [];
+      current.push({
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        drink: drinkName || selectedDrink || 'Water',
+        ml: amount,
+        timestamp: Date.now()
+      });
+      await pushSharedData({ vochtEntries: current });
+    }
+
+    // POS drankkeuze
+    document.querySelectorAll('.pos-drink-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        selectedDrink = btn.getAttribute('data-drink') || 'Water';
+        document.querySelectorAll('.pos-drink-btn').forEach((b) => {
+          const active = b.getAttribute('data-drink') === selectedDrink;
+          b.className = active
+            ? 'pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-sky-600 text-white cursor-pointer'
+            : 'pos-drink-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer';
+        });
+      });
+    });
+
+    // POS snelle ml-knoppen
+    document.querySelectorAll('.pos-ml-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const ml = Number(btn.getAttribute('data-ml') || 0);
+        addVochtEntry(ml, selectedDrink);
+      });
+    });
+
+    // POS eigen invoer
+    document.getElementById('pos-custom-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const drinkInput = document.getElementById('pos-custom-drink');
+      const mlInput = document.getElementById('pos-custom-ml');
+      const ml = Number(mlInput.value || 0);
+      if (ml <= 0) return;
+      const drink = drinkInput.value.trim() || selectedDrink;
+      addVochtEntry(ml, drink);
+      mlInput.value = '';
+    });
+
+    // 24u / 48u limieten aanpassen
+    document.getElementById('limit-24-input').addEventListener('change', (e) => {
+      pushSharedData({ vochtLimit24: Math.max(100, Number(e.target.value || 1500)) });
+    });
+    document.getElementById('limit-48-input').addEventListener('change', (e) => {
+      pushSharedData({ vochtLimit48: Math.max(200, Number(e.target.value || 3000)) });
+    });
+
+    // Bon wissen
+    document.getElementById('pos-clear-btn').addEventListener('click', () => {
+      pushSharedData({ vochtEntries: [] });
+    });
+
+    // Enkele bonregel verwijderen
+    document.getElementById('pos-receipt-list').addEventListener('click', (e) => {
+      const delBtn = e.target.closest('.del-vocht-btn');
+      if (!delBtn) return;
+      const id = delBtn.getAttribute('data-id');
+      const next = (sharedData.vochtEntries || []).filter((item) => item.id !== id);
+      pushSharedData({ vochtEntries: next });
+    });
+
+    // ---------------------------------------------------------
+    // CHAT + SPRAAKBERICHT + DICTEREN
+    // ---------------------------------------------------------
     const targetModeEl = document.getElementById('chat-target-mode');
     const recipientWrapperEl = document.getElementById('chat-recipient-wrapper');
     const selfInfoEl = document.getElementById('chat-self-info');
@@ -661,9 +889,6 @@
       }
     }
 
-    // ---------------------------------------------------------
-    // 1. SPRAAKBERICHT OPNEMEN & VERSTUREN (AUDIO-CLIP)
-    // ---------------------------------------------------------
     let mediaRecorder = null;
     let audioChunks = [];
     let isRecording = false;
@@ -730,10 +955,9 @@
           const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
           const reader = new FileReader();
           reader.onloadend = async () => {
-            const base64Audio = reader.result;
             await sendChatPayload({
               type: 'audio',
-              audioData: base64Audio,
+              audioData: reader.result,
               durationSec: recordSeconds,
               text: `Spraakbericht (${recordSeconds}s)`
             });
@@ -761,9 +985,6 @@
       }
     });
 
-    // ---------------------------------------------------------
-    // 2. DICTEREN (SPRAAK-NAAR-TEKST IN HET INVOERVELD)
-    // ---------------------------------------------------------
     const dictateBtn = document.getElementById('dictate-btn');
     const dictateLabel = document.getElementById('dictate-label');
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1000,7 +1221,6 @@
       }
     });
 
-    // Realtime schrijf & lees functies
     async function pushSharedData(patch) {
       if (!uid) return;
       sharedData = {
@@ -1041,13 +1261,15 @@
           : 'nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between';
       });
 
+      const vochtStats = computeVochtStats(sharedData.vochtEntries, sharedData.vochtLimit24, sharedData.vochtLimit48);
       const ritten = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
       const brieven = Array.isArray(sharedData.brieven) ? sharedData.brieven : [];
-      const vochtMl = Number(sharedData.vochtMl || 0);
       const dialyseStatus = sharedData.dialyseStatus || 'Geen sessie';
       const dialyseSub = sharedData.dialyseSub || 'Klaar voor planning';
 
-      document.getElementById('tile-vocht-value').textContent = `${vochtMl} ml`;
+      // Start-tegels
+      document.getElementById('tile-vocht-value').textContent = `${vochtStats.total24} ml`;
+      document.getElementById('tile-vocht-48u').textContent = `48u: ${vochtStats.total48} ml`;
       document.getElementById('tile-ritten-count').textContent = `${ritten.length} ${ritten.length === 1 ? 'rit' : 'ritten'}`;
       document.getElementById('tile-ritten-last').textContent = ritten.length > 0
         ? `Laatste: ${ritten[ritten.length - 1].titel}`
@@ -1078,16 +1300,74 @@
         `).join('');
       }
 
+      // 24u en 48u progress bars updaten
+      document.getElementById('bar-24-label').textContent = `${vochtStats.total24} ml`;
+      document.getElementById('bar-24-limit-label').textContent = `van ${vochtStats.lim24} ml`;
+      document.getElementById('bar-24-pct').textContent = `${vochtStats.pct24}%`;
+      const fill24 = document.getElementById('bar-24-fill');
+      fill24.style.width = `${vochtStats.pct24}%`;
+      fill24.className = vochtStats.total24 > vochtStats.lim24
+        ? 'h-full bg-rose-500 transition-all duration-300 rounded-full'
+        : vochtStats.pct24 >= 85
+          ? 'h-full bg-amber-500 transition-all duration-300 rounded-full'
+          : 'h-full bg-sky-500 transition-all duration-300 rounded-full';
+
+      document.getElementById('bar-48-label').textContent = `${vochtStats.total48} ml`;
+      document.getElementById('bar-48-limit-label').textContent = `van ${vochtStats.lim48} ml`;
+      document.getElementById('bar-48-pct').textContent = `${vochtStats.pct48}%`;
+      const fill48 = document.getElementById('bar-48-fill');
+      fill48.style.width = `${vochtStats.pct48}%`;
+      fill48.className = vochtStats.total48 > vochtStats.lim48
+        ? 'h-full bg-rose-500 transition-all duration-300 rounded-full'
+        : vochtStats.pct48 >= 85
+          ? 'h-full bg-amber-500 transition-all duration-300 rounded-full'
+          : 'h-full bg-indigo-500 transition-all duration-300 rounded-full';
+
+      document.getElementById('pos-receipt-total24').textContent = `${vochtStats.total24} ml`;
+      const lim24El = document.getElementById('limit-24-input');
+      const lim48El = document.getElementById('limit-48-input');
+      if (document.activeElement !== lim24El) lim24El.value = vochtStats.lim24;
+      if (document.activeElement !== lim48El) lim48El.value = vochtStats.lim48;
+
+      // POS Bon / lijst
+      const receiptEl = document.getElementById('pos-receipt-list');
+      if (vochtStats.valid48.length === 0) {
+        receiptEl.innerHTML = `<p class="text-slate-400 text-center py-6">Nog geen vocht geregistreerd.</p>`;
+      } else {
+        receiptEl.innerHTML = [...vochtStats.valid48].reverse().map((item) => {
+          const t = item.timestamp
+            ? new Date(Number(item.timestamp)).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
+            : '';
+          return `
+            <div class="flex items-center justify-between py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/70">
+              <div class="min-w-0">
+                <span class="font-bold text-slate-800 dark:text-slate-200">${escapeHtml(item.drink || 'Water')}</span>
+                <span class="text-slate-400 ml-1.5">${escapeHtml(t)}</span>
+              </div>
+              <div class="flex items-center gap-2.5 shrink-0">
+                <span class="font-extrabold tabular-nums text-sky-600 dark:text-sky-400">+${Number(item.ml || 0)} ml</span>
+                <button type="button" data-id="${escapeHtml(item.id)}" class="del-vocht-btn text-slate-400 hover:text-red-500 cursor-pointer">✕</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Weergave schakelen
       const startView = document.getElementById('start-view');
+      const vochtView = document.getElementById('vocht-view');
       const chatView = document.getElementById('chat-view');
       const moduleBox = document.getElementById('module-box');
 
       startView.classList.add('hidden');
+      vochtView.classList.add('hidden');
       chatView.classList.add('hidden');
       moduleBox.classList.add('hidden');
 
       if (tab === 'start') {
         startView.classList.remove('hidden');
+      } else if (tab === 'vochtintake') {
+        vochtView.classList.remove('hidden');
       } else if (tab === 'chat') {
         chatView.classList.remove('hidden');
       } else {
@@ -1101,9 +1381,6 @@
     }
 
     function renderModuleBody(tab, data, agendaItems) {
-      if (tab === 'vochtintake') {
-        return `<p>Huidige live vochtstand: <strong>${Number(data.vochtMl || 0)} ml</strong>.</p>`;
-      }
       if (tab === 'ritten') {
         const list = (data.ritten || []).map((r) => `<li>• ${escapeHtml(r.titel)} (${escapeHtml(r.tijd || '')})</li>`).join('');
         return `<p class="mb-2">Geregistreerde ritten (verschijnen ook in Agenda):</p><ul class="space-y-1">${list || '<li class="text-slate-400">Geen ritten</li>'}</ul>`;
@@ -1127,10 +1404,7 @@
     }
 
     document.getElementById('tile-vocht-plus150').addEventListener('click', () => {
-      pushSharedData({ vochtMl: Number(sharedData.vochtMl || 0) + 150 });
-    });
-    document.getElementById('tile-vocht-reset').addEventListener('click', () => {
-      pushSharedData({ vochtMl: 0 });
+      addVochtEntry(150, 'Water');
     });
     document.getElementById('tile-rit-quick').addEventListener('click', () => {
       const ritten = Array.isArray(sharedData.ritten) ? [...sharedData.ritten] : [];
