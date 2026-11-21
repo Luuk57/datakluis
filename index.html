@@ -102,6 +102,7 @@
             <span>Chat</span>
             <span id="chat-unread-badge" class="hidden px-2 py-0.5 text-[11px] font-bold rounded-full bg-rose-600 text-white">0</span>
           </button>
+          <button data-tab="instellingen" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Instellingen</button>
         </nav>
       </div>
 
@@ -321,10 +322,16 @@
                     <span class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">POS Vocht-Kassa</span>
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white">Product- en hoeveelheidtegels</h3>
                   </div>
-                  <button type="button" data-open-tab="start"
-                    class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
-                    ← Start
-                  </button>
+                  <div class="flex items-center gap-2">
+                    <button type="button" data-open-tab="instellingen"
+                      class="open-tab-link px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold cursor-pointer">
+                      Limieten in Instellingen
+                    </button>
+                    <button type="button" data-open-tab="start"
+                      class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
+                      ← Start
+                    </button>
+                  </div>
                 </div>
 
                 <div class="space-y-2">
@@ -352,19 +359,6 @@
                     </button>
                   </form>
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">24u Limiet (ml)</label>
-                    <input id="limit-24-input" type="number" min="250" step="50" value="1500"
-                      class="w-full px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
-                  </div>
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">48u Limiet (ml)</label>
-                    <input id="limit-48-input" type="number" min="500" step="50" value="3000"
-                      class="w-full px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
-                  </div>
-                </div>
               </div>
 
               <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 flex flex-col justify-between">
@@ -388,7 +382,7 @@
           </div>
 
           <!-- ===================================================== -->
-          <!-- RITTEN-MODULE (VELDEN + TIJDKNOPPEN + PUNCTUALITEIT)  -->
+          <!-- RITTEN-MODULE (DROPDOWNS + HERHALING + GELDIGHEID)    -->
           <!-- ===================================================== -->
           <div id="ritten-view" class="hidden space-y-5">
 
@@ -406,7 +400,6 @@
                 </span>
               </div>
 
-              <!-- 3 kerncijfers -->
               <div class="grid grid-cols-3 gap-3 text-center">
                 <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/70">
                   <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 block">Op tijd</span>
@@ -425,7 +418,6 @@
                 </div>
               </div>
 
-              <!-- Gecombineerde balk -->
               <div class="w-full h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex">
                 <div id="bar-rit-ontime" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
                 <div id="bar-rit-early" class="h-full bg-sky-500 transition-all duration-300" style="width: 0%"></div>
@@ -435,15 +427,21 @@
 
             <!-- Formulier nieuwe rit -->
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
-              <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div>
                   <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Rit registreren</span>
                   <h3 class="text-lg font-bold text-slate-900 dark:text-white">Nieuwe rit invoeren</h3>
                 </div>
-                <button type="button" data-open-tab="start"
-                  class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
-                  ← Start
-                </button>
+                <div class="flex items-center gap-2">
+                  <button type="button" data-open-tab="instellingen"
+                    class="open-tab-link px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold cursor-pointer">
+                    Lijsten bewerken
+                  </button>
+                  <button type="button" data-open-tab="start"
+                    class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
+                    ← Start
+                  </button>
+                </div>
               </div>
 
               <form id="rit-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
@@ -487,38 +485,74 @@
                     class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold tabular-nums" />
                 </div>
 
-                <!-- Van -->
+                <!-- Van (dropdown) -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Van *</label>
-                  <input id="rit-van" type="text" required placeholder="Bijv. Thuis"
-                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
+                  <select id="rit-van" required
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
+                  </select>
                 </div>
 
-                <!-- Naar -->
+                <!-- Naar (dropdown) -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Naar *</label>
-                  <input id="rit-naar" type="text" required placeholder="Bijv. Ziekenhuis / Dialyse"
-                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
+                  <select id="rit-naar" required
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
+                  </select>
                 </div>
 
-                <!-- Firma -->
+                <!-- Firma (dropdown) -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Firma</label>
-                  <input id="rit-firma" type="text" placeholder="Bijv. Vervoerder / Taxi"
-                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
+                  <select id="rit-firma"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
+                  </select>
                 </div>
 
                 <!-- Opmerking -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Opmerking</label>
-                  <input id="rit-opmerking" type="text" placeholder="Bijv. Rolstoel / wachtijd"
+                  <input id="rit-opmerking" type="text" placeholder="Bijv. Rolstoel / wachttijd"
                     class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
                 </div>
 
-                <div class="sm:col-span-2 lg:col-span-4 flex justify-end pt-1">
+                <!-- Herhaling: 1Malig, Elkedag, Om de dag, Ma wo vrij, Di do za -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Herhaling</label>
+                  <select id="rit-herhaling"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
+                    <option value="1Malig">1Malig</option>
+                    <option value="Elkedag">Elkedag</option>
+                    <option value="Om de dag">Om de dag</option>
+                    <option value="Ma wo vrij">Ma wo vrij</option>
+                    <option value="Di do za">Di do za</option>
+                  </select>
+                </div>
+
+                <!-- Geldig tot: huidige maand of tot einddatum -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Geldig voor</label>
+                  <select id="rit-geldig-type"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
+                    <option value="maand">Huidige maand (einde maand)</option>
+                    <option value="einddatum">Tot einddatum</option>
+                  </select>
+                </div>
+
+                <!-- Einddatum (zichtbaar bij 'Tot einddatum') -->
+                <div id="rit-einddatum-wrap" class="hidden">
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Einddatum</label>
+                  <input id="rit-einddatum" type="date"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold" />
+                </div>
+
+                <div class="sm:col-span-2 lg:col-span-4 flex items-center justify-between pt-1 gap-2">
+                  <span id="rit-preview-hint" class="text-xs text-slate-500 dark:text-slate-400">
+                    1Malig rit wordt direct opgeslagen.
+                  </span>
                   <button type="submit"
-                    class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer">
-                    Rit opslaan (ook in Agenda)
+                    class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer shrink-0">
+                    Rit(ten) opslaan
                   </button>
                 </div>
               </form>
@@ -529,6 +563,77 @@
               <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Geregistreerde ritten</h4>
               <div id="ritten-list-container" class="space-y-2.5">
                 <p class="text-xs text-slate-400 py-4 text-center">Nog geen ritten opgeslagen.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================================================== -->
+          <!-- INSTELLINGEN-MODULE (VOCHTLIMIETEN + DROPDOWNLIJSTEN)   -->
+          <!-- ===================================================== -->
+          <div id="instellingen-view" class="hidden space-y-5">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-6">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Instellingen</span>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">Limieten en dropdown-opties</h3>
+                </div>
+                <button type="button" data-open-tab="start"
+                  class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
+                  ← Start
+                </button>
+              </div>
+
+              <!-- 1. Vochtlimieten -->
+              <div class="space-y-3">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">Vochtintake limieten</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">24-uurs limiet (ml)</label>
+                    <input id="inst-limit-24" type="number" min="250" step="50" value="1500"
+                      class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">48-uurs limiet (ml)</label>
+                    <input id="inst-limit-48" type="number" min="500" step="50" value="3000"
+                      class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. Dropdowns voor Ritten: Firma, Van, Naar -->
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <!-- Firma lijst -->
+                <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
+                  <h5 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Firma dropdown</h5>
+                  <form id="add-firma-form" class="flex gap-1.5">
+                    <input id="new-firma-input" type="text" required placeholder="Nieuwe firma..."
+                      class="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs" />
+                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold cursor-pointer">+</button>
+                  </form>
+                  <div id="inst-firma-list" class="space-y-1.5 max-h-48 overflow-y-auto text-xs"></div>
+                </div>
+
+                <!-- Van lijst -->
+                <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
+                  <h5 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Van dropdown</h5>
+                  <form id="add-van-form" class="flex gap-1.5">
+                    <input id="new-van-input" type="text" required placeholder="Nieuwe vertreklocatie..."
+                      class="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs" />
+                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold cursor-pointer">+</button>
+                  </form>
+                  <div id="inst-van-list" class="space-y-1.5 max-h-48 overflow-y-auto text-xs"></div>
+                </div>
+
+                <!-- Naar lijst -->
+                <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
+                  <h5 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Naar dropdown</h5>
+                  <form id="add-naar-form" class="flex gap-1.5">
+                    <input id="new-naar-input" type="text" required placeholder="Nieuwe bestemming..."
+                      class="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs" />
+                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold cursor-pointer">+</button>
+                  </form>
+                  <div id="inst-naar-list" class="space-y-1.5 max-h-48 overflow-y-auto text-xs"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -680,7 +785,7 @@
   </div>
 
   <!-- ========================================================= -->
-  <!-- 5. REALTIME ENGINE (AUTH + REALTIME DB + RITTEN + VOCHT)  -->
+  <!-- 5. REALTIME ENGINE                                        -->
   <!-- ========================================================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -735,6 +840,9 @@
       vochtAmounts: [100, 150, 200, 250, 330, 500],
       vochtLimit24: 1500,
       vochtLimit48: 3000,
+      firmaOptions: ['Ziekenhuisvervoer', 'Regiotaxi', 'Eigen vervoer'],
+      vanOptions: ['Thuis', 'Dialysecentrum', 'Ziekenhuis'],
+      naarOptions: ['Dialysecentrum', 'Thuis', 'Ziekenhuis'],
       ritten: [],
       dialyseStatus: 'Geen sessie',
       dialyseSub: 'Klaar voor planning',
@@ -841,8 +949,85 @@
     }
 
     // ---------------------------------------------------------
-    // RITTEN LOGICA (TIJDKNOPPEN, DUUR & PUNCTUALITEIT ±15 MIN)
+    // INSTELLINGEN (VOCHTLIMIETEN + FIRMA / VAN / NAAR LIJSTEN)
     // ---------------------------------------------------------
+    function addOptionToList(fieldKey, rawVal) {
+      const val = String(rawVal || '').trim();
+      if (!val) return;
+      const list = Array.isArray(sharedData[fieldKey]) ? [...sharedData[fieldKey]] : [];
+      if (!list.some((x) => x.toLowerCase() === val.toLowerCase())) {
+        list.push(val);
+      }
+      pushSharedData({ [fieldKey]: list });
+    }
+
+    function removeOptionFromList(fieldKey, val) {
+      const list = Array.isArray(sharedData[fieldKey]) ? [...sharedData[fieldKey]] : [];
+      const next = list.filter((x) => x !== val);
+      pushSharedData({ [fieldKey]: next });
+    }
+
+    document.getElementById('inst-limit-24').addEventListener('change', (e) => {
+      pushSharedData({ vochtLimit24: Math.max(100, Number(e.target.value || 1500)) });
+    });
+    document.getElementById('inst-limit-48').addEventListener('change', (e) => {
+      pushSharedData({ vochtLimit48: Math.max(200, Number(e.target.value || 3000)) });
+    });
+
+    document.getElementById('add-firma-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const inp = document.getElementById('new-firma-input');
+      addOptionToList('firmaOptions', inp.value);
+      inp.value = '';
+    });
+    document.getElementById('add-van-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const inp = document.getElementById('new-van-input');
+      addOptionToList('vanOptions', inp.value);
+      inp.value = '';
+    });
+    document.getElementById('add-naar-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const inp = document.getElementById('new-naar-input');
+      addOptionToList('naarOptions', inp.value);
+      inp.value = '';
+    });
+
+    document.getElementById('inst-firma-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.del-opt-btn');
+      if (btn) removeOptionFromList('firmaOptions', btn.getAttribute('data-val'));
+    });
+    document.getElementById('inst-van-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.del-opt-btn');
+      if (btn) removeOptionFromList('vanOptions', btn.getAttribute('data-val'));
+    });
+    document.getElementById('inst-naar-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.del-opt-btn');
+      if (btn) removeOptionFromList('naarOptions', btn.getAttribute('data-val'));
+    });
+
+    // ---------------------------------------------------------
+    // RITTEN LOGICA (HERHALING, GELDIGHEID, TIJD & PUNCTUALITEIT)
+    // ---------------------------------------------------------
+    const geldigTypeEl = document.getElementById('rit-geldig-type');
+    const einddatumWrapEl = document.getElementById('rit-einddatum-wrap');
+    const herhalingEl = document.getElementById('rit-herhaling');
+    const previewHintEl = document.getElementById('rit-preview-hint');
+
+    function updateRepeatUI() {
+      const isEinddatum = geldigTypeEl.value === 'einddatum';
+      einddatumWrapEl.classList.toggle('hidden', !isEinddatum);
+      const rep = herhalingEl.value;
+      if (rep === '1Malig') {
+        previewHintEl.textContent = '1Malig: wordt als 1 rit op de gekozen datum opgeslagen.';
+      } else {
+        previewHintEl.textContent = `Herhaling "${rep}" wordt aangemaakt voor ${isEinddatum ? 'de gekozen einddatum' : 'de rest van de huidige maand'}.`;
+      }
+    }
+
+    geldigTypeEl.addEventListener('change', updateRepeatUI);
+    herhalingEl.addEventListener('change', updateRepeatUI);
+
     function currentHHMM() {
       const now = new Date();
       const hh = String(now.getHours()).padStart(2, '0');
@@ -882,9 +1067,6 @@
     document.getElementById('rit-start').addEventListener('change', updateRitDuurAuto);
     document.getElementById('rit-eind').addEventListener('change', updateRitDuurAuto);
 
-    // Beoordeel rit t.o.v. afspraaktijd:
-    // Bijv. afspraak 17:30 -> tussen 17:15 (-15 min) en 17:45 (+15 min) = Op tijd
-    // Daarboven (> +15 min) = Te laat | Daaronder (< -15 min) = Te vroeg
     function evaluateRitPunctuality(rit) {
       const afspraakStr = rit.afspraak || '';
       const eindStr = rit.eindTijd || '';
@@ -939,33 +1121,101 @@
       return { total: list.length, evaluated, onTime, early, late, pctOnTime, pctEarly, pctLate };
     }
 
+    function formatDateISO(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function generateOccurrenceDates(startDateStr, herhaling, geldigType, einddatumStr) {
+      const [sy, sm, sd] = startDateStr.split('-').map(Number);
+      const startDate = new Date(sy, sm - 1, sd);
+      if (herhaling === '1Malig') {
+        return [startDate];
+      }
+
+      let endDate;
+      if (geldigType === 'einddatum' && einddatumStr) {
+        const [ey, em, ed] = einddatumStr.split('-').map(Number);
+        endDate = new Date(ey, em - 1, ed);
+      } else {
+        // Einde van de huidige maand
+        endDate = new Date(sy, sm, 0);
+      }
+
+      if (endDate < startDate) {
+        return [startDate];
+      }
+
+      const dates = [];
+      const cur = new Date(startDate.getTime());
+      let dayStep = 0;
+
+      while (cur <= endDate && dates.length < 120) {
+        const dow = cur.getDay(); // 0=zo, 1=ma, 2=di, 3=wo, 4=do, 5=vr, 6=za
+        let match = false;
+
+        if (herhaling === 'Elkedag') {
+          match = true;
+        } else if (herhaling === 'Om de dag') {
+          match = dayStep % 2 === 0;
+        } else if (herhaling === 'Ma wo vrij') {
+          match = dow === 1 || dow === 3 || dow === 5;
+        } else if (herhaling === 'Di do za') {
+          match = dow === 2 || dow === 4 || dow === 6;
+        }
+
+        if (match) {
+          dates.push(new Date(cur.getTime()));
+        }
+        cur.setDate(cur.getDate() + 1);
+        dayStep += 1;
+      }
+
+      return dates.length > 0 ? dates : [startDate];
+    }
+
     document.getElementById('rit-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const afspraak = document.getElementById('rit-afspraak').value;
       const startTijd = document.getElementById('rit-start').value;
       const eindTijd = document.getElementById('rit-eind').value;
-      const van = document.getElementById('rit-van').value.trim();
-      const naar = document.getElementById('rit-naar').value.trim();
-      const firma = document.getElementById('rit-firma').value.trim();
+      const van = document.getElementById('rit-van').value;
+      const naar = document.getElementById('rit-naar').value;
+      const firma = document.getElementById('rit-firma').value;
       const opmerking = document.getElementById('rit-opmerking').value.trim();
       const duurVal = document.getElementById('rit-duur').value;
+      const herhaling = herhalingEl.value;
+      const geldigType = geldigTypeEl.value;
+      const einddatum = document.getElementById('rit-einddatum').value;
 
-      if (!afspraak || !van || !naar) return;
+      if (!afspraak || !van || !naar || !afspraak.includes('T')) return;
+
+      const [startDatePart, timePart] = afspraak.split('T');
+      const dates = generateOccurrenceDates(startDatePart, herhaling, geldigType, einddatum);
 
       const ritten = Array.isArray(sharedData.ritten) ? [...sharedData.ritten] : [];
-      ritten.push({
-        id: `${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-        afspraak,
-        startTijd,
-        eindTijd,
-        van,
-        naar,
-        firma,
-        opmerking,
-        duurMin: duurVal !== '' ? Number(duurVal) : null
+      dates.forEach((dObj, i) => {
+        const dateStr = formatDateISO(dObj);
+        ritten.push({
+          id: `${Date.now()}_${i}_${Math.random().toString(36).slice(2, 6)}`,
+          afspraak: `${dateStr}T${timePart.slice(0, 5)}`,
+          startTijd,
+          eindTijd,
+          van,
+          naar,
+          firma,
+          opmerking,
+          herhaling,
+          geldigType,
+          einddatum: geldigType === 'einddatum' ? einddatum : '',
+          duurMin: duurVal !== '' ? Number(duurVal) : null
+        });
       });
 
       document.getElementById('rit-form').reset();
+      updateRepeatUI();
       await pushSharedData({ ritten });
     });
 
@@ -1102,13 +1352,6 @@
         const ml = Number(addBtn.getAttribute('data-ml') || 0);
         addVochtEntry(ml, selectedDrink);
       }
-    });
-
-    document.getElementById('limit-24-input').addEventListener('change', (e) => {
-      pushSharedData({ vochtLimit24: Math.max(100, Number(e.target.value || 1500)) });
-    });
-    document.getElementById('limit-48-input').addEventListener('change', (e) => {
-      pushSharedData({ vochtLimit48: Math.max(200, Number(e.target.value || 3000)) });
     });
 
     document.getElementById('pos-clear-btn').addEventListener('click', () => {
@@ -1526,6 +1769,36 @@
       return afspraakStr;
     }
 
+    function fillSelectOptions(selectId, list) {
+      const sel = document.getElementById(selectId);
+      if (!sel) return;
+      const prev = sel.value;
+      const opts = Array.isArray(list) ? list : [];
+      sel.innerHTML = `<option value="">-- Kies --</option>` + opts.map((item) =>
+        `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`
+      ).join('');
+      if (prev && opts.includes(prev)) {
+        sel.value = prev;
+      }
+    }
+
+    function renderOptionManagerList(containerId, list) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      const opts = Array.isArray(list) ? list : [];
+      if (opts.length === 0) {
+        el.innerHTML = `<p class="text-slate-400 py-2">Geen items</p>`;
+        return;
+      }
+      el.innerHTML = opts.map((item) => `
+        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+          <span class="font-medium truncate">${escapeHtml(item)}</span>
+          <button type="button" data-val="${escapeHtml(item)}" title="Verwijder"
+            class="del-opt-btn text-slate-400 hover:text-red-500 font-bold ml-2 cursor-pointer">×</button>
+        </div>
+      `).join('');
+    }
+
     function renderAll() {
       const tabNames = {
         start: 'Start',
@@ -1534,7 +1807,8 @@
         dialyse: 'Dialyse',
         brieven: 'Brieven',
         agenda: 'Agenda',
-        chat: 'Chat'
+        chat: 'Chat',
+        instellingen: 'Instellingen'
       };
       const tab = localActiveTab;
       if (tab === 'chat') {
@@ -1550,6 +1824,15 @@
           ? 'nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white cursor-pointer flex items-center justify-between'
           : 'nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between';
       });
+
+      // Dropdowns & instellingenlijsten
+      fillSelectOptions('rit-firma', sharedData.firmaOptions);
+      fillSelectOptions('rit-van', sharedData.vanOptions);
+      fillSelectOptions('rit-naar', sharedData.naarOptions);
+
+      renderOptionManagerList('inst-firma-list', sharedData.firmaOptions);
+      renderOptionManagerList('inst-van-list', sharedData.vanOptions);
+      renderOptionManagerList('inst-naar-list', sharedData.naarOptions);
 
       const products = Array.isArray(sharedData.vochtProducts) && sharedData.vochtProducts.length > 0
         ? sharedData.vochtProducts
@@ -1587,7 +1870,6 @@
         ? `Laatste: ${brieven[brieven.length - 1].titel}`
         : 'Geen brief';
 
-      // Agenda-items uit Ritten en Dialyse
       const agendaItems = [
         ...ritten.map((r) => ({
           type: 'Rit',
@@ -1668,10 +1950,11 @@
           : 'h-full bg-indigo-500 transition-all duration-300 rounded-full';
 
       document.getElementById('pos-receipt-total24').textContent = `${vochtStats.total24} ml`;
-      const lim24El = document.getElementById('limit-24-input');
-      const lim48El = document.getElementById('limit-48-input');
-      if (document.activeElement !== lim24El) lim24El.value = vochtStats.lim24;
-      if (document.activeElement !== lim48El) lim48El.value = vochtStats.lim48;
+
+      const inst24 = document.getElementById('inst-limit-24');
+      const inst48 = document.getElementById('inst-limit-48');
+      if (inst24 && document.activeElement !== inst24) inst24.value = vochtStats.lim24;
+      if (inst48 && document.activeElement !== inst48) inst48.value = vochtStats.lim48;
 
       const receiptEl = document.getElementById('pos-receipt-list');
       if (vochtStats.valid48.length === 0) {
@@ -1733,6 +2016,7 @@
                 <div class="flex flex-wrap items-center gap-2">
                   <span class="text-sm font-bold text-slate-900 dark:text-white">${escapeHtml(routeLabel)}</span>
                   <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${badgeClass}">${escapeHtml(punct.label)}</span>
+                  ${r.herhaling && r.herhaling !== '1Malig' ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${escapeHtml(r.herhaling)}</span>` : ''}
                   ${r.firma ? `<span class="text-xs font-semibold text-slate-500 dark:text-slate-400">• ${escapeHtml(r.firma)}</span>` : ''}
                 </div>
                 <div class="text-xs text-slate-600 dark:text-slate-300 flex flex-wrap gap-x-3 gap-y-0.5 tabular-nums">
@@ -1765,12 +2049,14 @@
       const startView = document.getElementById('start-view');
       const vochtView = document.getElementById('vocht-view');
       const rittenView = document.getElementById('ritten-view');
+      const instellingenView = document.getElementById('instellingen-view');
       const chatView = document.getElementById('chat-view');
       const moduleBox = document.getElementById('module-box');
 
       startView.classList.add('hidden');
       vochtView.classList.add('hidden');
       rittenView.classList.add('hidden');
+      instellingenView.classList.add('hidden');
       chatView.classList.add('hidden');
       moduleBox.classList.add('hidden');
 
@@ -1780,6 +2066,8 @@
         vochtView.classList.remove('hidden');
       } else if (tab === 'ritten') {
         rittenView.classList.remove('hidden');
+      } else if (tab === 'instellingen') {
+        instellingenView.classList.remove('hidden');
       } else if (tab === 'chat') {
         chatView.classList.remove('hidden');
       } else {
@@ -1920,6 +2208,7 @@
         loginScreen.classList.add('hidden');
         appShell.classList.remove('hidden');
         document.getElementById('user-email-label').textContent = user.email;
+        updateRepeatUI();
         renderAll();
         startRealtime(user.uid);
         if (sessionStorage.getItem('dp_locked') === '1') {
