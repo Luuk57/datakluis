@@ -6,7 +6,6 @@
   "start_url": "/datakluis/",
   "scope": "/datakluis/",
   "display": "standalone",
-  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#176b52",
   "icons": [
