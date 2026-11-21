@@ -138,7 +138,7 @@
       <!-- Hoofdinhoud -->
       <main class="flex-1 p-4 md:p-8">
 
-        <!-- OVERIGE TABS (Start, Ritten, Dialyse, Brieven, Agenda) -->
+        <!-- OVERIGE TABS -->
         <div id="other-tab-view" class="hidden max-w-5xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
           <h2 id="page-title" class="text-2xl font-bold text-slate-900">Start</h2>
           <p id="page-description" class="text-slate-600 mt-2">
@@ -153,8 +153,13 @@
           <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
             <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
               <div>
-                <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Vochtmonitor</span>
-                <h2 class="text-xl font-bold text-slate-900">Vochtintake — 24u &amp; 48u tussen dialyses</h2>
+                <div class="flex items-center gap-2.5">
+                  <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Vochtmonitor</span>
+                  <span id="sync-status-badge" class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+                    Sync actief (alle apparaten)
+                  </span>
+                </div>
+                <h2 class="text-xl font-bold text-slate-900 mt-0.5">Vochtintake — 24u &amp; 48u tussen dialyses</h2>
               </div>
 
               <!-- Limieten instellen -->
@@ -207,7 +212,7 @@
               <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <div>
                   <h3 class="text-base font-bold text-slate-900">1. Kies een product-tegel</h3>
-                  <p class="text-xs text-slate-500">Eigen producten gelden alleen op jouw account.</p>
+                  <p class="text-xs text-slate-500">Gesynchroniseerd met jouw account op alle apparaten.</p>
                 </div>
                 <button id="toggle-add-product-btn" type="button"
                   class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition cursor-pointer">
@@ -235,7 +240,6 @@
                   </div>
                 </div>
 
-                <!-- Bibliotheek met afbeeldingen van allerlei soorten drinken -->
                 <div>
                   <p class="text-xs font-semibold text-slate-700 mb-2">Kies een afbeelding uit de drink-bibliotheek:</p>
                   <div id="drink-library-grid" class="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-48 overflow-y-auto p-1"></div>
@@ -256,14 +260,13 @@
               <div>
                 <div class="flex items-center justify-between gap-2 mb-1">
                   <h3 class="text-base font-bold text-slate-900">2. Vaste hoeveelheid-tegels</h3>
-                  <span class="text-[11px] font-medium text-slate-400">Alleen jouw account</span>
+                  <span class="text-[11px] font-medium text-slate-400">Live sync</span>
                 </div>
                 <p class="text-xs text-slate-500 mb-4">Klik op een hoeveelheid om direct te boeken, of maak eigen ml-tegels.</p>
 
-                <!-- Geselecteerd product tonen -->
                 <div class="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                   <div class="flex items-center gap-2.5 min-w-0">
-                    <span id="selected-product-icon" class="text-xl shrink-0">💧</span>
+                    <span id="selected-product-icon" class="w-7 h-7 shrink-0 flex items-center justify-center"></span>
                     <div class="truncate">
                       <span class="text-[10px] uppercase font-bold text-slate-400 block">Gekozen product</span>
                       <span id="selected-product-label" class="text-sm font-bold text-slate-900 truncate">Water</span>
@@ -272,10 +275,8 @@
                   <span class="text-[11px] px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-medium shrink-0">Actief</span>
                 </div>
 
-                <!-- Vaste hoeveelheid-tegels -->
                 <div id="amount-tiles-grid" class="grid grid-cols-3 gap-2.5 mb-4"></div>
 
-                <!-- Nieuwe vaste hoeveelheid-tegel toevoegen -->
                 <div class="flex gap-2">
                   <input id="new-amount-ml" type="number" min="5" step="5" placeholder="Nieuwe ml (bijv. 125)"
                     class="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
@@ -286,7 +287,6 @@
                 </div>
               </div>
 
-              <!-- Handmatige ml invoer -->
               <div class="pt-4 border-t border-slate-100">
                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Of vul een exacte hoeveelheid in (ml)</label>
                 <div class="flex gap-2">
@@ -306,7 +306,7 @@
             <div class="flex items-center justify-between mb-4">
               <div>
                 <h3 class="text-base font-bold text-slate-900">Innames (laatste 48 uur)</h3>
-                <p class="text-xs text-slate-500">Alle geregistreerde vochtinnames op jouw account.</p>
+                <p class="text-xs text-slate-500">Wordt automatisch bijgewerkt op alle apparaten.</p>
               </div>
             </div>
 
@@ -358,7 +358,7 @@
   </div>
 
   <!-- ========================================================= -->
-  <!-- BLOK D: DE WERKING (Auth, Tijd, Pincode & Vochtintake)   -->
+  <!-- BLOK D: DE WERKING (Auth + Realtime Database Sync)        -->
   <!-- ========================================================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -371,6 +371,12 @@
       GoogleAuthProvider,
       signOut
     } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      set,
+      onValue
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBzvMLTybV4bKEWRUA2WEuye4lfNeoHfew",
@@ -384,9 +390,12 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getDatabase(app);
     const googleProvider = new GoogleAuthProvider();
 
     let currentUserUid = null;
+    let unsubscribeVocht = null;
+    let currentVochtState = null;
 
     // ---------------------------------------------------------
     // 1. LIVE TIJD EN DATUM
@@ -495,7 +504,7 @@
     });
 
     // ---------------------------------------------------------
-    // 4. BIBLIOTHEEK MET AFBEELDINGEN VAN ALLERLEI SOORTEN DRINKEN
+    // 4. DRINK-BIBLIOTHEEK & VOCHTINTAKE (REALTIME DATABASE)
     // ---------------------------------------------------------
     const DRINK_LIBRARY = [
       { id: 'water', label: 'Water', bg: 'bg-sky-50', svg: `<svg viewBox="0 0 64 64" class="w-9 h-9 mx-auto"><path d="M32 8C32 8 14 29 14 41C14 50.94 22.06 59 32 59C41.94 59 50 50.94 50 41C50 29 32 8 32 8Z" fill="#0ea5e9"/><path d="M23 41C23 36 26 32 28 30" stroke="#bae6fd" stroke-width="3" stroke-linecap="round"/></svg>` },
@@ -525,45 +534,76 @@
     let selectedLibraryIconId = 'water';
     let selectedProductId = 'p_water';
 
-    // Account-specifieke opslag helper (alleen voor ingelogde gebruiker)
-    function userKey(suffix) {
-      return `datapoortalen_${currentUserUid}_${suffix}`;
+    function normalizeVochtState(raw) {
+      return {
+        limit24h: Number(raw?.limit24h) || 1500,
+        limit48h: Number(raw?.limit48h) || 3000,
+        products: Array.isArray(raw?.products) ? raw.products : DEFAULT_PRODUCTS,
+        amounts: Array.isArray(raw?.amounts) ? raw.amounts.map(Number) : DEFAULT_AMOUNTS,
+        intakes: Array.isArray(raw?.intakes) ? raw.intakes : []
+      };
     }
 
     function getVochtState() {
-      const defaultState = {
-        limit24h: 1500,
-        limit48h: 3000,
-        products: DEFAULT_PRODUCTS,
-        amounts: DEFAULT_AMOUNTS,
-        intakes: [] // { id, productId, productName, iconId, amountMl, timestamp }
-      };
+      return currentVochtState || normalizeVochtState({});
+    }
+
+    function setSyncBadge(text, ok = true) {
+      const badge = document.getElementById('sync-status-badge');
+      badge.textContent = text;
+      badge.className = ok
+        ? 'text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium'
+        : 'text-[11px] px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200 font-medium';
+    }
+
+    async function saveVochtState(state) {
+      if (!currentUserUid) return;
+      const cleanState = normalizeVochtState(state);
+      currentVochtState = cleanState;
+      renderVochtintake();
+
       try {
-        const raw = localStorage.getItem(userKey('vochtintake_v1'));
-        if (!raw) return defaultState;
-        const parsed = JSON.parse(raw);
-        return {
-          limit24h: Number(parsed.limit24h) || 1500,
-          limit48h: Number(parsed.limit48h) || 3000,
-          products: Array.isArray(parsed.products) ? parsed.products : DEFAULT_PRODUCTS,
-          amounts: Array.isArray(parsed.amounts) ? parsed.amounts : DEFAULT_AMOUNTS,
-          intakes: Array.isArray(parsed.intakes) ? parsed.intakes : []
-        };
-      } catch {
-        return defaultState;
+        await set(ref(db, `users/${currentUserUid}/vochtintake`), cleanState);
+        setSyncBadge('Gesynchroniseerd met alle apparaten', true);
+      } catch (err) {
+        setSyncBadge('Sync fout — controleer Firebase Database regels', false);
       }
     }
 
-    function saveVochtState(state) {
-      localStorage.setItem(userKey('vochtintake_v1'), JSON.stringify(state));
-      renderVochtintake();
+    function startRealtimeVochtListener(uid) {
+      if (unsubscribeVocht) {
+        unsubscribeVocht();
+        unsubscribeVocht = null;
+      }
+
+      const vochtRef = ref(db, `users/${uid}/vochtintake`);
+      unsubscribeVocht = onValue(vochtRef, (snapshot) => {
+        if (snapshot.exists()) {
+          currentVochtState = normalizeVochtState(snapshot.val());
+        } else {
+          // Eerste keer voor dit account: standaardwaarden naar Firebase schrijven
+          currentVochtState = normalizeVochtState({
+            limit24h: 1500,
+            limit48h: 3000,
+            products: DEFAULT_PRODUCTS,
+            amounts: DEFAULT_AMOUNTS,
+            intakes: []
+          });
+          set(vochtRef, currentVochtState).catch(() => {
+            setSyncBadge('Sync fout — controleer Firebase Database regels', false);
+          });
+        }
+        setSyncBadge('Gesynchroniseerd met alle apparaten', true);
+        renderVochtintake();
+      }, () => {
+        setSyncBadge('Geen database-verbinding', false);
+      });
     }
 
     function getDrinkById(iconId) {
       return DRINK_LIBRARY.find((d) => d.id === iconId) || DRINK_LIBRARY[0];
     }
 
-    // Bibliotheek met afbeeldingen renderen
     function renderDrinkLibrary() {
       const grid = document.getElementById('drink-library-grid');
       grid.innerHTML = DRINK_LIBRARY.map((item) => {
@@ -594,7 +634,6 @@
       });
     }
 
-    // Vochtintake volledig renderen
     function renderVochtintake() {
       if (!currentUserUid) return;
       const state = getVochtState();
@@ -602,20 +641,18 @@
       const ms24h = 24 * 60 * 60 * 1000;
       const ms48h = 48 * 60 * 60 * 1000;
 
-      // Limiet inputs synchroniseren zonder cursor-verstoring
       const limit24Input = document.getElementById('limit-24h-input');
       const limit48Input = document.getElementById('limit-48h-input');
       if (document.activeElement !== limit24Input) limit24Input.value = state.limit24h;
       if (document.activeElement !== limit48Input) limit48Input.value = state.limit48h;
 
-      // Innames filteren op 24u en 48u
-      const intakes48h = state.intakes.filter((item) => now - item.timestamp <= ms48h);
-      const intakes24h = intakes48h.filter((item) => now - item.timestamp <= ms24h);
+      const intakes48h = state.intakes.filter((item) => now - Number(item.timestamp) <= ms48h);
+      const intakes24h = intakes48h.filter((item) => now - Number(item.timestamp) <= ms24h);
 
       const total24h = intakes24h.reduce((sum, item) => sum + Number(item.amountMl), 0);
       const total48h = intakes48h.reduce((sum, item) => sum + Number(item.amountMl), 0);
 
-      // Progress 24u
+      // 24 uur progress bar
       const pct24 = Math.min(100, Math.round((total24h / state.limit24h) * 100));
       const bar24 = document.getElementById('bar-24h');
       bar24.style.width = `${pct24}%`;
@@ -628,7 +665,7 @@
         ? `Nog ${rem24} ml beschikbaar binnen 24 uur.`
         : `Limiet met ${Math.abs(rem24)} ml overschreden in de laatste 24 uur.`;
 
-      // Progress 48u (tussen dialyses)
+      // 48 uur progress bar (tussen dialyses)
       const pct48 = Math.min(100, Math.round((total48h / state.limit48h) * 100));
       const bar48 = document.getElementById('bar-48h');
       bar48.style.width = `${pct48}%`;
@@ -641,17 +678,20 @@
         ? `Nog ${rem48} ml beschikbaar over 48 uur (tussen dialyses).`
         : `48u-limiet met ${Math.abs(rem48)} ml overschreden.`;
 
-      // Actief geselecteerd product bepalen
+      // Actief product bepalen
       if (!state.products.some((p) => p.id === selectedProductId)) {
         selectedProductId = state.products[0]?.id || null;
       }
       const activeProd = state.products.find((p) => p.id === selectedProductId);
       const activeDrink = getDrinkById(activeProd?.iconId);
-      document.getElementById('selected-product-icon').innerHTML = activeDrink.svg;
-      document.getElementById('selected-product-icon').firstElementChild.className = 'w-7 h-7';
+      const iconContainer = document.getElementById('selected-product-icon');
+      iconContainer.innerHTML = activeDrink.svg;
+      if (iconContainer.firstElementChild) {
+        iconContainer.firstElementChild.className = 'w-7 h-7';
+      }
       document.getElementById('selected-product-label').textContent = activeProd ? activeProd.name : 'Geen product';
 
-      // Product-tegels renderen (met verwijderknop)
+      // Product-tegels
       const prodGrid = document.getElementById('product-tiles-grid');
       if (state.products.length === 0) {
         prodGrid.innerHTML = `<p class="col-span-full text-xs text-slate-400 py-4 text-center">Geen product-tegels. Klik op "+ Product / Bibliotheek" om er een te maken.</p>`;
@@ -679,7 +719,6 @@
         }).join('');
       }
 
-      // Events op product-tegels
       prodGrid.querySelectorAll('.select-prod-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
           selectedProductId = btn.getAttribute('data-select-prod');
@@ -695,13 +734,13 @@
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           const delId = btn.getAttribute('data-del-prod');
-          const next = getVochtState();
+          const next = structuredClone(getVochtState());
           next.products = next.products.filter((p) => p.id !== delId);
           saveVochtState(next);
         });
       });
 
-      // Vaste hoeveelheid-tegels renderen (met verwijderknop)
+      // Vaste hoeveelheid-tegels
       const amtGrid = document.getElementById('amount-tiles-grid');
       if (state.amounts.length === 0) {
         amtGrid.innerHTML = `<p class="col-span-3 text-xs text-slate-400 py-2 text-center">Geen hoeveelheid-tegels.</p>`;
@@ -730,21 +769,21 @@
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           const ml = Number(btn.getAttribute('data-del-amt'));
-          const next = getVochtState();
+          const next = structuredClone(getVochtState());
           next.amounts = next.amounts.filter((a) => Number(a) !== ml);
           saveVochtState(next);
         });
       });
 
-      // Logboek laatste 48 uur renderen
+      // Logboek laatste 48 uur
       const logList = document.getElementById('intake-log-list');
       if (intakes48h.length === 0) {
         logList.innerHTML = `<p class="text-slate-400 py-4 text-center">Nog geen vochtinnames in de laatste 48 uur.</p>`;
       } else {
-        const sorted = [...intakes48h].sort((a, b) => b.timestamp - a.timestamp);
+        const sorted = [...intakes48h].sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
         logList.innerHTML = sorted.map((entry) => {
           const drink = getDrinkById(entry.iconId);
-          const dt = new Date(entry.timestamp);
+          const dt = new Date(Number(entry.timestamp));
           const timeLabel = dt.toLocaleString('nl-NL', {
             weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
           });
@@ -775,7 +814,7 @@
         logList.querySelectorAll('.del-log-btn').forEach((btn) => {
           btn.addEventListener('click', () => {
             const logId = btn.getAttribute('data-del-log');
-            const next = getVochtState();
+            const next = structuredClone(getVochtState());
             next.intakes = next.intakes.filter((i) => i.id !== logId);
             saveVochtState(next);
           });
@@ -796,7 +835,7 @@
       const cleanMl = Number(amountMl);
       if (!cleanMl || cleanMl <= 0) return;
 
-      const state = getVochtState();
+      const state = structuredClone(getVochtState());
       const activeProd = state.products.find((p) => p.id === selectedProductId);
       const productName = activeProd ? activeProd.name : 'Vocht';
       const iconId = activeProd ? activeProd.iconId : 'water';
@@ -813,7 +852,6 @@
       saveVochtState(state);
     }
 
-    // Paneel openen/sluiten voor nieuw product + bibliotheek
     const addProductPanel = document.getElementById('add-product-panel');
     document.getElementById('toggle-add-product-btn').addEventListener('click', () => {
       addProductPanel.classList.toggle('hidden');
@@ -823,7 +861,6 @@
       addProductPanel.classList.add('hidden');
     });
 
-    // Nieuw product opslaan in eigen account
     document.getElementById('save-new-product-btn').addEventListener('click', () => {
       if (!currentUserUid) return;
       const nameInput = document.getElementById('new-product-name');
@@ -832,7 +869,7 @@
       if (!name) return;
 
       const defaultMl = mlInput.value ? Number(mlInput.value) : null;
-      const state = getVochtState();
+      const state = structuredClone(getVochtState());
       const newId = `p_${Date.now()}`;
 
       state.products.push({
@@ -849,14 +886,13 @@
       saveVochtState(state);
     });
 
-    // Nieuwe vaste hoeveelheid-tegel toevoegen
     document.getElementById('add-amount-tile-btn').addEventListener('click', () => {
       if (!currentUserUid) return;
       const input = document.getElementById('new-amount-ml');
       const ml = Number(input.value);
       if (!ml || ml <= 0) return;
 
-      const state = getVochtState();
+      const state = structuredClone(getVochtState());
       if (!state.amounts.includes(ml)) {
         state.amounts.push(ml);
         state.amounts.sort((a, b) => a - b);
@@ -865,7 +901,6 @@
       saveVochtState(state);
     });
 
-    // Handmatige ml boeken
     document.getElementById('log-custom-ml-btn').addEventListener('click', () => {
       const input = document.getElementById('custom-intake-ml');
       const ml = Number(input.value);
@@ -874,12 +909,11 @@
       input.value = '';
     });
 
-    // Limieten 24u en 48u opslaan
     document.getElementById('limit-24h-input').addEventListener('change', (e) => {
       if (!currentUserUid) return;
       const val = Number(e.target.value);
       if (!val || val < 50) return;
-      const state = getVochtState();
+      const state = structuredClone(getVochtState());
       state.limit24h = val;
       saveVochtState(state);
     });
@@ -888,7 +922,7 @@
       if (!currentUserUid) return;
       const val = Number(e.target.value);
       if (!val || val < 50) return;
-      const state = getVochtState();
+      const state = structuredClone(getVochtState());
       state.limit48h = val;
       saveVochtState(state);
     });
@@ -943,6 +977,11 @@
     });
 
     function handleLogout() {
+      if (unsubscribeVocht) {
+        unsubscribeVocht();
+        unsubscribeVocht = null;
+      }
+      currentVochtState = null;
       sessionStorage.removeItem('datapoortalen_locked');
       pinScreen.classList.add('hidden');
       signOut(auth);
@@ -958,7 +997,7 @@
         loginScreen.classList.add('hidden');
         appShell.classList.remove('hidden');
         document.getElementById('user-email-display').textContent = user.email;
-        renderVochtintake();
+        startRealtimeVochtListener(user.uid);
 
         if (sessionStorage.getItem('datapoortalen_locked') === 'true') {
           openLockScreen(false);
