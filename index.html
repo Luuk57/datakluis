@@ -80,7 +80,7 @@
   <div id="app-shell" class="hidden min-h-screen flex flex-col md:flex-row">
 
     <!-- Linker zijbalk -->
-    <aside class="w-full md:w-64 bg-slate-900 dark:bg-slate-900 text-white p-6 flex flex-col justify-between shrink-0 border-b md:border-b-0 md:border-r border-slate-800">
+    <aside class="w-full md:w-64 bg-slate-900 text-white p-6 flex flex-col justify-between shrink-0 border-b md:border-b-0 md:border-r border-slate-800">
       <div>
         <div class="pb-5 mb-6 border-b border-slate-800">
           <span class="text-xs font-bold uppercase tracking-wider text-blue-400">DataPoortalen</span>
@@ -120,7 +120,6 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <!-- Dag / Nacht modus knop -->
           <button id="theme-toggle" type="button" title="Wissel tussen Dag- en Nachtmodus"
             class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -129,7 +128,6 @@
             <span class="theme-label">Nachtmodus</span>
           </button>
 
-          <!-- Volledig beeld knop -->
           <button id="fullscreen-toggle" type="button" title="Volledig beeld"
             class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -138,7 +136,6 @@
             <span id="fullscreen-text">Volledig beeld</span>
           </button>
 
-          <!-- Vergrendelen met pincode knop -->
           <button id="lock-trigger" type="button" title="Vergrendelen met pincode"
             class="px-3 py-2 rounded-xl border border-amber-200 dark:border-amber-800/70 bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -147,7 +144,6 @@
             <span>Vergrendel</span>
           </button>
 
-          <!-- Uitloggen knop -->
           <button id="logout-header" type="button" title="Uitloggen"
             class="px-3 py-2 rounded-xl border border-red-200 dark:border-red-900/70 bg-red-50 dark:bg-red-950/50 hover:bg-red-600 text-red-700 dark:text-red-300 hover:text-white text-xs font-semibold transition cursor-pointer">
             Uitloggen
@@ -157,53 +153,156 @@
 
       <!-- Hoofdinhoud -->
       <main class="flex-1 p-6 md:p-8">
-        <div class="max-w-5xl mx-auto space-y-6">
+        <div class="max-w-6xl mx-auto space-y-6">
 
-          <!-- Realtime Live Statuskaart -->
-          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
-            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-              <div>
-                <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Realtime Synchronisatie</span>
-                <h2 id="active-tab-title" class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">Start</h2>
-              </div>
-              <div class="text-right">
-                <span class="text-xs text-slate-400 dark:text-slate-500 block">Laatste live update</span>
-                <span id="last-sync-time" class="text-xs font-bold text-slate-700 dark:text-slate-200 tabular-nums">Nog geen wijziging</span>
-              </div>
+          <!-- Kopregel & Realtime sync indicator -->
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Realtime Dashboard</span>
+              <h2 id="active-tab-title" class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">Start</h2>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Actieve status / melding</label>
-                <input id="live-status-input" type="text" placeholder="Bijv. Klaar voor dialyse of Onderweg"
-                  class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Snelle vocht-teller (ml)</label>
-                <div class="flex gap-2">
-                  <input id="live-vocht-input" type="number" min="0" step="50" value="0"
-                    class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold tabular-nums focus:outline-none focus:ring-2 focus:ring-blue-600" />
-                  <button id="add-150-btn" type="button"
-                    class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shrink-0 cursor-pointer">
-                    +150
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Gedeelde notitie</label>
-                <input id="live-note-input" type="text" placeholder="Typ iets op toestel A, zie het op B..."
-                  class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-600" />
-              </div>
+            <div class="text-right">
+              <span class="text-xs text-slate-400 dark:text-slate-500 block">Laatste live update</span>
+              <span id="last-sync-time" class="text-xs font-bold text-slate-700 dark:text-slate-200 tabular-nums">Nog geen wijziging</span>
             </div>
           </div>
 
-          <!-- Module werkruimte -->
-          <div id="module-box" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
-            <p id="module-desc" class="text-sm text-slate-600 dark:text-slate-400">
-              Alle invoer hierboven wordt live opgeslagen in Firebase Realtime Database onder jouw account en verschijnt direct op elk ander ingelogd apparaat.
-            </p>
+          <!-- ===================================================== -->
+          <!-- START-WEERGAVE: 5 LIVE TEGELS                         -->
+          <!-- ===================================================== -->
+          <div id="start-view" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+            <!-- TEGEL 1: VOCHTINTAKE -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between hover:border-sky-400 dark:hover:border-sky-500 transition">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">Vochtintake</span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse"></span>
+                </div>
+                <p id="tile-vocht-value" class="text-3xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 ml</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Live vochtstand over je apparaten</p>
+              </div>
+              <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                <div class="flex gap-1.5">
+                  <button id="tile-vocht-plus150" type="button"
+                    class="px-2.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold cursor-pointer">
+                    +150 ml
+                  </button>
+                  <button id="tile-vocht-reset" type="button"
+                    class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold cursor-pointer">
+                    Reset
+                  </button>
+                </div>
+                <button type="button" data-open-tab="vochtintake"
+                  class="open-tab-link text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                  Openen →
+                </button>
+              </div>
+            </div>
+
+            <!-- TEGEL 2: RITTEN -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between hover:border-emerald-400 dark:hover:border-emerald-500 transition">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Ritten</span>
+                  <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-semibold">→ Agenda</span>
+                </div>
+                <p id="tile-ritten-count" class="text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 ritten</p>
+                <p id="tile-ritten-last" class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Nog geen rit ingepland</p>
+              </div>
+              <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                <button id="tile-rit-quick" type="button"
+                  class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer">
+                  + Snelle rit
+                </button>
+                <button type="button" data-open-tab="ritten"
+                  class="open-tab-link text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                  Openen →
+                </button>
+              </div>
+            </div>
+
+            <!-- TEGEL 3: DIALYSE -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-500 transition">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Dialyse</span>
+                  <span class="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-semibold">→ Agenda</span>
+                </div>
+                <p id="tile-dialyse-status" class="text-2xl font-extrabold text-slate-900 dark:text-white truncate">Geen sessie</p>
+                <p id="tile-dialyse-sub" class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Klik om status te wisselen</p>
+              </div>
+              <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                <button id="tile-dialyse-cycle" type="button"
+                  class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer">
+                  Wissel status
+                </button>
+                <button type="button" data-open-tab="dialyse"
+                  class="open-tab-link text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                  Openen →
+                </button>
+              </div>
+            </div>
+
+            <!-- TEGEL 4: BRIEVEN -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between hover:border-amber-400 dark:hover:border-amber-500 transition">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Brieven</span>
+                  <span class="text-[11px] text-slate-400 font-medium">Dossier</span>
+                </div>
+                <p id="tile-brieven-count" class="text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 brieven</p>
+                <p id="tile-brieven-last" class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Geen recente brief</p>
+              </div>
+              <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                <button id="tile-brief-quick" type="button"
+                  class="px-2.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer">
+                  + Brief noteren
+                </button>
+                <button type="button" data-open-tab="brieven"
+                  class="open-tab-link text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                  Openen →
+                </button>
+              </div>
+            </div>
+
+            <!-- TEGEL 5: AGENDA -->
+            <div class="sm:col-span-2 lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-between hover:border-indigo-400 dark:hover:border-indigo-500 transition">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Agenda (Ritten &amp; Dialyse)</span>
+                  <span id="tile-agenda-total" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300">0 items</span>
+                </div>
+                <div id="tile-agenda-preview" class="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+                  <p class="text-slate-400 dark:text-slate-500">Nog geen agenda-items uit Ritten of Dialyse.</p>
+                </div>
+              </div>
+              <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <span class="text-xs text-slate-500 dark:text-slate-400">Ritten en dialyses verschijnen hier automatisch</span>
+                <button type="button" data-open-tab="agenda"
+                  class="open-tab-link text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
+                  Open Agenda →
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ===================================================== -->
+          <!-- MODULE-WEERGAVE (BIJ KLIKKEN OP EEN TEGEL OF MENU-ITEM) -->
+          <!-- ===================================================== -->
+          <div id="module-box" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
+            <div class="flex items-center justify-between gap-4 pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <h3 id="module-heading" class="text-lg font-bold text-slate-900 dark:text-white">Onderdeel</h3>
+                <p id="module-desc" class="text-sm text-slate-500 dark:text-slate-400 mt-0.5"></p>
+              </div>
+              <button type="button" data-open-tab="start"
+                class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
+                ← Terug naar Start
+              </button>
+            </div>
+            <div id="module-content" class="text-sm text-slate-700 dark:text-slate-300"></div>
           </div>
 
         </div>
@@ -276,16 +375,19 @@
 
     let uid = null;
     let dbUnsub = null;
+
     let liveData = {
       activeTab: 'start',
       theme: 'light',
-      status: '',
       vochtMl: 0,
-      note: '',
+      ritten: [],
+      dialyseStatus: 'Geen sessie',
+      dialyseSub: 'Klaar voor planning',
+      brieven: [],
       updatedAt: ''
     };
 
-    // Dag / Nacht modus toepassen
+    // Dag / Nacht modus
     function applyTheme(theme) {
       const isDark = theme === 'dark';
       document.documentElement.classList.toggle('dark', isDark);
@@ -303,7 +405,7 @@
     document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
     document.getElementById('login-theme-btn').addEventListener('click', toggleTheme);
 
-    // Live datum & tijd
+    // Live tijd & datum
     function tickClock() {
       const now = new Date();
       document.getElementById('clock-time').textContent = now.toLocaleTimeString('nl-NL');
@@ -415,6 +517,7 @@
       };
       const tab = data.activeTab || 'start';
       document.getElementById('active-tab-title').textContent = tabNames[tab] || 'Start';
+
       document.querySelectorAll('.nav-btn').forEach((btn) => {
         const active = btn.getAttribute('data-tab') === tab;
         btn.className = active
@@ -422,16 +525,136 @@
           : 'nav-btn w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer';
       });
 
-      const statusEl = document.getElementById('live-status-input');
-      const vochtEl = document.getElementById('live-vocht-input');
-      const noteEl = document.getElementById('live-note-input');
+      const ritten = Array.isArray(data.ritten) ? data.ritten : [];
+      const brieven = Array.isArray(data.brieven) ? data.brieven : [];
+      const vochtMl = Number(data.vochtMl || 0);
+      const dialyseStatus = data.dialyseStatus || 'Geen sessie';
+      const dialyseSub = data.dialyseSub || 'Klaar voor planning';
 
-      if (document.activeElement !== statusEl) statusEl.value = data.status || '';
-      if (document.activeElement !== vochtEl) vochtEl.value = Number(data.vochtMl || 0);
-      if (document.activeElement !== noteEl) noteEl.value = data.note || '';
+      // Tegel 1: Vochtintake
+      document.getElementById('tile-vocht-value').textContent = `${vochtMl} ml`;
+
+      // Tegel 2: Ritten
+      document.getElementById('tile-ritten-count').textContent = `${ritten.length} ${ritten.length === 1 ? 'rit' : 'ritten'}`;
+      document.getElementById('tile-ritten-last').textContent = ritten.length > 0
+        ? `Laatste: ${ritten[ritten.length - 1].titel}`
+        : 'Nog geen rit ingepland';
+
+      // Tegel 3: Dialyse
+      document.getElementById('tile-dialyse-status').textContent = dialyseStatus;
+      document.getElementById('tile-dialyse-sub').textContent = dialyseSub;
+
+      // Tegel 4: Brieven
+      document.getElementById('tile-brieven-count').textContent = `${brieven.length} ${brieven.length === 1 ? 'brief' : 'brieven'}`;
+      document.getElementById('tile-brieven-last').textContent = brieven.length > 0
+        ? `Laatste: ${brieven[brieven.length - 1].titel}`
+        : 'Geen recente brief';
+
+      // Tegel 5: Agenda (combinatie van Ritten en Dialyse)
+      const agendaItems = [
+        ...ritten.map((r) => ({ type: 'Rit', titel: r.titel, tijd: r.tijd || 'Vandaag' })),
+        ...(dialyseStatus !== 'Geen sessie'
+          ? [{ type: 'Dialyse', titel: dialyseStatus, tijd: dialyseSub }]
+          : [])
+      ];
+      document.getElementById('tile-agenda-total').textContent = `${agendaItems.length} ${agendaItems.length === 1 ? 'item' : 'items'}`;
+      const agendaPreview = document.getElementById('tile-agenda-preview');
+      if (agendaItems.length === 0) {
+        agendaPreview.innerHTML = `<p class="text-slate-400 dark:text-slate-500">Nog geen agenda-items uit Ritten of Dialyse.</p>`;
+      } else {
+        agendaPreview.innerHTML = agendaItems.slice(-3).reverse().map((item) => `
+          <div class="flex items-center justify-between py-1 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/70">
+            <span class="font-semibold text-slate-800 dark:text-slate-200 truncate">[${item.type}] ${escapeHtml(item.titel)}</span>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400 shrink-0 ml-2">${escapeHtml(item.tijd)}</span>
+          </div>
+        `).join('');
+      }
+
+      // Wissel tussen Start (tegels) en geselecteerd onderdeel
+      const startView = document.getElementById('start-view');
+      const moduleBox = document.getElementById('module-box');
+      if (tab === 'start') {
+        startView.classList.remove('hidden');
+        moduleBox.classList.add('hidden');
+      } else {
+        startView.classList.add('hidden');
+        moduleBox.classList.remove('hidden');
+        document.getElementById('module-heading').textContent = tabNames[tab];
+        document.getElementById('module-desc').textContent = `Onderdeel ${tabNames[tab]} — live gesynchroniseerd over je toestellen.`;
+        document.getElementById('module-content').innerHTML = renderModuleBody(tab, data, agendaItems);
+      }
 
       document.getElementById('last-sync-time').textContent = data.updatedAt || 'Zojuist verbonden';
     }
+
+    function renderModuleBody(tab, data, agendaItems) {
+      if (tab === 'vochtintake') {
+        return `<p>Huidige live vochtstand: <strong>${Number(data.vochtMl || 0)} ml</strong>. De volledige vochtintake-module bouwen we hierna verder uit.</p>`;
+      }
+      if (tab === 'ritten') {
+        const list = (data.ritten || []).map((r) => `<li>• ${escapeHtml(r.titel)} (${escapeHtml(r.tijd || '')})</li>`).join('');
+        return `<p class="mb-2">Geregistreerde ritten (verschijnen ook in Agenda):</p><ul class="space-y-1">${list || '<li class="text-slate-400">Geen ritten</li>'}</ul>`;
+      }
+      if (tab === 'dialyse') {
+        return `<p>Status: <strong>${escapeHtml(data.dialyseStatus || 'Geen sessie')}</strong> — ${escapeHtml(data.dialyseSub || '')}</p>`;
+      }
+      if (tab === 'brieven') {
+        const list = (data.brieven || []).map((b) => `<li>• ${escapeHtml(b.titel)}</li>`).join('');
+        return `<p class="mb-2">Brieven in dossier:</p><ul class="space-y-1">${list || '<li class="text-slate-400">Geen brieven</li>'}</ul>`;
+      }
+      if (tab === 'agenda') {
+        const list = agendaItems.map((a) => `<li class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800"><strong>${escapeHtml(a.type)}:</strong> ${escapeHtml(a.titel)} <span class="text-xs text-slate-500">(${escapeHtml(a.tijd)})</span></li>`).join('');
+        return `<p class="mb-3">Overzicht van gekoppelde Ritten en Dialyse:</p><ul class="space-y-2">${list || '<li class="text-slate-400">Geen agenda-items</li>'}</ul>`;
+      }
+      return '';
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Snelle acties op de Start-tegels (allemaal realtime naar Firebase)
+    document.getElementById('tile-vocht-plus150').addEventListener('click', () => {
+      pushRealtime({ vochtMl: Number(liveData.vochtMl || 0) + 150 });
+    });
+    document.getElementById('tile-vocht-reset').addEventListener('click', () => {
+      pushRealtime({ vochtMl: 0 });
+    });
+    document.getElementById('tile-rit-quick').addEventListener('click', () => {
+      const ritten = Array.isArray(liveData.ritten) ? [...liveData.ritten] : [];
+      const nr = ritten.length + 1;
+      const tijd = new Date().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+      ritten.push({ titel: `Ziekenhuisrit #${nr}`, tijd });
+      pushRealtime({ ritten });
+    });
+    const dialyseStates = [
+      ['Geen sessie', 'Klaar voor planning'],
+      ['Nachtdialyse gepland', 'Vanavond 22:00 - 06:00'],
+      ['Dialyse actief', 'Bezig op apparaat']
+    ];
+    document.getElementById('tile-dialyse-cycle').addEventListener('click', () => {
+      const idx = dialyseStates.findIndex(([st]) => st === liveData.dialyseStatus);
+      const [nextStatus, nextSub] = dialyseStates[(idx + 1) % dialyseStates.length];
+      pushRealtime({ dialyseStatus: nextStatus, dialyseSub: nextSub });
+    });
+    document.getElementById('tile-brief-quick').addEventListener('click', () => {
+      const brieven = Array.isArray(liveData.brieven) ? [...liveData.brieven] : [];
+      const nr = brieven.length + 1;
+      brieven.push({ titel: `Brief #${nr} (${new Date().toLocaleDateString('nl-NL')})` });
+      pushRealtime({ brieven });
+    });
+
+    // Openen van tab via tegels of zijbalk
+    document.querySelectorAll('.open-tab-link').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        pushRealtime({ activeTab: btn.getAttribute('data-open-tab') });
+      });
+    });
+    document.querySelectorAll('.nav-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        pushRealtime({ activeTab: btn.getAttribute('data-tab') });
+      });
+    });
 
     function startRealtime(userId) {
       if (dbUnsub) dbUnsub();
@@ -446,27 +669,6 @@
         document.getElementById('rt-status-label').textContent = 'Geen toegang tot Realtime DB';
       });
     }
-
-    // Live inputs direct doorsturen naar andere toestellen
-    document.getElementById('live-status-input').addEventListener('input', (e) => {
-      pushRealtime({ status: e.target.value });
-    });
-    document.getElementById('live-vocht-input').addEventListener('input', (e) => {
-      pushRealtime({ vochtMl: Number(e.target.value || 0) });
-    });
-    document.getElementById('add-150-btn').addEventListener('click', () => {
-      pushRealtime({ vochtMl: Number(liveData.vochtMl || 0) + 150 });
-    });
-    document.getElementById('live-note-input').addEventListener('input', (e) => {
-      pushRealtime({ note: e.target.value });
-    });
-
-    // Menu tabbladen live synchroniseren
-    document.querySelectorAll('.nav-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        pushRealtime({ activeTab: btn.getAttribute('data-tab') });
-      });
-    });
 
     // Auth
     const loginScreen = document.getElementById('login-screen');
