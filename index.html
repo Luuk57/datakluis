@@ -199,14 +199,14 @@
               <div>
                 <div class="flex items-center justify-between mb-1.5">
                   <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Ritten</span>
-                  <span class="text-[10px] text-emerald-700 dark:text-emerald-300 font-semibold">→ Agenda</span>
+                  <span id="tile-ritten-ontime" class="text-[10px] text-emerald-700 dark:text-emerald-300 font-bold">0% op tijd</span>
                 </div>
                 <p id="tile-ritten-count" class="text-xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 ritten</p>
                 <p id="tile-ritten-last" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Nog geen rit</p>
               </div>
               <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
-                <button id="tile-rit-quick" type="button"
-                  class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer">
+                <button type="button" data-open-tab="ritten"
+                  class="open-tab-link px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer">
                   + Rit
                 </button>
                 <button type="button" data-open-tab="ritten"
@@ -284,7 +284,6 @@
           <!-- ===================================================== -->
           <div id="vocht-view" class="hidden space-y-5">
 
-            <!-- 24U & 48U PROGRESS KAARTEN -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-2.5">
                 <div class="flex items-center justify-between">
@@ -315,10 +314,7 @@
               </div>
             </div>
 
-            <!-- POS KASSA + BON OVERZICHT -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-              <!-- Linker 2 kolommen: POS Tegels & Eigen tegels maken/verwijderen -->
               <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-5">
                 <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
                   <div>
@@ -331,7 +327,6 @@
                   </button>
                 </div>
 
-                <!-- 1. PRODUCTTEGELS (KIEZEN & VERWIJDEREN) -->
                 <div class="space-y-2">
                   <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Producttegels (klik om te kiezen, × om te verwijderen)</label>
                   <div id="pos-drink-buttons" class="flex flex-wrap gap-2"></div>
@@ -345,7 +340,6 @@
                   </form>
                 </div>
 
-                <!-- 2. HOEVEELHEIDTEGELS (TIKKEN OM TOE TE VOEGEN & VERWIJDEREN) -->
                 <div class="space-y-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                   <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hoeveelheidtegels in ml (klik om direct toe te voegen, × om te verwijderen)</label>
                   <div id="pos-ml-buttons" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
@@ -359,7 +353,6 @@
                   </form>
                 </div>
 
-                <!-- 3. LIMIETEN 24U / 48U -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                   <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">24u Limiet (ml)</label>
@@ -374,7 +367,6 @@
                 </div>
               </div>
 
-              <!-- Rechter kolom: Live POS Bon / Logboek -->
               <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 flex flex-col justify-between">
                 <div>
                   <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
@@ -392,7 +384,152 @@
                   <span id="pos-receipt-total24" class="tabular-nums text-sky-600 dark:text-sky-400">0 ml</span>
                 </div>
               </div>
+            </div>
+          </div>
 
+          <!-- ===================================================== -->
+          <!-- RITTEN-MODULE (VELDEN + TIJDKNOPPEN + PUNCTUALITEIT)  -->
+          <!-- ===================================================== -->
+          <div id="ritten-view" class="hidden space-y-5">
+
+            <!-- Punctualiteits-statistieken (% Op tijd / Te vroeg / Te laat) -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Rit-punctualiteit (±15 min marge)</span>
+                  <h3 id="ritten-stats-summary" class="text-base font-bold text-slate-900 dark:text-white mt-0.5">
+                    0 gereden ritten beoordeeld
+                  </h3>
+                </div>
+                <span class="text-xs text-slate-500 dark:text-slate-400">
+                  Bijv. afspraak 17:30 → tussen 17:15 en 17:45 is op tijd
+                </span>
+              </div>
+
+              <!-- 3 kerncijfers -->
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/70">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 block">Op tijd</span>
+                  <span id="stat-ontime-pct" class="text-xl font-extrabold text-emerald-700 dark:text-emerald-300 tabular-nums">0%</span>
+                  <span id="stat-ontime-cnt" class="text-[11px] text-emerald-600/80 dark:text-emerald-400/80 block tabular-nums">(0 ritten)</span>
+                </div>
+                <div class="p-3 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/70">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-300 block">Te vroeg</span>
+                  <span id="stat-early-pct" class="text-xl font-extrabold text-sky-700 dark:text-sky-300 tabular-nums">0%</span>
+                  <span id="stat-early-cnt" class="text-[11px] text-sky-600/80 dark:text-sky-400/80 block tabular-nums">(0 ritten)</span>
+                </div>
+                <div class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/70">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-300 block">Te laat</span>
+                  <span id="stat-late-pct" class="text-xl font-extrabold text-rose-700 dark:text-rose-300 tabular-nums">0%</span>
+                  <span id="stat-late-cnt" class="text-[11px] text-rose-600/80 dark:text-rose-400/80 block tabular-nums">(0 ritten)</span>
+                </div>
+              </div>
+
+              <!-- Gecombineerde balk -->
+              <div class="w-full h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex">
+                <div id="bar-rit-ontime" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+                <div id="bar-rit-early" class="h-full bg-sky-500 transition-all duration-300" style="width: 0%"></div>
+                <div id="bar-rit-late" class="h-full bg-rose-500 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Formulier nieuwe rit -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Rit registreren</span>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">Nieuwe rit invoeren</h3>
+                </div>
+                <button type="button" data-open-tab="start"
+                  class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
+                  ← Start
+                </button>
+              </div>
+
+              <form id="rit-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <!-- Afspraak datum/tijd -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Afspraak datum/tijd *</label>
+                  <input id="rit-afspraak" type="datetime-local" required
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold" />
+                </div>
+
+                <!-- Start tijd met knop -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Start tijd</label>
+                  <div class="flex gap-1.5">
+                    <input id="rit-start" type="time"
+                      class="flex-1 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold tabular-nums" />
+                    <button id="rit-start-now-btn" type="button"
+                      class="px-2.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer shrink-0">
+                      Nu
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Eind tijd met knop -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Eind tijd (aankomst)</label>
+                  <div class="flex gap-1.5">
+                    <input id="rit-eind" type="time"
+                      class="flex-1 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold tabular-nums" />
+                    <button id="rit-eind-now-btn" type="button"
+                      class="px-2.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer shrink-0">
+                      Nu
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Duur -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Duur (minuten)</label>
+                  <input id="rit-duur" type="number" min="0" placeholder="Automatisch"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold tabular-nums" />
+                </div>
+
+                <!-- Van -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Van *</label>
+                  <input id="rit-van" type="text" required placeholder="Bijv. Thuis"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
+                </div>
+
+                <!-- Naar -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Naar *</label>
+                  <input id="rit-naar" type="text" required placeholder="Bijv. Ziekenhuis / Dialyse"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
+                </div>
+
+                <!-- Firma -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Firma</label>
+                  <input id="rit-firma" type="text" placeholder="Bijv. Vervoerder / Taxi"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
+                </div>
+
+                <!-- Opmerking -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Opmerking</label>
+                  <input id="rit-opmerking" type="text" placeholder="Bijv. Rolstoel / wachtijd"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
+                </div>
+
+                <div class="sm:col-span-2 lg:col-span-4 flex justify-end pt-1">
+                  <button type="submit"
+                    class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer">
+                    Rit opslaan (ook in Agenda)
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Overzicht gereden ritten -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Geregistreerde ritten</h4>
+              <div id="ritten-list-container" class="space-y-2.5">
+                <p class="text-xs text-slate-400 py-4 text-center">Nog geen ritten opgeslagen.</p>
+              </div>
             </div>
           </div>
 
@@ -543,7 +680,7 @@
   </div>
 
   <!-- ========================================================= -->
-  <!-- 5. REALTIME ENGINE (AUTH + REALTIME DB + POS VOCHT + CHAT) -->
+  <!-- 5. REALTIME ENGINE (AUTH + REALTIME DB + RITTEN + VOCHT)  -->
   <!-- ========================================================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -704,6 +841,162 @@
     }
 
     // ---------------------------------------------------------
+    // RITTEN LOGICA (TIJDKNOPPEN, DUUR & PUNCTUALITEIT ±15 MIN)
+    // ---------------------------------------------------------
+    function currentHHMM() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      return `${hh}:${mm}`;
+    }
+
+    function timeToMinutes(hhmm) {
+      if (!hhmm || !hhmm.includes(':')) return null;
+      const [h, m] = hhmm.split(':').map(Number);
+      if (Number.isNaN(h) || Number.isNaN(m)) return null;
+      return h * 60 + m;
+    }
+
+    function updateRitDuurAuto() {
+      const startVal = document.getElementById('rit-start').value;
+      const eindVal = document.getElementById('rit-eind').value;
+      const sMin = timeToMinutes(startVal);
+      const eMin = timeToMinutes(eindVal);
+      if (sMin !== null && eMin !== null) {
+        let diff = eMin - sMin;
+        if (diff < 0) diff += 24 * 60;
+        document.getElementById('rit-duur').value = String(diff);
+      }
+    }
+
+    document.getElementById('rit-start-now-btn').addEventListener('click', () => {
+      document.getElementById('rit-start').value = currentHHMM();
+      updateRitDuurAuto();
+    });
+
+    document.getElementById('rit-eind-now-btn').addEventListener('click', () => {
+      document.getElementById('rit-eind').value = currentHHMM();
+      updateRitDuurAuto();
+    });
+
+    document.getElementById('rit-start').addEventListener('change', updateRitDuurAuto);
+    document.getElementById('rit-eind').addEventListener('change', updateRitDuurAuto);
+
+    // Beoordeel rit t.o.v. afspraaktijd:
+    // Bijv. afspraak 17:30 -> tussen 17:15 (-15 min) en 17:45 (+15 min) = Op tijd
+    // Daarboven (> +15 min) = Te laat | Daaronder (< -15 min) = Te vroeg
+    function evaluateRitPunctuality(rit) {
+      const afspraakStr = rit.afspraak || '';
+      const eindStr = rit.eindTijd || '';
+      if (!afspraakStr.includes('T') || !eindStr.includes(':')) {
+        return { status: 'ongepland', label: 'Geen eindtijd', diffMin: null };
+      }
+      const afspTimePart = afspraakStr.split('T')[1].slice(0, 5);
+      const afspMin = timeToMinutes(afspTimePart);
+      const eindMin = timeToMinutes(eindStr.slice(0, 5));
+      if (afspMin === null || eindMin === null) {
+        return { status: 'ongepland', label: 'Geen eindtijd', diffMin: null };
+      }
+
+      let diff = eindMin - afspMin;
+      if (diff < -720) diff += 1440;
+      if (diff > 720) diff -= 1440;
+
+      if (diff > 15) {
+        return { status: 'telaat', label: `Te laat (+${diff} min)`, diffMin: diff };
+      }
+      if (diff < -15) {
+        return { status: 'tevroeg', label: `Te vroeg (${Math.abs(diff)} min)`, diffMin: diff };
+      }
+      return { status: 'optijd', label: 'Op tijd', diffMin: diff };
+    }
+
+    function computeRittenStats(rittenList) {
+      const list = Array.isArray(rittenList) ? rittenList : [];
+      let evaluated = 0;
+      let onTime = 0;
+      let early = 0;
+      let late = 0;
+
+      list.forEach((r) => {
+        const res = evaluateRitPunctuality(r);
+        if (res.status === 'optijd') {
+          evaluated += 1;
+          onTime += 1;
+        } else if (res.status === 'tevroeg') {
+          evaluated += 1;
+          early += 1;
+        } else if (res.status === 'telaat') {
+          evaluated += 1;
+          late += 1;
+        }
+      });
+
+      const pctOnTime = evaluated > 0 ? Math.round((onTime / evaluated) * 100) : 0;
+      const pctEarly = evaluated > 0 ? Math.round((early / evaluated) * 100) : 0;
+      const pctLate = evaluated > 0 ? Math.round((late / evaluated) * 100) : 0;
+
+      return { total: list.length, evaluated, onTime, early, late, pctOnTime, pctEarly, pctLate };
+    }
+
+    document.getElementById('rit-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const afspraak = document.getElementById('rit-afspraak').value;
+      const startTijd = document.getElementById('rit-start').value;
+      const eindTijd = document.getElementById('rit-eind').value;
+      const van = document.getElementById('rit-van').value.trim();
+      const naar = document.getElementById('rit-naar').value.trim();
+      const firma = document.getElementById('rit-firma').value.trim();
+      const opmerking = document.getElementById('rit-opmerking').value.trim();
+      const duurVal = document.getElementById('rit-duur').value;
+
+      if (!afspraak || !van || !naar) return;
+
+      const ritten = Array.isArray(sharedData.ritten) ? [...sharedData.ritten] : [];
+      ritten.push({
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        afspraak,
+        startTijd,
+        eindTijd,
+        van,
+        naar,
+        firma,
+        opmerking,
+        duurMin: duurVal !== '' ? Number(duurVal) : null
+      });
+
+      document.getElementById('rit-form').reset();
+      await pushSharedData({ ritten });
+    });
+
+    document.getElementById('ritten-list-container').addEventListener('click', (e) => {
+      const delBtn = e.target.closest('.del-rit-btn');
+      if (delBtn) {
+        const id = delBtn.getAttribute('data-id');
+        const next = (sharedData.ritten || []).filter((r, idx) => String(r.id || idx) !== id);
+        pushSharedData({ ritten: next });
+        return;
+      }
+      const arriveNowBtn = e.target.closest('.arrive-now-rit-btn');
+      if (arriveNowBtn) {
+        const id = arriveNowBtn.getAttribute('data-id');
+        const nowStr = currentHHMM();
+        const next = (sharedData.ritten || []).map((r, idx) => {
+          if (String(r.id || idx) !== id) return r;
+          const sMin = timeToMinutes(r.startTijd);
+          const eMin = timeToMinutes(nowStr);
+          let duur = r.duurMin;
+          if (sMin !== null && eMin !== null) {
+            duur = eMin - sMin;
+            if (duur < 0) duur += 1440;
+          }
+          return { ...r, eindTijd: nowStr, duurMin: duur };
+        });
+        pushSharedData({ ritten: next });
+      }
+    });
+
+    // ---------------------------------------------------------
     // VOCHTINTAKE BEREKENINGEN + PRODUCT- & HOEVEELHEIDTEGELS
     // ---------------------------------------------------------
     function computeVochtStats(entries, limit24, limit48) {
@@ -749,7 +1042,6 @@
       await pushSharedData({ vochtEntries: current });
     }
 
-    // Producttegel toevoegen
     document.getElementById('add-drink-tile-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const input = document.getElementById('new-drink-tile-input');
@@ -764,7 +1056,6 @@
       pushSharedData({ vochtProducts: products });
     });
 
-    // Producttegel kiezen of verwijderen
     document.getElementById('pos-drink-buttons').addEventListener('click', (e) => {
       const delBtn = e.target.closest('.del-drink-btn');
       if (delBtn) {
@@ -784,7 +1075,6 @@
       }
     });
 
-    // Hoeveelheidtegel toevoegen
     document.getElementById('add-ml-tile-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const input = document.getElementById('new-ml-tile-input');
@@ -798,7 +1088,6 @@
       pushSharedData({ vochtAmounts: amounts });
     });
 
-    // Hoeveelheidtegel tikken (toevoegen aan bon) of verwijderen
     document.getElementById('pos-ml-buttons').addEventListener('click', (e) => {
       const delBtn = e.target.closest('.del-ml-btn');
       if (delBtn) {
@@ -1228,6 +1517,15 @@
       }
     }
 
+    function formatAfspraakLabel(afspraakStr) {
+      if (!afspraakStr) return 'Geen tijd';
+      if (afspraakStr.includes('T')) {
+        const [d, t] = afspraakStr.split('T');
+        return `${d} ${t.slice(0, 5)}`;
+      }
+      return afspraakStr;
+    }
+
     function renderAll() {
       const tabNames = {
         start: 'Start',
@@ -1266,6 +1564,7 @@
 
       const vochtStats = computeVochtStats(sharedData.vochtEntries, sharedData.vochtLimit24, sharedData.vochtLimit48);
       const ritten = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
+      const rittenStats = computeRittenStats(ritten);
       const brieven = Array.isArray(sharedData.brieven) ? sharedData.brieven : [];
       const dialyseStatus = sharedData.dialyseStatus || 'Geen sessie';
       const dialyseSub = sharedData.dialyseSub || 'Klaar voor planning';
@@ -1273,10 +1572,14 @@
       // Start-tegels
       document.getElementById('tile-vocht-value').textContent = `${vochtStats.total24} ml`;
       document.getElementById('tile-vocht-48u').textContent = `48u: ${vochtStats.total48} ml`;
+
       document.getElementById('tile-ritten-count').textContent = `${ritten.length} ${ritten.length === 1 ? 'rit' : 'ritten'}`;
-      document.getElementById('tile-ritten-last').textContent = ritten.length > 0
-        ? `Laatste: ${ritten[ritten.length - 1].titel}`
+      document.getElementById('tile-ritten-ontime').textContent = `${rittenStats.pctOnTime}% op tijd`;
+      const lastRit = ritten[ritten.length - 1];
+      document.getElementById('tile-ritten-last').textContent = lastRit
+        ? `${lastRit.van || ''} → ${lastRit.naar || lastRit.titel || ''}`
         : 'Nog geen rit';
+
       document.getElementById('tile-dialyse-status').textContent = dialyseStatus;
       document.getElementById('tile-dialyse-sub').textContent = dialyseSub;
       document.getElementById('tile-brieven-count').textContent = `${brieven.length} ${brieven.length === 1 ? 'brief' : 'brieven'}`;
@@ -1284,8 +1587,13 @@
         ? `Laatste: ${brieven[brieven.length - 1].titel}`
         : 'Geen brief';
 
+      // Agenda-items uit Ritten en Dialyse
       const agendaItems = [
-        ...ritten.map((r) => ({ type: 'Rit', titel: r.titel, tijd: r.tijd || 'Vandaag' })),
+        ...ritten.map((r) => ({
+          type: 'Rit',
+          titel: r.van && r.naar ? `${r.van} → ${r.naar}${r.firma ? ` (${r.firma})` : ''}` : (r.titel || 'Rit'),
+          tijd: r.afspraak ? formatAfspraakLabel(r.afspraak) : (r.tijd || 'Vandaag')
+        })),
         ...(dialyseStatus !== 'Geen sessie'
           ? [{ type: 'Dialyse', titel: dialyseStatus, tijd: dialyseSub }]
           : [])
@@ -1303,7 +1611,7 @@
         `).join('');
       }
 
-      // Render POS producttegels (met verwijderknop)
+      // Render POS producttegels
       document.getElementById('pos-drink-buttons').innerHTML = products.map((prod) => {
         const active = prod === selectedDrink;
         return `
@@ -1323,7 +1631,7 @@
         `;
       }).join('');
 
-      // Render POS hoeveelheidtegels (met verwijderknop)
+      // Render POS hoeveelheidtegels
       document.getElementById('pos-ml-buttons').innerHTML = amounts.map((ml) => `
         <div class="flex items-center justify-between rounded-xl border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/50 text-sky-950 dark:text-sky-100 overflow-hidden">
           <button type="button" data-ml="${Number(ml)}" class="add-ml-btn flex-1 py-2.5 px-2.5 text-left text-xs font-extrabold tabular-nums hover:bg-sky-600 hover:text-white transition cursor-pointer">
@@ -1388,13 +1696,81 @@
         }).join('');
       }
 
+      // Render Ritten statistieken & lijst
+      document.getElementById('ritten-stats-summary').textContent =
+        `${rittenStats.evaluated} van ${rittenStats.total} ritten beoordeeld op aankomsttijd`;
+      document.getElementById('stat-ontime-pct').textContent = `${rittenStats.pctOnTime}%`;
+      document.getElementById('stat-ontime-cnt').textContent = `(${rittenStats.onTime} ritten)`;
+      document.getElementById('stat-early-pct').textContent = `${rittenStats.pctEarly}%`;
+      document.getElementById('stat-early-cnt').textContent = `(${rittenStats.early} ritten)`;
+      document.getElementById('stat-late-pct').textContent = `${rittenStats.pctLate}%`;
+      document.getElementById('stat-late-cnt').textContent = `(${rittenStats.late} ritten)`;
+
+      document.getElementById('bar-rit-ontime').style.width = `${rittenStats.pctOnTime}%`;
+      document.getElementById('bar-rit-early').style.width = `${rittenStats.pctEarly}%`;
+      document.getElementById('bar-rit-late').style.width = `${rittenStats.pctLate}%`;
+
+      const rittenContainer = document.getElementById('ritten-list-container');
+      if (ritten.length === 0) {
+        rittenContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen ritten opgeslagen.</p>`;
+      } else {
+        rittenContainer.innerHTML = [...ritten].reverse().map((r, revIdx) => {
+          const origIdx = ritten.length - 1 - revIdx;
+          const ritId = String(r.id || origIdx);
+          const punct = evaluateRitPunctuality(r);
+
+          let badgeClass = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
+          if (punct.status === 'optijd') badgeClass = 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
+          if (punct.status === 'tevroeg') badgeClass = 'bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300';
+          if (punct.status === 'telaat') badgeClass = 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300';
+
+          const routeLabel = r.van && r.naar ? `${r.van} → ${r.naar}` : (r.titel || 'Rit');
+          const duurLabel = r.duurMin !== null && r.duurMin !== undefined && r.duurMin !== '' ? `${r.duurMin} min` : '-';
+
+          return `
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-sm font-bold text-slate-900 dark:text-white">${escapeHtml(routeLabel)}</span>
+                  <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${badgeClass}">${escapeHtml(punct.label)}</span>
+                  ${r.firma ? `<span class="text-xs font-semibold text-slate-500 dark:text-slate-400">• ${escapeHtml(r.firma)}</span>` : ''}
+                </div>
+                <div class="text-xs text-slate-600 dark:text-slate-300 flex flex-wrap gap-x-3 gap-y-0.5 tabular-nums">
+                  <span><strong>Afspraak:</strong> ${escapeHtml(formatAfspraakLabel(r.afspraak || r.tijd || ''))}</span>
+                  <span><strong>Start:</strong> ${escapeHtml(r.startTijd || '-')}</span>
+                  <span><strong>Eind:</strong> ${escapeHtml(r.eindTijd || '-')}</span>
+                  <span><strong>Duur:</strong> ${escapeHtml(duurLabel)}</span>
+                </div>
+                ${r.opmerking ? `<p class="text-xs text-slate-500 dark:text-slate-400 italic">Opmerking: ${escapeHtml(r.opmerking)}</p>` : ''}
+              </div>
+
+              <div class="flex items-center gap-2 shrink-0">
+                ${!r.eindTijd ? `
+                  <button type="button" data-id="${escapeHtml(ritId)}"
+                    class="arrive-now-rit-btn px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer">
+                    Eind = Nu
+                  </button>
+                ` : ''}
+                <button type="button" data-id="${escapeHtml(ritId)}" title="Verwijder rit"
+                  class="del-rit-btn px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-red-600 text-slate-700 dark:text-slate-200 hover:text-white text-xs font-bold cursor-pointer">
+                  ✕
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Weergave schakelen
       const startView = document.getElementById('start-view');
       const vochtView = document.getElementById('vocht-view');
+      const rittenView = document.getElementById('ritten-view');
       const chatView = document.getElementById('chat-view');
       const moduleBox = document.getElementById('module-box');
 
       startView.classList.add('hidden');
       vochtView.classList.add('hidden');
+      rittenView.classList.add('hidden');
       chatView.classList.add('hidden');
       moduleBox.classList.add('hidden');
 
@@ -1402,6 +1778,8 @@
         startView.classList.remove('hidden');
       } else if (tab === 'vochtintake') {
         vochtView.classList.remove('hidden');
+      } else if (tab === 'ritten') {
+        rittenView.classList.remove('hidden');
       } else if (tab === 'chat') {
         chatView.classList.remove('hidden');
       } else {
@@ -1415,10 +1793,6 @@
     }
 
     function renderModuleBody(tab, data, agendaItems) {
-      if (tab === 'ritten') {
-        const list = (data.ritten || []).map((r) => `<li>• ${escapeHtml(r.titel)} (${escapeHtml(r.tijd || '')})</li>`).join('');
-        return `<p class="mb-2">Geregistreerde ritten (verschijnen ook in Agenda):</p><ul class="space-y-1">${list || '<li class="text-slate-400">Geen ritten</li>'}</ul>`;
-      }
       if (tab === 'dialyse') {
         return `<p>Status: <strong>${escapeHtml(data.dialyseStatus || 'Geen sessie')}</strong> — ${escapeHtml(data.dialyseSub || '')}</p>`;
       }
@@ -1439,13 +1813,6 @@
 
     document.getElementById('tile-vocht-plus150').addEventListener('click', () => {
       addVochtEntry(150, selectedDrink);
-    });
-    document.getElementById('tile-rit-quick').addEventListener('click', () => {
-      const ritten = Array.isArray(sharedData.ritten) ? [...sharedData.ritten] : [];
-      const nr = ritten.length + 1;
-      const tijd = new Date().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
-      ritten.push({ titel: `Ziekenhuisrit #${nr}`, tijd });
-      pushSharedData({ ritten });
     });
     const dialyseStates = [
       ['Geen sessie', 'Klaar voor planning'],
