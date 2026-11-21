@@ -98,6 +98,14 @@
           <button data-tab="dialyse" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Dialyse</button>
           <button data-tab="brieven" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Brieven</button>
           <button data-tab="agenda" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer">Agenda</button>
+          <button data-tab="overzichten" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between">
+            <span>Overzichten</span>
+            <span id="overzichten-done-badge" class="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-slate-800 text-slate-300 tabular-nums">0</span>
+          </button>
+          <button data-tab="pdf" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between">
+            <span>PDF</span>
+            <span id="pdf-count-badge" class="hidden px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-rose-600 text-white tabular-nums">0</span>
+          </button>
           <button data-tab="chat" class="nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between">
             <span>Chat</span>
             <span id="chat-unread-badge" class="hidden px-2 py-0.5 text-[11px] font-bold rounded-full bg-rose-600 text-white">0</span>
@@ -319,7 +327,7 @@
                 <div class="flex items-center gap-2">
                   <button type="button" data-open-tab="instellingen"
                     class="open-tab-link px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold cursor-pointer">
-                    Drooggewicht &amp; Kleuren
+                    Instellingen (Verpleging &amp; Kleuren)
                   </button>
                   <button type="button" data-open-tab="start"
                     class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
@@ -402,7 +410,7 @@
                   </div>
                 </div>
 
-                <!-- Planning / Herhaling (net als bij Ritten) -->
+                <!-- Planning / Herhaling -->
                 <div id="dialyse-repeat-fields" class="p-3.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/70 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                   <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Herhaling (Planning)</label>
@@ -469,8 +477,9 @@
 
                   <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Verpleging</label>
-                    <input id="dialyse-verpleging" type="text" placeholder="Naam verpleegkundige / team"
-                      class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
+                    <select id="dialyse-verpleging"
+                      class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
+                    </select>
                   </div>
                 </div>
 
@@ -565,6 +574,114 @@
 
             <div id="agenda-render-container" class="space-y-3">
               <p class="text-xs text-slate-400 py-6 text-center">Geen agenda-items.</p>
+            </div>
+          </div>
+
+          <!-- ===================================================== -->
+          <!-- OVERZICHTEN-MODULE: ALLES & AL GEDAAN                 -->
+          <!-- ===================================================== -->
+          <div id="overzichten-view" class="hidden space-y-5">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <span class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">Overzichten</span>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-0.5">Totaaloverzicht &amp; al gedaan</h3>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                  <div class="inline-flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-700">
+                    <button type="button" data-overzicht-filter="all"
+                      class="overzicht-filter-btn px-3 py-1 rounded-lg text-xs font-bold bg-purple-600 text-white cursor-pointer">
+                      Alles
+                    </button>
+                    <button type="button" data-overzicht-filter="done"
+                      class="overzicht-filter-btn px-3 py-1 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer">
+                      Al gedaan / Afgerond
+                    </button>
+                  </div>
+
+                  <button type="button" data-open-tab="pdf"
+                    class="open-tab-link px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold cursor-pointer">
+                    Naar PDF →
+                  </button>
+                  <button type="button" data-open-tab="start"
+                    class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
+                    ← Start
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/70">
+                  <span class="text-[11px] font-bold uppercase text-emerald-700 dark:text-emerald-300 block">Ritten gedaan</span>
+                  <span id="ov-ritten-done-cnt" class="text-xl font-extrabold text-emerald-800 dark:text-emerald-200 tabular-nums">0</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/70">
+                  <span class="text-[11px] font-bold uppercase text-blue-700 dark:text-blue-300 block">Dialyse gedaan</span>
+                  <span id="ov-dialyse-done-cnt" class="text-xl font-extrabold text-blue-800 dark:text-blue-200 tabular-nums">0</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800/70">
+                  <span class="text-[11px] font-bold uppercase text-sky-700 dark:text-sky-300 block">Vocht 24u / 48u</span>
+                  <span id="ov-vocht-totals" class="text-sm font-extrabold text-sky-800 dark:text-sky-200 tabular-nums block mt-1">0 / 0 ml</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/70">
+                  <span class="text-[11px] font-bold uppercase text-amber-700 dark:text-amber-300 block">Brieven</span>
+                  <span id="ov-brieven-cnt" class="text-xl font-extrabold text-amber-800 dark:text-amber-200 tabular-nums">0</span>
+                </div>
+              </div>
+
+              <div id="overzichten-list-container" class="space-y-2.5">
+                <p class="text-xs text-slate-400 py-6 text-center">Nog geen overzicht-items.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================================================== -->
+          <!-- PDF-MODULE: AUTOMATISCH & HANDMATIG PDF-ARCHIEF       -->
+          <!-- ===================================================== -->
+          <div id="pdf-view" class="hidden space-y-5">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <span class="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">PDF Rapportages &amp; Archief</span>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white mt-0.5">Vochtintake • Ritten • Dialyse • Bloeddruk</h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    Zodra een rit (of dialysesessie) zijn eindtijd met <strong>1 uur</strong> is gepasseerd, verschijnt hier automatisch een PDF-document.
+                  </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                  <button id="pdf-gen-ritten-btn" type="button"
+                    class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer">
+                    + PDF Ritten
+                  </button>
+                  <button id="pdf-gen-dialyse-btn" type="button"
+                    class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer">
+                    + PDF Dialyse
+                  </button>
+                  <button id="pdf-gen-vocht-btn" type="button"
+                    class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold cursor-pointer">
+                    + PDF Vochtintake
+                  </button>
+                  <button type="button" data-open-tab="start"
+                    class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
+                    ← Start
+                  </button>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="text-slate-600 dark:text-slate-300">
+                  <strong>Bloeddruk-module:</strong> Zodra de module <em>Bloeddruk</em> actief is, worden bloeddrukrapporten automatisch in deze zelfde PDF-lijst geplaatst.
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+                  Bloeddruk: binnenkort
+                </span>
+              </div>
+
+              <div id="pdf-docs-container" class="space-y-3">
+                <p class="text-xs text-slate-400 py-6 text-center">Nog geen PDF-documenten aangemaakt.</p>
+              </div>
             </div>
           </div>
 
@@ -961,7 +1078,18 @@
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-4 border-t border-slate-100 dark:border-slate-800">
+              <!-- Dropdown lijsten: Verpleging, Firma, Van, Naar -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div class="p-4 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/70 space-y-3">
+                  <h5 class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">Verpleging (Dialyse)</h5>
+                  <form id="add-verpleging-form" class="flex gap-1.5">
+                    <input id="new-verpleging-input" type="text" required placeholder="Naam verpleging..."
+                      class="flex-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs" />
+                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold cursor-pointer">+</button>
+                  </form>
+                  <div id="inst-verpleging-list" class="space-y-1.5 max-h-48 overflow-y-auto text-xs"></div>
+                </div>
+
                 <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
                   <h5 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Firma dropdown</h5>
                   <form id="add-firma-form" class="flex gap-1.5">
@@ -1195,6 +1323,7 @@
 
     let agendaMode = 'lijst';
     let agendaCursorDate = new Date();
+    let overzichtFilter = 'all';
 
     let sharedData = {
       vochtEntries: [],
@@ -1209,6 +1338,7 @@
       dialyseUfOrangeMin: 4.0,
       dialyseUfRedMin: 4.5,
       dialyseSessies: [],
+      verplegingOptions: [],
       firmaOptions: [],
       vanOptions: [],
       naarOptions: [],
@@ -1216,6 +1346,7 @@
       dialyseStatus: 'Geen sessie',
       dialyseSub: 'Klaar voor planning',
       brieven: [],
+      pdfDocs: [],
       updatedAt: ''
     };
 
@@ -1562,8 +1693,6 @@
         });
     }
 
-    // Start datumtijd neemt Afspraak datumtijd over (tenzij handmatig aangepast),
-    // en Stop datumtijd = Start datumtijd + 4 uur (Dag) of + 7 uur (Nacht).
     function syncDialyseTimesFromAfspraak(forceStop = false) {
       const soort = document.getElementById('dialyse-soort').value || 'Dag';
       const afspraakVal = document.getElementById('dialyse-afspraak').value;
@@ -1701,6 +1830,7 @@
     function resetDialyseForm() {
       editingDialyseId = null;
       document.getElementById('dialyse-form').reset();
+      fillSelectOptions('dialyse-verpleging', sharedData.verplegingOptions, '');
       const startInp = document.getElementById('dialyse-start');
       const stopInp = document.getElementById('dialyse-stop');
       const duurInp = document.getElementById('dialyse-duur');
@@ -1727,6 +1857,7 @@
 
       editingDialyseId = sessieId;
       dialyseRepeatFieldsEl.classList.add('hidden');
+      fillSelectOptions('dialyse-verpleging', sharedData.verplegingOptions, item.verpleging || '');
       document.getElementById('dialyse-soort').value = item.soort === 'Nacht' ? 'Nacht' : 'Dag';
       document.getElementById('dialyse-afspraak').value = item.afspraak || '';
       const startInp = document.getElementById('dialyse-start');
@@ -1752,7 +1883,6 @@
       document.getElementById('dialyse-chk-shuntflow').checked = Boolean(item.shuntflowMeting);
 
       document.getElementById('dialyse-shuntflow-resultaat').value = item.shuntflowResultaat || '';
-      document.getElementById('dialyse-verpleging').value = item.verpleging || '';
 
       document.getElementById('dialyse-form-badge').textContent = 'Dialyse aanpassen';
       document.getElementById('dialyse-form-title').textContent = 'Dialysesessie bewerken';
@@ -1902,6 +2032,362 @@
         pushSharedData({ dialyseSessies: nextList });
       }
     });
+
+    // ---------------------------------------------------------
+    // OVERZICHTEN (ALLES & AL GEDAAN)
+    // ---------------------------------------------------------
+    document.querySelectorAll('.overzicht-filter-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        overzichtFilter = btn.getAttribute('data-overzicht-filter') || 'all';
+        renderAll();
+      });
+    });
+
+    function isRitDone(rit, nowMs = Date.now()) {
+      const { dateISO } = parseRitDateTimeParts(rit);
+      const endHHMM = (rit.eindTijd || '').slice(0, 5);
+      if (dateISO && /^\d{2}:\d{2}$/.test(endHHMM)) {
+        const endDate = parseLocalDateTime(`${dateISO}T${endHHMM}`);
+        if (endDate && endDate.getTime() <= nowMs) return true;
+      }
+      return Boolean(rit.eindTijd);
+    }
+
+    function isDialyseDone(sessie, nowMs = Date.now()) {
+      const stopStr = sessie.stopDatumTijd || '';
+      if (stopStr && stopStr.includes('T')) {
+        const stopDate = parseLocalDateTime(stopStr);
+        if (stopDate && stopDate.getTime() <= nowMs) return true;
+      }
+      return Boolean(sessie.postGewicht !== null && sessie.postGewicht !== undefined && sessie.postGewicht !== '');
+    }
+
+    function renderOverzichtenView(data) {
+      document.querySelectorAll('.overzicht-filter-btn').forEach((btn) => {
+        const active = btn.getAttribute('data-overzicht-filter') === overzichtFilter;
+        btn.className = active
+          ? 'overzicht-filter-btn px-3 py-1 rounded-lg text-xs font-bold bg-purple-600 text-white cursor-pointer'
+          : 'overzicht-filter-btn px-3 py-1 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer';
+      });
+
+      const nowMs = Date.now();
+      const ritten = Array.isArray(data.ritten) ? data.ritten : [];
+      const dialyseSessies = Array.isArray(data.dialyseSessies) ? data.dialyseSessies : [];
+      const brieven = Array.isArray(data.brieven) ? data.brieven : [];
+      const vochtStats = computeVochtStats(data.vochtEntries, data);
+
+      const rittenDone = ritten.filter((r) => isRitDone(r, nowMs));
+      const dialyseDone = dialyseSessies.filter((s) => isDialyseDone(s, nowMs));
+
+      document.getElementById('ov-ritten-done-cnt').textContent = `${rittenDone.length} / ${ritten.length}`;
+      document.getElementById('ov-dialyse-done-cnt').textContent = `${dialyseDone.length} / ${dialyseSessies.length}`;
+      document.getElementById('ov-vocht-totals').textContent = `${vochtStats.total24} / ${vochtStats.total48} ml`;
+      document.getElementById('ov-brieven-cnt').textContent = String(brieven.length);
+
+      const items = [];
+
+      ritten.forEach((r, idx) => {
+        const done = isRitDone(r, nowMs);
+        if (overzichtFilter === 'done' && !done) return;
+        const { dateISO, timeHHMM } = parseRitDateTimeParts(r);
+        items.push({
+          sortKey: `${dateISO || '9999-99-99'}T${r.eindTijd || timeHHMM || '00:00'}`,
+          category: 'Ritten',
+          done,
+          title: r.van && r.naar ? `${r.van} → ${r.naar}` : (r.titel || `Rit #${idx + 1}`),
+          detail: `Afspraak ${formatIsoDateTimeNL(r.afspraak)} • Start ${r.startTijd || '-'} • Stop ${r.eindTijd || '-'}${r.firma ? ` • ${r.firma}` : ''}`
+        });
+      });
+
+      dialyseSessies.forEach((s, idx) => {
+        const done = isDialyseDone(s, nowMs);
+        if (overzichtFilter === 'done' && !done) return;
+        items.push({
+          sortKey: s.stopDatumTijd || s.afspraak || '9999-99-99T00:00',
+          category: 'Dialyse',
+          done,
+          title: `${s.soort || 'Dag'}dialyse${s.verpleging ? ` (${s.verpleging})` : ''}`,
+          detail: `Afspraak ${formatIsoDateTimeNL(s.afspraak)} • Stop ${formatIsoDateTimeNL(s.stopDatumTijd)}${s.adviesUf !== null && s.adviesUf !== undefined ? ` • UF advies ${Number(s.adviesUf).toFixed(2).replace('.', ',')} L` : ''}`
+        });
+      });
+
+      (Array.isArray(data.vochtEntries) ? data.vochtEntries : []).forEach((v, idx) => {
+        if (overzichtFilter === 'done') return;
+        const ts = Number(v.timestamp || nowMs);
+        items.push({
+          sortKey: toDateTimeLocalString(new Date(ts)),
+          category: 'Vochtintake',
+          done: true,
+          title: `${v.drink || 'Water'} (+${Number(v.ml || 0)} ml)`,
+          detail: `Geregistreerd op ${formatDateTimeNL(ts)}`
+        });
+      });
+
+      brieven.forEach((b, idx) => {
+        if (overzichtFilter === 'done') return;
+        items.push({
+          sortKey: `9999-99-99T${String(idx).padStart(2, '0')}:00`,
+          category: 'Brieven',
+          done: true,
+          title: b.titel || `Brief #${idx + 1}`,
+          detail: 'Dossierbrief opgeslagen'
+        });
+      });
+
+      items.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
+
+      const container = document.getElementById('overzichten-list-container');
+      if (items.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">Geen items gevonden voor dit filter.</p>`;
+        return;
+      }
+
+      container.innerHTML = items.map((it) => {
+        const statusBadge = it.done
+          ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Gedaan</span>`
+          : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">Gepland</span>`;
+
+        return `
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300">${escapeHtml(it.category)}</span>
+                ${statusBadge}
+                <span class="text-sm font-bold text-slate-900 dark:text-white truncate">${escapeHtml(it.title)}</span>
+              </div>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 tabular-nums">${escapeHtml(it.detail)}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ---------------------------------------------------------
+    // PDF-MODULE (AUTOMATISCH +1 UUR NA EINDTIJD + HANDMATIG)
+    // ---------------------------------------------------------
+    function buildPdfDocument(category, title, summaryText, lines, autoKey = '') {
+      return {
+        id: `pdf_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        autoKey,
+        category,
+        title,
+        summaryText,
+        lines,
+        createdAt: new Date().toISOString(),
+        createdLabel: formatDateTimeNL(Date.now())
+      };
+    }
+
+    function syncAutoPdfReports(data, nowMs = Date.now()) {
+      const existingDocs = Array.isArray(data.pdfDocs) ? [...data.pdfDocs] : [];
+      const existingKeys = new Set(existingDocs.map((d) => d.autoKey).filter(Boolean));
+      const oneHourMs = 60 * 60 * 1000;
+      const newDocs = [];
+
+      // 1. Ritten: 1 uur na eindtijd automatisch PDF aanmaken
+      (Array.isArray(data.ritten) ? data.ritten : []).forEach((r, idx) => {
+        const { dateISO } = parseRitDateTimeParts(r);
+        const endHHMM = (r.eindTijd || '').slice(0, 5);
+        if (!dateISO || !/^\d{2}:\d{2}$/.test(endHHMM)) return;
+        const endDate = parseLocalDateTime(`${dateISO}T${endHHMM}`);
+        if (!endDate) return;
+
+        const oneHourAfterEndMs = endDate.getTime() + oneHourMs;
+        if (nowMs >= oneHourAfterEndMs) {
+          const ritKey = `auto_rit_${r.id || `${dateISO}_${r.van}_${r.naar}_${endHHMM}_${idx}`}`;
+          if (!existingKeys.has(ritKey)) {
+            existingKeys.add(ritKey);
+            const route = r.van && r.naar ? `${r.van} → ${r.naar}` : (r.titel || 'Rit');
+            newDocs.push(buildPdfDocument(
+              'Ritten',
+              `Rit PDF: ${route} (${dateISO})`,
+              `Automatisch aangemaakt 1 uur na eindtijd (${dateISO} ${endHHMM}).`,
+              [
+                `Route: ${route}`,
+                `Afspraak: ${formatIsoDateTimeNL(r.afspraak)}`,
+                `Starttijd: ${r.startTijd || '-'} • Eindtijd: ${r.eindTijd || '-'}`,
+                `Duur: ${r.duurMin ?? '-'} min • Firma: ${r.firma || '-'}`,
+                r.opmerking ? `Opmerking: ${r.opmerking}` : ''
+              ].filter(Boolean),
+              ritKey
+            ));
+          }
+        }
+      });
+
+      // 2. Dialyse: 1 uur na stoptijd automatisch PDF aanmaken
+      (Array.isArray(data.dialyseSessies) ? data.dialyseSessies : []).forEach((s, idx) => {
+        const stopStr = s.stopDatumTijd || '';
+        if (!stopStr || !stopStr.includes('T')) return;
+        const stopDate = parseLocalDateTime(stopStr);
+        if (!stopDate) return;
+
+        const oneHourAfterStopMs = stopDate.getTime() + oneHourMs;
+        if (nowMs >= oneHourAfterStopMs) {
+          const dialyseKey = `auto_dialyse_${s.id || `${s.soort}_${stopStr}_${idx}`}`;
+          if (!existingKeys.has(dialyseKey)) {
+            existingKeys.add(dialyseKey);
+            newDocs.push(buildPdfDocument(
+              'Dialyse',
+              `Dialyse PDF: ${s.soort || 'Dag'}dialyse (${formatIsoDateTimeNL(s.afspraak)})`,
+              `Automatisch aangemaakt 1 uur na stoptijd (${formatIsoDateTimeNL(stopStr)}).`,
+              [
+                `Soort: ${s.soort || 'Dag'}dialyse • Verpleging: ${s.verpleging || '-'}`,
+                `Afspraak: ${formatIsoDateTimeNL(s.afspraak)} • Start: ${formatIsoDateTimeNL(s.startDatumTijd)} • Stop: ${formatIsoDateTimeNL(stopStr)}`,
+                `Gewicht: Pre ${s.preGewicht ?? '-'} kg → Post ${s.postGewicht ?? '-'} kg`,
+                `UF advies: ${s.adviesUf ?? '-'} L • Gebruikte UF: ${s.gebruikteUf ?? '-'} • Werkelijke UF: ${s.werkelijkeUf ?? '-'}`,
+                s.shuntflowResultaat ? `ShuntFlow resultaat: ${s.shuntflowResultaat}` : ''
+              ].filter(Boolean),
+              dialyseKey
+            ));
+          }
+        }
+      });
+
+      return { newDocs, allDocs: [...existingDocs, ...newDocs] };
+    }
+
+    function openPrintablePdfDoc(doc) {
+      const win = window.open('', '_blank');
+      if (!win) {
+        showIncomingToast('PDF', 'Pop-up geblokkeerd door browser. Sta pop-ups toe om de PDF te openen.');
+        return;
+      }
+      const linesHtml = (Array.isArray(doc.lines) ? doc.lines : [])
+        .map((line) => `<li style="margin-bottom:6px;">${escapeHtml(line)}</li>`)
+        .join('');
+
+      win.document.write(`
+        <!DOCTYPE html>
+        <html lang="nl">
+        <head>
+          <meta charset="UTF-8" />
+          <title>${escapeHtml(doc.title)}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 32px; color: #0f172a; max-width: 780px; margin: 0 auto; }
+            .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; background: #e2e8f0; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+            h1 { margin: 12px 0 6px; font-size: 22px; }
+            .meta { color: #475569; font-size: 13px; margin-bottom: 20px; }
+            .box { border: 1px solid #cbd5e1; border-radius: 10px; padding: 18px; background: #f8fafc; }
+            ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.5; }
+            @media print { .no-print { display: none; } }
+          </style>
+        </head>
+        <body>
+          <div class="no-print" style="margin-bottom: 18px;">
+            <button onclick="window.print()" style="padding:8px 16px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">
+              Opslaan als PDF / Afdrukken
+            </button>
+          </div>
+          <span class="badge">DataPoortalen • ${escapeHtml(doc.category)}</span>
+          <h1>${escapeHtml(doc.title)}</h1>
+          <p class="meta">Aangemaakt: ${escapeHtml(doc.createdLabel || '')} — ${escapeHtml(doc.summaryText || '')}</p>
+          <div class="box">
+            <ul>${linesHtml || '<li>Geen details</li>'}</ul>
+          </div>
+        </body>
+        </html>
+      `);
+      win.document.close();
+      setTimeout(() => {
+        try { win.print(); } catch {}
+      }, 250);
+    }
+
+    document.getElementById('pdf-gen-ritten-btn').addEventListener('click', () => {
+      const ritten = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
+      const doc = buildPdfDocument(
+        'Ritten',
+        `Rittenoverzicht (${ritten.length} ritten)`,
+        `Handmatig rapport op ${formatDateTimeNL(Date.now())}`,
+        ritten.map((r) => `${formatIsoDateTimeNL(r.afspraak)} | ${r.van || '-'} → ${r.naar || '-'} | Start ${r.startTijd || '-'} / Stop ${r.eindTijd || '-'}`)
+      );
+      pushSharedData({ pdfDocs: [...(sharedData.pdfDocs || []), doc] });
+    });
+
+    document.getElementById('pdf-gen-dialyse-btn').addEventListener('click', () => {
+      const sessies = Array.isArray(sharedData.dialyseSessies) ? sharedData.dialyseSessies : [];
+      const doc = buildPdfDocument(
+        'Dialyse',
+        `Dialyse-overzicht (${sessies.length} sessies)`,
+        `Handmatig rapport op ${formatDateTimeNL(Date.now())}`,
+        sessies.map((s) => `${s.soort || 'Dag'} | Afspraak ${formatIsoDateTimeNL(s.afspraak)} | Stop ${formatIsoDateTimeNL(s.stopDatumTijd)} | UF advies ${s.adviesUf ?? '-'}`)
+      );
+      pushSharedData({ pdfDocs: [...(sharedData.pdfDocs || []), doc] });
+    });
+
+    document.getElementById('pdf-gen-vocht-btn').addEventListener('click', () => {
+      const stats = computeVochtStats(sharedData.vochtEntries, sharedData);
+      const doc = buildPdfDocument(
+        'Vochtintake',
+        `Vochtintake-rapport (${stats.total24} ml / 24u • ${stats.total48} ml / 48u)`,
+        stats.win48.label,
+        [
+          `Totaal 24 uur: ${stats.total24} ml (Limiet: ${stats.lim24} ml)`,
+          `Totaal 48 uur: ${stats.total48} ml (Limiet: ${stats.lim48} ml)`,
+          ...(stats.in48 || []).map((v) => `${v.drink || 'Water'}: +${v.ml} ml (${formatDateTimeNL(v.timestamp)})`)
+        ]
+      );
+      pushSharedData({ pdfDocs: [...(sharedData.pdfDocs || []), doc] });
+    });
+
+    document.getElementById('pdf-docs-container').addEventListener('click', (e) => {
+      const openBtn = e.target.closest('.open-pdf-btn');
+      if (openBtn) {
+        const id = openBtn.getAttribute('data-id');
+        const found = (sharedData.pdfDocs || []).find((d) => d.id === id);
+        if (found) openPrintablePdfDoc(found);
+        return;
+      }
+      const delBtn = e.target.closest('.del-pdf-btn');
+      if (delBtn) {
+        const id = delBtn.getAttribute('data-id');
+        const next = (sharedData.pdfDocs || []).filter((d) => d.id !== id);
+        pushSharedData({ pdfDocs: next });
+      }
+    });
+
+    function renderPdfView(data) {
+      const docs = Array.isArray(data.pdfDocs) ? [...data.pdfDocs].reverse() : [];
+      const container = document.getElementById('pdf-docs-container');
+      if (docs.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">Nog geen PDF-documenten in de lijst.</p>`;
+        return;
+      }
+
+      container.innerHTML = docs.map((doc) => {
+        const catColor = doc.category === 'Ritten'
+          ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
+          : doc.category === 'Dialyse'
+            ? 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
+            : doc.category === 'Vochtintake'
+              ? 'bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300'
+              : 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300';
+
+        return `
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-start justify-between gap-3">
+            <div class="space-y-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${catColor}">${escapeHtml(doc.category || 'PDF')}</span>
+                <span class="text-sm font-bold text-slate-900 dark:text-white">${escapeHtml(doc.title || 'PDF Rapport')}</span>
+                <span class="text-[11px] text-slate-400 tabular-nums">${escapeHtml(doc.createdLabel || '')}</span>
+              </div>
+              <p class="text-xs text-slate-600 dark:text-slate-300">${escapeHtml(doc.summaryText || '')}</p>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" data-id="${escapeHtml(doc.id)}"
+                class="open-pdf-btn px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold cursor-pointer">
+                PDF Openen / Opslaan
+              </button>
+              <button type="button" data-id="${escapeHtml(doc.id)}"
+                class="del-pdf-btn px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-red-600 hover:text-white text-xs font-bold cursor-pointer">
+                ✕
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
 
     // ---------------------------------------------------------
     // AGENDA OVERZICHTVORMEN: LIJST / DAG / WEEK / MAAND
@@ -2236,6 +2722,12 @@
       pushSharedData({ vochtLimit48: Math.max(200, Number(e.target.value || 3000)) });
     });
 
+    document.getElementById('add-verpleging-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const inp = document.getElementById('new-verpleging-input');
+      addOptionToList('verplegingOptions', inp.value);
+      inp.value = '';
+    });
     document.getElementById('add-firma-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const inp = document.getElementById('new-firma-input');
@@ -2255,6 +2747,10 @@
       inp.value = '';
     });
 
+    document.getElementById('inst-verpleging-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.del-opt-btn');
+      if (btn) removeOptionFromList('verplegingOptions', btn.getAttribute('data-val'));
+    });
     document.getElementById('inst-firma-list').addEventListener('click', (e) => {
       const btn = e.target.closest('.del-opt-btn');
       if (btn) removeOptionFromList('firmaOptions', btn.getAttribute('data-val'));
@@ -2269,7 +2765,7 @@
     });
 
     // ---------------------------------------------------------
-    // RITTEN LOGICA (SLUITENDE PLANNING: VANDAAG -> MORGEN -> VERDER)
+    // RITTEN LOGICA
     // ---------------------------------------------------------
     const geldigTypeEl = document.getElementById('rit-geldig-type');
     const einddatumWrapEl = document.getElementById('rit-einddatum-wrap');
@@ -3062,9 +3558,19 @@
       document.getElementById('clock-date').textContent = now.toLocaleDateString('nl-NL', {
         weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
       });
+      if (uid) {
+        const { newDocs, allDocs } = syncAutoPdfReports(sharedData, now.getTime());
+        if (newDocs.length > 0) {
+          pushSharedData({ pdfDocs: allDocs });
+        }
+      }
     }
     tickClock();
-    setInterval(tickClock, 1000);
+    setInterval(tickClock, 15000);
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById('clock-time').textContent = now.toLocaleTimeString('nl-NL');
+    }, 1000);
 
     const fsBtn = document.getElementById('fullscreen-toggle');
     const fsText = document.getElementById('fullscreen-text');
@@ -3201,6 +3707,8 @@
         dialyse: 'Dialyse',
         brieven: 'Brieven',
         agenda: 'Agenda',
+        overzichten: 'Overzichten',
+        pdf: 'PDF',
         chat: 'Chat',
         instellingen: 'Instellingen'
       };
@@ -3219,10 +3727,12 @@
           : 'nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between';
       });
 
+      fillSelectOptions('dialyse-verpleging', sharedData.verplegingOptions);
       fillSelectOptions('rit-firma', sharedData.firmaOptions);
       fillSelectOptions('rit-van', sharedData.vanOptions);
       fillSelectOptions('rit-naar', sharedData.naarOptions);
 
+      renderOptionManagerList('inst-verpleging-list', sharedData.verplegingOptions);
       renderOptionManagerList('inst-firma-list', sharedData.firmaOptions);
       renderOptionManagerList('inst-van-list', sharedData.vanOptions);
       renderOptionManagerList('inst-naar-list', sharedData.naarOptions);
@@ -3238,6 +3748,7 @@
         ? sharedData.vochtAmounts
         : [150];
 
+      const nowMs = Date.now();
       const vochtStats = computeVochtStats(sharedData.vochtEntries, sharedData);
       const ritten = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
       const sortedPlanning = sortRittenPlanning(ritten);
@@ -3245,8 +3756,21 @@
       const dialyseSessies = Array.isArray(sharedData.dialyseSessies) ? sharedData.dialyseSessies : [];
       const sortedDialysePlanning = sortDialysePlanning(dialyseSessies);
       const brieven = Array.isArray(sharedData.brieven) ? sharedData.brieven : [];
+      const pdfDocs = Array.isArray(sharedData.pdfDocs) ? sharedData.pdfDocs : [];
       const dialyseStatus = sharedData.dialyseStatus || 'Geen sessie';
       const dialyseSub = sharedData.dialyseSub || 'Klaar voor planning';
+
+      const doneCount = ritten.filter((r) => isRitDone(r, nowMs)).length
+        + dialyseSessies.filter((s) => isDialyseDone(s, nowMs)).length;
+      document.getElementById('overzichten-done-badge').textContent = String(doneCount);
+
+      const pdfBadge = document.getElementById('pdf-count-badge');
+      if (pdfDocs.length > 0) {
+        pdfBadge.textContent = String(pdfDocs.length);
+        pdfBadge.classList.remove('hidden');
+      } else {
+        pdfBadge.classList.add('hidden');
+      }
 
       // Start-tegels
       document.getElementById('tile-vocht-value').textContent = `${vochtStats.total24} ml`;
@@ -3306,7 +3830,7 @@
 
       updateDialyseLiveCalculations();
 
-      // Dialyse lijst weergeven (Vandaag -> Morgen -> Verder oplopend)
+      // Dialyse lijst weergeven
       const dialyseContainer = document.getElementById('dialyse-list-container');
       if (sortedDialysePlanning.length === 0) {
         dialyseContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen dialysesessies opgeslagen.</p>`;
@@ -3524,25 +4048,25 @@
                   <span class="text-sm font-bold text-slate-900 dark:text-white">${escapeHtml(routeLabel)}</span>
                   <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${badgeClass}">${escapeHtml(punct.label)}</span>
                   ${r.herhaling && r.herhaling !== '1Malig' ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${escapeHtml(r.herhaling)}</span>` : ''}
-                  ${r.firma ? `<span class="text-xs font-semibold text-slate-500 dark:text-slate-400">• ${escapeHtml(r.firma)}</span>` : ''}
                 </div>
                 <div class="text-xs text-slate-600 dark:text-slate-300 flex flex-wrap gap-x-3 gap-y-0.5 tabular-nums">
-                  <span><strong>Afspraak:</strong> ${escapeHtml(formatAfspraakLabel(r.afspraak || r.tijd || ''))}</span>
+                  <span><strong>Afspraak:</strong> ${escapeHtml(formatAfspraakLabel(r.afspraak))}</span>
                   <span><strong>Start:</strong> ${escapeHtml(r.startTijd || '-')}</span>
-                  <span><strong>Stop:</strong> ${escapeHtml(r.eindTijd || '-')}</span>
+                  <span><strong>Eind:</strong> ${escapeHtml(r.eindTijd || '-')}</span>
                   <span><strong>Duur:</strong> ${escapeHtml(duurLabel)}</span>
+                  ${r.firma ? `<span><strong>Firma:</strong> ${escapeHtml(r.firma)}</span>` : ''}
                 </div>
-                ${r.opmerking ? `<p class="text-xs text-slate-500 dark:text-slate-400 italic">Opmerking: ${escapeHtml(r.opmerking)}</p>` : ''}
+                ${r.opmerking ? `<p class="text-xs text-slate-500 dark:text-slate-400">Opmerking: ${escapeHtml(r.opmerking)}</p>` : ''}
               </div>
 
               <div class="flex flex-wrap items-center gap-1.5 shrink-0">
                 <button type="button" data-id="${escapeHtml(ritId)}"
                   class="start-now-rit-btn px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer">
-                  Start = Nu
+                  Start nu
                 </button>
                 <button type="button" data-id="${escapeHtml(ritId)}"
                   class="stop-now-rit-btn px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer">
-                  Stop = Nu
+                  Stop nu
                 </button>
                 <button type="button" data-id="${escapeHtml(ritId)}"
                   class="edit-rit-btn px-2.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold cursor-pointer">
@@ -3558,135 +4082,181 @@
         }).join('');
       }
 
+      document.getElementById('last-sync-time').textContent = sharedData.updatedAt || 'Live';
+
       const startView = document.getElementById('start-view');
-      const dialyseView = document.getElementById('dialyse-view');
-      const agendaView = document.getElementById('agenda-view');
       const vochtView = document.getElementById('vocht-view');
       const rittenView = document.getElementById('ritten-view');
-      const instellingenView = document.getElementById('instellingen-view');
+      const dialyseView = document.getElementById('dialyse-view');
+      const agendaView = document.getElementById('agenda-view');
+      const overzichtenView = document.getElementById('overzichten-view');
+      const pdfView = document.getElementById('pdf-view');
+      const instView = document.getElementById('instellingen-view');
       const chatView = document.getElementById('chat-view');
-      const moduleBox = document.getElementById('module-box');
+      const modBox = document.getElementById('module-box');
 
       startView.classList.add('hidden');
-      dialyseView.classList.add('hidden');
-      agendaView.classList.add('hidden');
       vochtView.classList.add('hidden');
       rittenView.classList.add('hidden');
-      instellingenView.classList.add('hidden');
+      dialyseView.classList.add('hidden');
+      agendaView.classList.add('hidden');
+      overzichtenView.classList.add('hidden');
+      pdfView.classList.add('hidden');
+      instView.classList.add('hidden');
       chatView.classList.add('hidden');
-      moduleBox.classList.add('hidden');
+      modBox.classList.add('hidden');
 
       if (tab === 'start') {
         startView.classList.remove('hidden');
-      } else if (tab === 'dialyse') {
-        dialyseView.classList.remove('hidden');
-      } else if (tab === 'agenda') {
-        agendaView.classList.remove('hidden');
-        renderAgendaView(ritten, dialyseSessies, dialyseStatus, dialyseSub);
       } else if (tab === 'vochtintake') {
         vochtView.classList.remove('hidden');
       } else if (tab === 'ritten') {
         rittenView.classList.remove('hidden');
+      } else if (tab === 'dialyse') {
+        dialyseView.classList.remove('hidden');
+        updateDialyseLiveCalculations();
+      } else if (tab === 'agenda') {
+        agendaView.classList.remove('hidden');
+        renderAgendaView(ritten, dialyseSessies, dialyseStatus, dialyseSub);
+      } else if (tab === 'overzichten') {
+        overzichtenView.classList.remove('hidden');
+        renderOverzichtenView(sharedData);
+      } else if (tab === 'pdf') {
+        pdfView.classList.remove('hidden');
+        renderPdfView(sharedData);
       } else if (tab === 'instellingen') {
-        instellingenView.classList.remove('hidden');
+        instView.classList.remove('hidden');
       } else if (tab === 'chat') {
         chatView.classList.remove('hidden');
+        startChatListener();
       } else {
-        moduleBox.classList.remove('hidden');
-        document.getElementById('module-heading').textContent = tabNames[tab];
-        document.getElementById('module-desc').textContent = `Onderdeel ${tabNames[tab]} — inhoud wordt live gesynchroniseerd tussen je toestellen.`;
-        document.getElementById('module-content').innerHTML = renderModuleBody(tab, sharedData);
+        modBox.classList.remove('hidden');
+        document.getElementById('module-heading').textContent = tabNames[tab] || tab;
+        document.getElementById('module-desc').textContent = 'Realtime gesynchroniseerd met Firebase.';
+        document.getElementById('module-content').innerHTML = `
+          <div class="space-y-3">
+            <p>Gegevens voor <strong>${escapeHtml(tabNames[tab] || tab)}</strong> worden live bewaard in je account.</p>
+            <button id="demo-brief-btn" type="button" class="px-4 py-2 rounded-xl bg-amber-600 text-white text-xs font-bold cursor-pointer">
+              + Voorbeeldbrief toevoegen
+            </button>
+          </div>
+        `;
+        const briefBtn = document.getElementById('demo-brief-btn');
+        if (briefBtn) {
+          briefBtn.addEventListener('click', () => {
+            const next = [...brieven, { titel: `Brief #${brieven.length + 1}` }];
+            pushSharedData({ brieven: next });
+          });
+        }
       }
-
-      document.getElementById('last-sync-time').textContent = sharedData.updatedAt || 'Zojuist verbonden';
     }
 
-    function renderModuleBody(tab, data) {
-      if (tab === 'brieven') {
-        const list = (data.brieven || []).map((b) => `<li>• ${escapeHtml(b.titel)}</li>`).join('');
-        return `<p class="mb-2">Brieven in dossier:</p><ul class="space-y-1">${list || '<li class="text-slate-400">Geen brieven</li>'}</ul>`;
-      }
-      return '';
-    }
-
-    function escapeHtml(s) {
-      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
-    document.getElementById('tile-vocht-plus150').addEventListener('click', () => {
-      addVochtEntry(150, selectedDrink);
-    });
+    document.getElementById('tile-vocht-plus150').addEventListener('click', () => addVochtEntry(150, 'Water'));
     document.getElementById('tile-brief-quick').addEventListener('click', () => {
-      const brieven = Array.isArray(sharedData.brieven) ? [...sharedData.brieven] : [];
-      const nr = brieven.length + 1;
-      brieven.push({ titel: `Brief #${nr} (${new Date().toLocaleDateString('nl-NL')})` });
-      pushSharedData({ brieven });
+      const brieven = Array.isArray(sharedData.brieven) ? sharedData.brieven : [];
+      pushSharedData({ brieven: [...brieven, { titel: `Brief #${brieven.length + 1}` }] });
+    });
+
+    document.getElementById('nav-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.nav-btn');
+      if (btn) switchLocalTab(btn.getAttribute('data-tab'));
     });
 
     document.querySelectorAll('.open-tab-link').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        switchLocalTab(btn.getAttribute('data-open-tab'));
-      });
-    });
-    document.querySelectorAll('.nav-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        switchLocalTab(btn.getAttribute('data-tab'));
-      });
+      btn.addEventListener('click', () => switchLocalTab(btn.getAttribute('data-open-tab')));
     });
 
-    function startRealtime(userId) {
+    function startRealtimeListener(userId) {
       if (dbUnsub) dbUnsub();
-      const dataRef = ref(db, `users/${userId}/data`);
-      dbUnsub = onValue(dataRef, (snap) => {
-        document.getElementById('rt-status-label').textContent = 'Realtime live';
-        if (snap.exists()) {
-          const val = snap.val();
+      const userDataRef = ref(db, `users/${userId}/data`);
+      document.getElementById('rt-status-label').textContent = 'Realtime verbinden...';
+
+      dbUnsub = onValue(userDataRef, (snapshot) => {
+        document.getElementById('rt-status-label').textContent = 'Realtime verbonden';
+        if (snapshot.exists()) {
+          const val = snapshot.val() || {};
           sharedData = {
             ...sharedData,
             ...val,
+            vochtEntries: Array.isArray(val.vochtEntries) ? val.vochtEntries : [],
+            vochtProducts: Array.isArray(val.vochtProducts) && val.vochtProducts.length > 0
+              ? val.vochtProducts
+              : ['Water', 'Koffie', 'Thee', 'Soep', 'Frisdrank'],
+            vochtAmounts: Array.isArray(val.vochtAmounts) && val.vochtAmounts.length > 0
+              ? val.vochtAmounts
+              : [100, 150, 200, 250, 330, 500],
+            vocht48StartDate: val.vocht48StartDate || '2026-11-22',
+            vocht48StartTime: val.vocht48StartTime || '05:30',
+            vocht48Mode: val.vocht48Mode || 'every_other_day',
+            dialyseDryWeight: Number(val.dialyseDryWeight ?? 109),
+            dialyseUfOrangeMin: Number(val.dialyseUfOrangeMin ?? 4.0),
+            dialyseUfRedMin: Number(val.dialyseUfRedMin ?? 4.5),
+            dialyseSessies: Array.isArray(val.dialyseSessies) ? val.dialyseSessies : [],
+            verplegingOptions: Array.isArray(val.verplegingOptions) ? val.verplegingOptions : [],
             firmaOptions: Array.isArray(val.firmaOptions) ? val.firmaOptions : [],
             vanOptions: Array.isArray(val.vanOptions) ? val.vanOptions : [],
             naarOptions: Array.isArray(val.naarOptions) ? val.naarOptions : [],
-            dialyseSessies: Array.isArray(val.dialyseSessies) ? val.dialyseSessies : []
+            ritten: Array.isArray(val.ritten) ? val.ritten : [],
+            brieven: Array.isArray(val.brieven) ? val.brieven : [],
+            pdfDocs: Array.isArray(val.pdfDocs) ? val.pdfDocs : []
           };
+
+          const { newDocs, allDocs } = syncAutoPdfReports(sharedData, Date.now());
+          if (newDocs.length > 0) {
+            sharedData.pdfDocs = allDocs;
+            set(ref(db, `users/${userId}/data/pdfDocs`), allDocs).catch(() => {});
+          }
         }
         renderAll();
       }, () => {
-        document.getElementById('rt-status-label').textContent = 'Geen toegang tot Realtime DB';
+        document.getElementById('rt-status-label').textContent = 'Controleer Database Rules';
+        renderAll();
       });
-      startChatListener();
     }
 
     const loginScreen = document.getElementById('login-screen');
     const appShell = document.getElementById('app-shell');
     const authError = document.getElementById('auth-error');
-    const toggleAuthMode = document.getElementById('toggle-auth-mode');
     const authTitle = document.getElementById('auth-title');
+    const emailForm = document.getElementById('email-form');
+    const emailInput = document.getElementById('email-input');
+    const passwordInput = document.getElementById('password-input');
     const emailSubmitBtn = document.getElementById('email-submit-btn');
-    let registerMode = false;
+    const toggleAuthMode = document.getElementById('toggle-auth-mode');
+    let isRegisterMode = false;
+
+    function showAuthError(msg) {
+      authError.textContent = msg;
+      authError.classList.remove('hidden');
+    }
 
     toggleAuthMode.addEventListener('click', () => {
-      registerMode = !registerMode;
+      isRegisterMode = !isRegisterMode;
       authError.classList.add('hidden');
-      authTitle.textContent = registerMode ? 'Account aanmaken' : 'Inloggen';
-      emailSubmitBtn.textContent = registerMode ? 'Account aanmaken' : 'Inloggen met e-mail';
-      toggleAuthMode.textContent = registerMode ? 'Heb je al een account? Log in' : 'Nog geen account? Maak er een aan';
+      if (isRegisterMode) {
+        authTitle.textContent = 'Account aanmaken';
+        emailSubmitBtn.textContent = 'Registreren met e-mail';
+        toggleAuthMode.textContent = 'Heb je al een account? Log in';
+      } else {
+        authTitle.textContent = 'Inloggen';
+        emailSubmitBtn.textContent = 'Inloggen met e-mail';
+        toggleAuthMode.textContent = 'Nog geen account? Maak er een aan';
+      }
     });
 
-    document.getElementById('email-form').addEventListener('submit', async (e) => {
+    emailForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       authError.classList.add('hidden');
-      const email = document.getElementById('email-input').value;
-      const password = document.getElementById('password-input').value;
+      const email = emailInput.value.trim();
+      const pass = passwordInput.value;
       try {
-        if (registerMode) {
-          await createUserWithEmailAndPassword(auth, email, password);
+        if (isRegisterMode) {
+          await createUserWithEmailAndPassword(auth, email, pass);
         } else {
-          await signInWithEmailAndPassword(auth, email, password);
+          await signInWithEmailAndPassword(auth, email, pass);
         }
-      } catch {
-        authError.textContent = 'Inloggen of registreren mislukt.';
-        authError.classList.remove('hidden');
+      } catch (err) {
+        showAuthError(err.message || 'Inloggen mislukt.');
       }
     });
 
@@ -3694,49 +4264,58 @@
       authError.classList.add('hidden');
       try {
         await signInWithPopup(auth, googleProvider);
-      } catch {
-        authError.textContent = 'Google-inlog mislukt. Controleer Authorized domains in Firebase.';
-        authError.classList.remove('hidden');
+      } catch (err) {
+        showAuthError(err.message || 'Google login mislukt.');
       }
     });
 
-    function doLogout() {
-      if (dbUnsub) dbUnsub();
-      if (chatUnsub) chatUnsub();
+    async function handleLogout() {
+      stopRecording(true);
       sessionStorage.removeItem('dp_locked');
       pinModal.classList.add('hidden');
-      toastEl.classList.add('hidden');
-      signOut(auth);
+      if (dbUnsub) { dbUnsub(); dbUnsub = null; }
+      if (chatUnsub) { chatUnsub(); chatUnsub = null; }
+      await signOut(auth);
     }
 
-    document.getElementById('logout-sidebar').addEventListener('click', doLogout);
-    document.getElementById('logout-header').addEventListener('click', doLogout);
-    document.getElementById('pin-logout-btn').addEventListener('click', doLogout);
+    document.getElementById('logout-sidebar').addEventListener('click', handleLogout);
+    document.getElementById('logout-header').addEventListener('click', handleLogout);
+    document.getElementById('pin-logout-btn').addEventListener('click', handleLogout);
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
         uid = user.uid;
         userEmail = user.email || '';
-        loginScreen.classList.add('hidden');
-        appShell.classList.remove('hidden');
-        document.getElementById('user-email-label').textContent = user.email;
+        localActiveTab = 'start';
+        editingRitId = null;
+        editingDialyseId = null;
         syncRitFormMode();
         updateDialyseRepeatUI();
-        syncDialyseTimesFromAfspraak(false);
-        renderAll();
-        startRealtime(user.uid);
+        syncDialyseTimesFromAfspraak(true);
+        document.getElementById('user-email-label').textContent = userEmail || uid;
+        loginScreen.classList.add('hidden');
+        appShell.classList.remove('hidden');
+        startRealtimeListener(uid);
+        startChatListener();
         if (sessionStorage.getItem('dp_locked') === '1') {
           openPin(false);
         }
       } else {
         uid = null;
         userEmail = '';
+        if (dbUnsub) { dbUnsub(); dbUnsub = null; }
+        if (chatUnsub) { chatUnsub(); chatUnsub = null; }
         appShell.classList.add('hidden');
         pinModal.classList.add('hidden');
-        toastEl.classList.add('hidden');
         loginScreen.classList.remove('hidden');
       }
     });
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
   </script>
 </body>
 </html>
