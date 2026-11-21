@@ -86,24 +86,113 @@
         </nav>
       </div>
 
-      <button id="logout-btn" class="mt-8 w-full py-2.5 px-4 rounded-lg bg-slate-800 hover:bg-red-600 text-sm text-slate-200 hover:text-white transition cursor-pointer">
-        Uitloggen
+      <button id="logout-btn-sidebar" class="mt-8 w-full py-2.5 px-4 rounded-lg bg-slate-800 hover:bg-red-600 text-sm text-slate-200 hover:text-white transition cursor-pointer flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        <span>Uitloggen</span>
       </button>
     </aside>
 
-    <!-- Rechter werkruimte -->
-    <main class="flex-1 p-6 md:p-10">
-      <div class="max-w-4xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
-        <h2 id="page-title" class="text-2xl font-bold text-slate-900">Start</h2>
-        <p id="page-description" class="text-slate-600 mt-2">
-          Welkom bij DataPoortalen. Kies links een onderdeel. Ritten en Dialyse koppelen we straks automatisch aan de Agenda.
-        </p>
-      </div>
-    </main>
+    <!-- Rechter kolom: Bovenbalk + Werkruimte -->
+    <div class="flex-1 flex flex-col min-w-0">
+
+      <!-- BOVENBALK: Live datum/tijd + Volledig beeld + Pincode slot + Uitloggen -->
+      <header class="bg-white border-b border-slate-200 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+        
+        <!-- Live Tijd & Datum -->
+        <div class="flex items-center gap-3">
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+          <div>
+            <span id="live-time" class="text-base font-bold text-slate-900 tabular-nums">--:--:--</span>
+            <span class="mx-2 text-slate-300">•</span>
+            <span id="live-date" class="text-sm font-medium text-slate-600 capitalize">Datum laden...</span>
+          </div>
+        </div>
+
+        <!-- Actieknoppen rechtsboven -->
+        <div class="flex items-center gap-2">
+          <!-- Volledig beeld knop -->
+          <button id="fullscreen-btn" type="button" title="Volledig beeld"
+            class="px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-medium flex items-center gap-1.5 transition cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+            </svg>
+            <span id="fullscreen-label">Volledig beeld</span>
+          </button>
+
+          <!-- Vergrendel met pincode knop -->
+          <button id="lock-btn" type="button" title="Scherm vergrendelen met pincode"
+            class="px-3 py-2 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-medium flex items-center gap-1.5 transition cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span>Vergrendel</span>
+          </button>
+
+          <!-- Uitloggen knop -->
+          <button id="logout-btn-header" type="button" title="Uitloggen"
+            class="px-3 py-2 rounded-lg border border-red-200 bg-red-50 hover:bg-red-600 text-red-700 hover:text-white text-xs font-medium flex items-center gap-1.5 transition cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span>Uitloggen</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Hoofdinhoud -->
+      <main class="flex-1 p-6 md:p-10">
+        <div class="max-w-4xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+          <h2 id="page-title" class="text-2xl font-bold text-slate-900">Start</h2>
+          <p id="page-description" class="text-slate-600 mt-2">
+            Welkom bij DataPoortalen. Kies links een onderdeel. Ritten en Dialyse koppelen we straks automatisch aan de Agenda.
+          </p>
+        </div>
+      </main>
+    </div>
   </div>
 
   <!-- ========================================================= -->
-  <!-- BLOK C: DE WERKING (Firebase E-mail & Google + Menu)       -->
+  <!-- BLOK C: PINCODE VERGRENDELSCHERM (Overlay)                -->
+  <!-- ========================================================= -->
+  <div id="pin-screen" class="hidden fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8 text-center">
+      <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-4">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+      </div>
+
+      <h2 id="pin-title" class="text-xl font-bold text-slate-900">Scherm vergrendeld</h2>
+      <p id="pin-subtitle" class="text-sm text-slate-500 mt-1 mb-5">Voer je 4-cijferige pincode in om verder te gaan.</p>
+
+      <div id="pin-error" class="hidden mb-4 p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs font-medium text-red-700"></div>
+
+      <form id="pin-form" class="space-y-4">
+        <input id="pin-input" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required
+          placeholder="••••"
+          class="w-full text-center text-2xl tracking-[0.6em] font-bold py-3 px-4 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        
+        <button id="pin-submit-btn" type="submit"
+          class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition cursor-pointer">
+          Ontgrendelen
+        </button>
+      </form>
+
+      <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+        <button id="reset-pin-btn" type="button" class="text-slate-500 hover:text-blue-600 underline cursor-pointer">
+          Pincode wijzigen
+        </button>
+        <button id="pin-logout-btn" type="button" class="text-red-600 hover:underline font-medium cursor-pointer">
+          Volledig uitloggen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- BLOK D: DE WERKING (Firebase, Tijd, Fullscreen, Pincode)  -->
   <!-- ========================================================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -131,6 +220,127 @@
     const auth = getAuth(app);
     const googleProvider = new GoogleAuthProvider();
 
+    let currentUserUid = null;
+
+    // ---------------------------------------------------------
+    // 1. LIVE TIJD EN DATUM
+    // ---------------------------------------------------------
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('nl-NL', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      const dateStr = now.toLocaleDateString('nl-NL', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      document.getElementById('live-time').textContent = timeStr;
+      document.getElementById('live-date').textContent = dateStr;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // ---------------------------------------------------------
+    // 2. VOLLEDIG BEELD KNOP
+    // ---------------------------------------------------------
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const fullscreenLabel = document.getElementById('fullscreen-label');
+
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      fullscreenLabel.textContent = document.fullscreenElement
+        ? 'Normaal beeld'
+        : 'Volledig beeld';
+    });
+
+    // ---------------------------------------------------------
+    // 3. PINCODE VERGRENDELING
+    // ---------------------------------------------------------
+    const pinScreen = document.getElementById('pin-screen');
+    const pinTitle = document.getElementById('pin-title');
+    const pinSubtitle = document.getElementById('pin-subtitle');
+    const pinSubmitBtn = document.getElementById('pin-submit-btn');
+    const pinInput = document.getElementById('pin-input');
+    const pinError = document.getElementById('pin-error');
+    let isSettingNewPin = false;
+
+    function getPinStorageKey() {
+      return `datapoortalen_pin_${currentUserUid}`;
+    }
+
+    function openLockScreen(forceSetup = false) {
+      pinError.classList.add('hidden');
+      pinInput.value = '';
+      const savedPin = localStorage.getItem(getPinStorageKey());
+
+      if (!savedPin || forceSetup) {
+        isSettingNewPin = true;
+        pinTitle.textContent = 'Pincode instellen';
+        pinSubtitle.textContent = 'Kies een 4-cijferige pincode om het scherm te vergrendelen.';
+        pinSubmitBtn.textContent = 'Pincode opslaan & vergrendelen';
+      } else {
+        isSettingNewPin = false;
+        pinTitle.textContent = 'Scherm vergrendeld';
+        pinSubtitle.textContent = 'Voer je 4-cijferige pincode in om verder te gaan.';
+        pinSubmitBtn.textContent = 'Ontgrendelen';
+        sessionStorage.setItem('datapoortalen_locked', 'true');
+      }
+
+      pinScreen.classList.remove('hidden');
+      setTimeout(() => pinInput.focus(), 50);
+    }
+
+    document.getElementById('lock-btn').addEventListener('click', () => openLockScreen(false));
+
+    document.getElementById('reset-pin-btn').addEventListener('click', () => {
+      localStorage.removeItem(getPinStorageKey());
+      openLockScreen(true);
+    });
+
+    document.getElementById('pin-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      pinError.classList.add('hidden');
+      const enteredPin = pinInput.value.trim();
+
+      if (!/^\d{4}$/.test(enteredPin)) {
+        pinError.textContent = 'Vul precies 4 cijfers in.';
+        pinError.classList.remove('hidden');
+        return;
+      }
+
+      if (isSettingNewPin) {
+        localStorage.setItem(getPinStorageKey(), enteredPin);
+        sessionStorage.setItem('datapoortalen_locked', 'true');
+        openLockScreen(false);
+      } else {
+        const savedPin = localStorage.getItem(getPinStorageKey());
+        if (enteredPin === savedPin) {
+          sessionStorage.removeItem('datapoortalen_locked');
+          pinScreen.classList.add('hidden');
+          pinInput.value = '';
+        } else {
+          pinError.textContent = 'Onjuiste pincode. Probeer het opnieuw.';
+          pinError.classList.remove('hidden');
+          pinInput.value = '';
+          pinInput.focus();
+        }
+      }
+    });
+
+    // ---------------------------------------------------------
+    // 4. INLOGGEN & UITLOGGEN (FIREBASE)
+    // ---------------------------------------------------------
     const loginScreen = document.getElementById('login-screen');
     const appShell = document.getElementById('app-shell');
     const errorBox = document.getElementById('error-box');
@@ -177,19 +387,37 @@
       }
     });
 
-    document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+    function handleLogout() {
+      sessionStorage.removeItem('datapoortalen_locked');
+      pinScreen.classList.add('hidden');
+      signOut(auth);
+    }
+
+    document.getElementById('logout-btn-sidebar').addEventListener('click', handleLogout);
+    document.getElementById('logout-btn-header').addEventListener('click', handleLogout);
+    document.getElementById('pin-logout-btn').addEventListener('click', handleLogout);
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        currentUserUid = user.uid;
         loginScreen.classList.add('hidden');
         appShell.classList.remove('hidden');
         document.getElementById('user-email-display').textContent = user.email;
+
+        if (sessionStorage.getItem('datapoortalen_locked') === 'true') {
+          openLockScreen(false);
+        }
       } else {
+        currentUserUid = null;
         appShell.classList.add('hidden');
+        pinScreen.classList.add('hidden');
         loginScreen.classList.remove('hidden');
       }
     });
 
+    // ---------------------------------------------------------
+    // 5. MENU KNOPPEN
+    // ---------------------------------------------------------
     const tabTexts = {
       start: ['Start', 'Welkom bij DataPoortalen. Kies links een onderdeel.'],
       vochtintake: ['Vochtintake', 'Hier komt straks de Vochtmonitor.'],
