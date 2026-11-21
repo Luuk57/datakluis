@@ -1,547 +1,1917 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="nl" class="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DataKluis - Drinken</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Roboto', Arial, sans-serif;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Datakluis — Persoonlijke Datakluis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Inter", "system-ui", "-apple-system", "sans-serif"]
+          }
         }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            background-color: #f8f9fa;
-        }
-
-        /* Android Material Top App Bar */
-        header {
-            background-color: #1976D2;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 24px;
-            font-size: 1.25rem;
-            font-weight: 500;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            z-index: 10;
-        }
-
-        #datetime {
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
-
-        /* Hoofdcontainer (zijmenu + middenvlak) */
-        .main-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        /* Android-stijl Zijmenu */
-        nav {
-            width: 280px;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            padding: 12px 8px;
-            gap: 4px;
-        }
-
-        nav h3 {
-            padding: 12px 16px;
-            font-size: 0.8rem;
-            color: #757575;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        nav a {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 12px 16px;
-            text-decoration: none;
-            color: #333333;
-            font-size: 1.05rem;
-            font-weight: 500;
-            border-radius: 24px;
-            transition: background 0.2s;
-        }
-
-        nav a span.icon {
-            font-size: 1.4rem;
-        }
-
-        nav a:hover {
-            background-color: #f1f3f4;
-        }
-
-        nav a.active {
-            background-color: #e3f2fd;
-            color: #1976D2;
-        }
-
-        /* Middenvlak / Content Area */
-        main {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-            background-color: #f8f9fa;
-        }
-
-        .form-card {
-            background: white;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-            max-width: 650px;
-        }
-
-        .form-card h2 {
-            margin-bottom: 20px;
-            color: #202124;
-            font-size: 1.4rem;
-        }
-
-        /* Sub-tabs binnen het Drinken gedeelte */
-        .sub-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 10px;
-        }
-
-        .sub-tab-btn {
-            background: #f1f3f4;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 16px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #5f6368;
-            box-shadow: none;
-        }
-
-        .sub-tab-btn.active {
-            background-color: #1976D2;
-            color: white;
-        }
-
-        .sub-tab-content {
-            display: none;
-        }
-
-        .sub-tab-content.active {
-            display: block;
-        }
-
-        /* Voortgangsbalk voor drinken */
-        .progress-container {
-            background: #e0e0e0;
-            border-radius: 8px;
-            height: 24px;
-            width: 100%;
-            margin-bottom: 20px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: #4CAF50; /* Groen tot en met 100ml */
-            transition: width 0.3s ease, background-color 0.3s ease;
-        }
-
-        .progress-text {
-            position: absolute;
-            width: 100%;
-            text-align: center;
-            top: 3px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: #333;
-        }
-
-        /* Formulier stijlen */
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            color: #5f6368;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #dadce0;
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-            transition: border 0.2s;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            border-color: #1976D2;
-            border-width: 2px;
-            padding: 11px;
-        }
-
-        /* Snelkeuze knoppen */
-        .quick-amounts {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .quick-btn {
-            background-color: #f1f3f4;
-            color: #333;
-            border: 1px solid #dadce0;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            box-shadow: none;
-        }
-
-        .quick-btn:hover {
-            background-color: #e8eaed;
-            color: #1976D2;
-            border-color: #1976D2;
-        }
-
-        .submit-btn {
-            background-color: #1976D2;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 24px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            width: 100%;
-        }
-
-        .submit-btn:hover {
-            background-color: #115293;
-        }
-
-        /* Overzicht tabel */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        table th, table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 0.95rem;
-        }
-
-        table th {
-            color: #5f6368;
-            font-weight: 500;
-        }
-
-        /* Mobiele aanpassing */
-        @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column;
-            }
-            nav {
-                width: 100%;
-                height: 64px;
-                flex-direction: row;
-                justify-content: space-around;
-                align-items: center;
-                padding: 0;
-                border-right: none;
-                border-top: 1px solid #e0e0e0;
-                background-color: #ffffff;
-                order: 2;
-            }
-            nav h3 {
-                display: none;
-            }
-            nav a {
-                flex-direction: column;
-                gap: 2px;
-                padding: 6px 12px;
-                border-radius: 12px;
-                font-size: 0.75rem;
-                text-align: center;
-            }
-            nav a span.icon {
-                font-size: 1.2rem;
-            }
-            nav a.active {
-                background-color: transparent;
-                color: #1976D2;
-                font-weight: bold;
-            }
-            main {
-                order: 1;
-                padding: 16px;
-                flex: 1;
-            }
-        }
-    </style>
+      }
+    };
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    .pos-tile {
+      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease, background-color 0.14s ease;
+    }
+    .pos-tile:active {
+      transform: scale(0.97);
+    }
+    @keyframes toastFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .toast-enter {
+      animation: toastFadeIn 0.2s ease-out forwards;
+    }
+  </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-cyan-500/20 selection:text-cyan-700 dark:selection:text-cyan-200">
 
-    <!-- Bovenbalk -->
-    <header>
-        <div>DataKluis</div>
-        <div id="datetime">Laden...</div>
+  <!-- ===================================================================== -->
+  <!-- TOAST MELDINGEN (GEEN BROWSER ALERT/CONFIRM)                          -->
+  <!-- ===================================================================== -->
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full px-4 sm:px-0 pointer-events-none"></div>
+
+  <!-- ===================================================================== -->
+  <!-- INLOGSCHERM (ZICHTBAAR WANNEER NIET INGELOGD)                          -->
+  <!-- ===================================================================== -->
+  <div id="loginScreen" class="min-h-screen flex flex-col justify-between bg-gradient-to-br from-cyan-50 via-slate-50 to-indigo-100/70 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950/40 p-4 sm:p-6">
+    <!-- Topbar op inlogscherm met live datum, klok & thema -->
+    <header class="max-w-5xl w-full mx-auto flex flex-wrap items-center justify-between gap-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 rounded-2xl px-4 py-3 shadow-xs">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-600 to-blue-700 text-white flex items-center justify-center font-black text-lg shadow-sm">
+          🔐
+        </div>
+        <div>
+          <p class="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">Datakluis</p>
+          <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Persoonlijke datakluis</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="text-right px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700">
+          <div id="loginLiveDate" class="text-[11px] font-semibold text-slate-600 dark:text-slate-300 capitalize">Zaterdag 21 november 2026</div>
+          <div id="loginLiveClock" class="text-sm font-black text-cyan-700 dark:text-cyan-300 tabular-nums">10:04:00</div>
+        </div>
+        <button type="button" id="loginThemeToggleBtn" aria-label="Nachtmodus wisselen" title="Nachtmodus"
+          class="px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
+          <span id="loginThemeIcon">🌙</span>
+          <span id="loginThemeLabel" class="hidden sm:inline">Nachtmodus</span>
+        </button>
+      </div>
     </header>
 
-    <!-- Inhoud -->
-    <div class="main-container">
-        <!-- Zijmenu -->
-        <nav>
-            <h3>Menu</h3>
-            <a href="#" onclick="switchMainTab('Eten', event)"><span class="icon">🍎</span>Eten</a>
-            <a href="#" class="active" onclick="switchMainTab('Drinken', event)"><span class="icon">💧</span>Drinken</a>
-            <a href="#" onclick="switchMainTab('Vervoer', event)"><span class="icon">🚗</span>Vervoer</a>
-            <a href="#" onclick="switchMainTab('Dialyse', event)"><span class="icon">🩺</span>Dialyse</a>
-        </nav>
+    <!-- Centrale inlogkaart -->
+    <main class="max-w-5xl w-full mx-auto my-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      <!-- Linkerzijde: Introductie -->
+      <div class="lg:col-span-6 space-y-4 text-center lg:text-left">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 text-xs font-extrabold">
+          <span>●</span> Persoonlijke datakluis
+        </span>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+          Datakluis <span class="block text-xl sm:text-2xl font-bold text-cyan-600 dark:text-cyan-400 mt-1">Persoonlijke datakluis</span>
+        </h1>
+        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl mx-auto lg:mx-0">
+          Uw eigen overzichtelijke omgeving voor dagelijkse vochtinname en uw persoonlijke app-agenda. Log in met Google, uw e-mailadres of open direct als gast.
+        </p>
 
-        <!-- Middenvlak -->
-        <main>
-            <div class="form-card">
-                <h2 id="main-form-title">Formulier: Drinken</h2>
-
-                <!-- Sub-tabbladen voor Drinken (2 tabbladen: Invoer & Overzicht) -->
-                <div class="sub-tabs">
-                    <button class="sub-tab-btn active" onclick="switchSubTab(1)">1. Invoer</button>
-                    <button class="sub-tab-btn" onclick="switchSubTab(2)">2. Overzicht</button>
-                </div>
-
-                <!-- Voortgangsbalk (Limiet 1000ml, tot 100ml groen, daarboven rood) -->
-                <div class="progress-container">
-                    <div id="progressBar" class="progress-bar"></div>
-                    <div id="progressText" class="progress-text">0 ml / 1000 ml</div>
-                </div>
-
-                <!-- TAB 1: INVOER -->
-                <div id="subTab1" class="sub-tab-content active">
-                    <form id="drinkForm" onsubmit="handleDrinkSubmit(event)">
-                        <div class="form-group">
-                            <label for="datumInput">Datum & Tijd</label>
-                            <input type="text" id="datumInput" readonly>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="drankSoort">Soort Drank</label>
-                            <select id="drankSoort" required>
-                                <option value="" disabled selected>Selecteer drankje...</option>
-                                <option value="Koffie">Koffie</option>
-                                <option value="Thee">Thee</option>
-                                <option value="Water">Water</option>
-                                <option value="Ranja">Ranja</option>
-                                <option value="Fris">Fris</option>
-                                <option value="Overige">Overige</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="omschrijving">Omschrijving / Details</label>
-                            <input type="text" id="omschrijving" placeholder="Bijv. merk of extra toevoeging...">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Snelkeuze hoeveelheid (ml)</label>
-                            <div class="quick-amounts">
-                                <button type="button" class="quick-btn" onclick="setAmount(75)">75</button>
-                                <button type="button" class="quick-btn" onclick="setAmount(100)">100</button>
-                                <button type="button" class="quick-btn" onclick="setAmount(150)">150</button>
-                                <button type="button" class="quick-btn" onclick="setAmount(200)">200</button>
-                                <button type="button" class="quick-btn" onclick="setAmount(330)">330</button>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="hoeveelheidInput">Custom Hoeveelheid (ml)</label>
-                            <input type="number" id="hoeveelheidInput" placeholder="Voer aantal ml in..." min="1" required>
-                        </div>
-
-                        <button type="submit" class="submit-btn">Opslaan</button>
-                    </form>
-                </div>
-
-                <!-- TAB 2: OVERZICHT -->
-                <div id="subTab2" class="sub-tab-content">
-                    <h3 style="margin-bottom: 15px; color: #333; font-size: 1.1rem;">Ingevoerde Drinken Gegevens</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Tijd</th>
-                                <th>Drank</th>
-                                <th>Details</th>
-                                <th>Hoeveelheid</th>
-                            </tr>
-                        </thead>
-                        <tbody id="overviewTableBody">
-                            <tr>
-                                <td colspan="4" style="text-align: center; color: #757575;">Nog geen gegevens ingevoerd.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-left">
+            <div class="p-3.5 rounded-2xl bg-white/85 dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800">
+              <p class="text-xs font-extrabold text-cyan-700 dark:text-cyan-300">1. Vochtinname</p>
+              <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">Snelle tegels per dranksoort en hoeveelheid (75 t/m 330 ml) voor 24u of 48u.</p>
             </div>
-        </main>
-    </div>
+            <div class="p-3.5 rounded-2xl bg-white/85 dark:bg-slate-900/85 border border-slate-200/80 dark:border-slate-800">
+              <p class="text-xs font-extrabold text-indigo-700 dark:text-indigo-300">2. Eigen app-agenda</p>
+              <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">Uw eigen agenda in de datakluis, volledig los van externe agenda's.</p>
+            </div>
+          </div>
+      </div>
 
-    <script>
-        // Jouw Google Apps Script Web App URL
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwXzMMEUA38UlX4lekV64Gp1jTW8qY1mlsri1eRHGeiK88oshNkkp__xMYiDJdPFndxLw/exec';
+      <!-- Rechterzijde: Inlogformulier -->
+      <div class="lg:col-span-6">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xl space-y-5">
+          <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+            <div>
+              <h2 id="authCardTitle" class="text-xl font-extrabold text-slate-900 dark:text-white">Inloggen</h2>
+              <p id="authCardSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Open uw persoonlijke datakluis</p>
+            </div>
+            <div class="flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 text-xs font-bold">
+              <button type="button" id="tabAuthLogin" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-2xs transition cursor-pointer">
+                Inloggen
+              </button>
+              <button type="button" id="tabAuthRegister" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer">
+                Registreren
+              </button>
+            </div>
+          </div>
 
-        let drinkRecords = [];
-        let totalDrankMl = 0;
-        const maxLimit = 1000;
+          <div id="authErrorBox" class="hidden p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-xs font-semibold text-rose-700 dark:text-rose-300"></div>
 
-        function updateDateTime() {
-            const now = new Date();
-            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            const formatted = now.toLocaleDateString('nl-NL', options);
-            document.getElementById('datetime').innerText = formatted;
-            document.getElementById('datumInput').value = formatted;
+          <form id="emailAuthForm" class="space-y-4">
+            <div id="registerNameField" class="hidden">
+              <label for="authDisplayNameInput" class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+                Naam (optioneel)
+              </label>
+              <input type="text" id="authDisplayNameInput" placeholder="Bijv. Luuk Wagt"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500 outline-none" />
+            </div>
+
+            <div>
+              <label for="authEmailInput" class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+                E-mailadres
+              </label>
+              <input type="email" id="authEmailInput" placeholder="naam@voorbeeld.nl"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500 outline-none" />
+            </div>
+
+            <div>
+              <label for="authPasswordInput" class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+                Wachtwoord
+              </label>
+              <input type="password" id="authPasswordInput" placeholder="Minimaal 6 tekens"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500 outline-none" />
+            </div>
+
+            <button type="submit" id="emailAuthSubmitBtn"
+              class="w-full py-3.5 px-4 rounded-2xl bg-cyan-600 hover:bg-cyan-700 active:scale-[0.99] text-white font-extrabold text-sm shadow-md shadow-cyan-600/20 transition cursor-pointer">
+              Inloggen met e-mail
+            </button>
+          </form>
+
+          <div class="relative py-1">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-slate-200 dark:border-slate-800"></div>
+            </div>
+            <div class="relative flex justify-center text-xs">
+              <span class="px-3 bg-white dark:bg-slate-900 text-slate-400 font-semibold">of</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button type="button" id="googleSignInBtn"
+              class="py-3 px-4 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/80 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer">
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.54-1.14 2.85-2.4 3.72v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.22z" />
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24z" />
+                <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z" />
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z" />
+              </svg>
+              <span>Inloggen met Google</span>
+            </button>
+
+            <button type="button" id="directAccessBtn"
+              class="py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition cursor-pointer">
+              <span>⚡ Gasttoegang</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="max-w-5xl w-full mx-auto text-center text-[11px] text-slate-500 dark:text-slate-400 pb-2">
+      Datakluis • Persoonlijke datakluis
+    </footer>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- APPLICATIELOGICA (BETROUWBARE LOKALE AUTH + REAL-TIME/LOCAL OPSLAG) -->
+  <!-- ===================================================================== -->
+  <script type="module">
+    let initializeApp = null;
+    let getAuth = null;
+    let signInAnonymously = null;
+    let signInWithEmailAndPassword = null;
+    let createUserWithEmailAndPassword = null;
+    let signInWithPopup = null;
+    let GoogleAuthProvider = null;
+    let updateProfile = null;
+    let signOut = null;
+    let onAuthStateChanged = null;
+    let getFirestore = null;
+    let doc = null;
+    let setDoc = null;
+    let deleteDoc = null;
+    let onSnapshot = null;
+    let collection = null;
+
+    try {
+      const authMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+      const appMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+      const fsMod = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+      initializeApp = appMod.initializeApp;
+      getAuth = authMod.getAuth;
+      signInAnonymously = authMod.signInAnonymously;
+      signInWithEmailAndPassword = authMod.signInWithEmailAndPassword;
+      createUserWithEmailAndPassword = authMod.createUserWithEmailAndPassword;
+      signInWithPopup = authMod.signInWithPopup;
+      GoogleAuthProvider = authMod.GoogleAuthProvider;
+      updateProfile = authMod.updateProfile;
+      signOut = authMod.signOut;
+      onAuthStateChanged = authMod.onAuthStateChanged;
+      getFirestore = fsMod.getFirestore;
+      doc = fsMod.doc;
+      setDoc = fsMod.setDoc;
+      deleteDoc = fsMod.deleteDoc;
+      onSnapshot = fsMod.onSnapshot;
+      collection = fsMod.collection;
+    } catch (sdkErr) {
+      console.info("Externe Firebase SDK niet geladen; lokale kluis-authenticatie en opslag actief.");
+    }
+
+    // -----------------------------------------------------------------------
+    // 1. CONFIGURATIE & FALLBACK-OPSLAPLAG
+    // -----------------------------------------------------------------------
+    const appId = typeof __app_id !== "undefined" ? __app_id : "datakluis-persoonlijk";
+    let firebaseConfig = null;
+    try {
+      if (typeof __firebase_config !== "undefined" && __firebase_config) {
+        firebaseConfig = typeof __firebase_config === "string"
+          ? JSON.parse(__firebase_config)
+          : __firebase_config;
+      }
+    } catch (e) {
+      firebaseConfig = null;
+    }
+
+    let app = null;
+    let auth = null;
+    let db = null;
+    let firebaseEnabled = false;
+
+    if (initializeApp && getAuth && getFirestore && firebaseConfig && firebaseConfig.apiKey) {
+      try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        firebaseEnabled = true;
+      } catch (err) {
+        firebaseEnabled = false;
+      }
+    }
+
+    // -----------------------------------------------------------------------
+    // 2. APPLICATIESTATE
+    // -----------------------------------------------------------------------
+    let currentSessionUser = null; // { uid, email, displayName, provider, isLocal }
+    let activeModule = "fluid"; // 'fluid' | 'agenda'
+    let authMode = "login"; // 'login' | 'register'
+    let manualLogoutRequested = false;
+
+    // Vochtinname POS state
+    const DRINK_OPTIONS = [
+      { id: "koffie", label: "Koffie", emoji: "☕" },
+      { id: "thee", label: "Thee", emoji: "🍵" },
+      { id: "water", label: "Water", emoji: "💧" },
+      { id: "melk", label: "Melk / Karnemelk", emoji: "🥛" },
+      { id: "sap", label: "Frisdrank / Sap", emoji: "🧃" },
+      { id: "soep", label: "Soep / Bouillon", emoji: "🍲" },
+      { id: "zuivel", label: "Yoghurt / Vla", emoji: "🥣" },
+      { id: "medicatie", label: "Medicatie-water", emoji: "💊" },
+      { id: "overig", label: "Overig", emoji: "➕" }
+    ];
+
+    let selectedDrinkId = "water";
+    let selectedPosMl = 200;
+    let directBookEnabled = true;
+    let fluidMode = "24h"; // '24h' | '48h'
+    let period48hStartMs = Date.now();
+    let fluidEntries = [];
+
+    // Eigen app-agenda state (start standaard LEEG en staat los van Google Agenda)
+    let agendaItems = [];
+    let agendaFilter = "all"; // 'all' | 'upcoming' | 'today_tomorrow'
+
+    let unsubEntries = null;
+    let unsubSettings = null;
+    let unsubAgenda = null;
+
+    const STORAGE_PREFIX = "datakluis_persoonlijk_v1_";
+    const ACTIVE_SESSION_KEY = `${STORAGE_PREFIX}active_session`;
+    const REGISTERED_USERS_KEY = `${STORAGE_PREFIX}registered_users`;
+
+    function getRegisteredUsers() {
+      try {
+        const raw = localStorage.getItem(REGISTERED_USERS_KEY);
+        const list = raw ? JSON.parse(raw) : [];
+        return Array.isArray(list) ? list : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveRegisteredUsers(users) {
+      try {
+        localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
+      } catch (e) {
+        // negeer opslagfouten
+      }
+    }
+
+    function persistActiveSession(userObj) {
+      try {
+        if (userObj) {
+          localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(userObj));
+        } else {
+          localStorage.removeItem(ACTIVE_SESSION_KEY);
         }
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
+      } catch (e) {
+        // negeer opslagfouten
+      }
+    }
 
-        function switchMainTab(category, event) {
-            event.preventDefault();
-            document.querySelectorAll('nav a').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            document.getElementById('main-form-title').innerText = 'Formulier: ' + category;
+    function loadPersistedSession() {
+      try {
+        const raw = localStorage.getItem(ACTIVE_SESSION_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.uid) return parsed;
+      } catch (e) {
+        // negeer
+      }
+      return null;
+    }
+
+    function loadLocalUserState(uid) {
+      try {
+        const raw = localStorage.getItem(`${STORAGE_PREFIX}data_${uid}`);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.fluidEntries)) fluidEntries = parsed.fluidEntries;
+        if (parsed.fluidMode === "24h" || parsed.fluidMode === "48h") fluidMode = parsed.fluidMode;
+        if (typeof parsed.period48hStartMs === "number") period48hStartMs = parsed.period48hStartMs;
+        if (Array.isArray(parsed.agendaItems)) agendaItems = parsed.agendaItems;
+      } catch (err) {
+        console.warn("Kon lokale opslag niet lezen:", err);
+      }
+    }
+
+    function saveLocalUserState() {
+      if (!currentSessionUser) return;
+      try {
+        localStorage.setItem(
+          `${STORAGE_PREFIX}data_${currentSessionUser.uid}`,
+          JSON.stringify({
+            fluidEntries,
+            fluidMode,
+            period48hStartMs,
+            agendaItems
+          })
+        );
+      } catch (err) {
+        console.warn("Kon lokale opslag niet wegschrijven:", err);
+      }
+    }
+
+    function loadThemePreference() {
+      try {
+        const savedTheme = localStorage.getItem(`${STORAGE_PREFIX}theme`);
+        if (savedTheme === "dark") applyTheme(true);
+        if (savedTheme === "light") applyTheme(false);
+      } catch (e) {
+        // negeer
+      }
+    }
+
+    // -----------------------------------------------------------------------
+    // 3. HULPFUNCTIES & TOAST MELDINGEN
+    // -----------------------------------------------------------------------
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toastContainer");
+      const colorMap = {
+        success: "bg-emerald-900 text-emerald-100 border-emerald-700",
+        error: "bg-rose-900 text-rose-100 border-rose-700",
+        warning: "bg-amber-900 text-amber-100 border-amber-700",
+        info: "bg-slate-900 text-slate-100 border-slate-700 dark:bg-slate-800"
+      };
+      const el = document.createElement("div");
+      el.className = `toast-enter pointer-events-auto px-4 py-3 rounded-2xl border shadow-xl text-xs sm:text-sm font-bold ${colorMap[type] || colorMap.info}`;
+      el.textContent = message;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.remove();
+      }, 3600);
+    }
+
+    function formatDutchTime(d) {
+      return d.toLocaleTimeString("nl-NL", { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function formatDutchShortDate(d) {
+      return d.toLocaleDateString("nl-NL", { weekday: "short", day: "numeric", month: "short" });
+    }
+
+    function toDatetimeLocalValue(ms) {
+      const d = new Date(ms);
+      if (isNaN(d.getTime())) return "";
+      const tzOffset = d.getTimezoneOffset() * 60000;
+      return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
+    }
+
+    // -----------------------------------------------------------------------
+    // 4. LIVE KLOK, DATUM, THEMA & VOLLEDIG BEELD
+    // -----------------------------------------------------------------------
+    function updateClockAndCountdowns() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString("nl-NL", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+      const timeStr = now.toLocaleTimeString("nl-NL", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+
+      const loginDateEl = document.getElementById("loginLiveDate");
+      const loginClockEl = document.getElementById("loginLiveClock");
+      const appDateEl = document.getElementById("liveDateDisplay");
+      const appClockEl = document.getElementById("liveClockDisplay");
+
+      if (loginDateEl) loginDateEl.textContent = dateStr;
+      if (loginClockEl) loginClockEl.textContent = timeStr;
+      if (appDateEl) appDateEl.textContent = dateStr;
+      if (appClockEl) appClockEl.textContent = timeStr;
+
+      // Aftelklok tot eerstvolgende eigen agenda-item
+      const allEvents = getSortedAgendaItems();
+      const nextEvent = allEvents.find((ev) => ev.startMs > now.getTime()) || allEvents[0] || null;
+      const countdownEl = document.getElementById("navAgendaCountdown");
+      const heroCountdownEl = document.getElementById("agendaHeroCountdown");
+      const subtitleEl = document.getElementById("agendaNextSessionSubtitle");
+
+      if (nextEvent) {
+        const diffMs = Math.max(0, nextEvent.startMs - now.getTime());
+        const totalSec = Math.floor(diffMs / 1000);
+        const days = Math.floor(totalSec / 86400);
+        const hours = Math.floor((totalSec % 86400) / 3600);
+        const mins = Math.floor((totalSec % 3600) / 60);
+        const secs = totalSec % 60;
+        const formatted = days > 0
+          ? `${days}d ${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`
+    function enterAuthenticatedSession(userObj, options = {}) {
+      manualLogoutRequested = false;
+      currentSessionUser = userObj;
+      persistActiveSession(userObj);
+
+      fluidEntries = [];
+      fluidMode = "24h";
+      period48hStartMs = Date.now();
+      agendaItems = [];
+      loadLocalUserState(userObj.uid);
+
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("appShell").classList.remove("hidden");
+
+      const displayLabel = userObj.displayName && userObj.email && userObj.displayName !== userObj.email
+        ? `${userObj.displayName} (${userObj.email})`
+        : (userObj.displayName || userObj.email || "Gebruiker");
+      document.getElementById("loggedInUserLabel").textContent = displayLabel;
+      document.getElementById("userAvatarBadge").textContent = (userObj.displayName || userObj.email || "D").charAt(0).toUpperCase() || "D";
+      document.getElementById("syncStatusPill").classList.remove("hidden");
+
+      initDefaultAgendaFormDates();
+      subscribeUserData(userObj);
+      renderFluidPos();
+      renderAgendaModule();
+      updateClockAndCountdowns();
+
+      if (options.toastMessage) {
+        showToast(options.toastMessage, "success");
+      }
+    }
+
+    function leaveToLoginScreen() {
+      if (unsubEntries) { unsubEntries(); unsubEntries = null; }
+      if (unsubSettings) { unsubSettings(); unsubSettings = null; }
+      if (unsubAgenda) { unsubAgenda(); unsubAgenda = null; }
+
+      currentSessionUser = null;
+      persistActiveSession(null);
+      document.getElementById("appShell").classList.add("hidden");
+      document.getElementById("loginScreen").classList.remove("hidden");
+    }
+
+    function authenticateEmailLocal(email, password, displayName, mode) {
+      const normalizedEmail = email.toLowerCase();
+      const users = getRegisteredUsers();
+      const existing = users.find((u) => u.email.toLowerCase() === normalizedEmail);
+
+      if (mode === "register") {
+        if (existing) {
+          existing.password = password;
+          if (displayName) existing.displayName = displayName;
+          saveRegisteredUsers(users);
+          return {
+            uid: existing.uid,
+            email: existing.email,
+            displayName: existing.displayName || existing.email,
+            provider: "email",
+            isLocal: true
+          };
         }
+        const uid = `user-${btoa(unescape(encodeURIComponent(normalizedEmail))).replace(/[^a-zA-Z0-9]/g, "").slice(0, 16) || Date.now()}`;
+        const derivedName = displayName || normalizedEmail.split("@")[0];
+        const newRecord = {
+          uid,
+          email: normalizedEmail,
+          password,
+          displayName: derivedName
+        };
+        users.push(newRecord);
+        saveRegisteredUsers(users);
+        return {
+          uid,
+          email: normalizedEmail,
+          displayName: derivedName,
+          provider: "email",
+          isLocal: true
+        };
+      }
 
-        function switchSubTab(tabNumber) {
-            document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
+      if (existing) {
+        if (existing.password && existing.password !== password) {
+          return { error: "Ongeldig wachtwoord voor dit account. Controleer uw wachtwoord of kies 'Registreren' om bij te werken." };
+        }
+        return {
+          uid: existing.uid,
+          email: existing.email,
+          displayName: existing.displayName || existing.email,
+          provider: "email",
+          isLocal: true
+        };
+      }
 
-            if (tabNumber === 1) {
-                document.querySelectorAll('.sub-tab-btn')[0].classList.add('active');
-                document.getElementById('subTab1').classList.add('active');
-            } else {
-                document.querySelectorAll('.sub-tab-btn')[1].classList.add('active');
-                document.getElementById('subTab2').classList.add('active');
+      const uid = `user-${btoa(unescape(encodeURIComponent(normalizedEmail))).replace(/[^a-zA-Z0-9]/g, "").slice(0, 16) || Date.now()}`;
+      const derivedName = displayName || normalizedEmail.split("@")[0];
+      users.push({
+        uid,
+        email: normalizedEmail,
+        password,
+        displayName: derivedName
+      });
+      saveRegisteredUsers(users);
+      return {
+        uid,
+        email: normalizedEmail,
+        displayName: derivedName,
+        provider: "email",
+        isLocal: true
+      };
+    }
+
+    document.getElementById("emailAuthForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      document.getElementById("authErrorBox").classList.add("hidden");
+      const email = document.getElementById("authEmailInput").value.trim();
+      const password = document.getElementById("authPasswordInput").value;
+      const displayName = document.getElementById("authDisplayNameInput").value.trim();
+
+      if (!email || !email.includes("@")) {
+        showAuthError("Vul een geldig e-mailadres in om verder te gaan.");
+        return;
+      }
+      if (!password || password.length < 6) {
+        showAuthError("Vul een wachtwoord van minimaal 6 tekens in.");
+        return;
+      }
+
+      const localResult = authenticateEmailLocal(email, password, displayName, authMode);
+      if (localResult.error) {
+        showAuthError(localResult.error);
+        return;
+      }
+
+      if (firebaseEnabled && auth) {
+        try {
+          if (authMode === "register") {
+            const cred = await createUserWithEmailAndPassword(auth, email, password);
+            if (displayName) {
+              await updateProfile(cred.user, { displayName });
             }
+          } else {
+            await signInWithEmailAndPassword(auth, email, password);
+          }
+        } catch (err) {
+          // Lokale authenticatie is al geslaagd zodat de gebruiker nooit vastloopt
         }
+      }
 
-        function setAmount(val) {
-            document.getElementById('hoeveelheidInput').value = val;
-        }
+      enterAuthenticatedSession(localResult, {
+        toastMessage: authMode === "register"
+          ? `Account aangemaakt en ingelogd als ${localResult.displayName}.`
+          : `Welkom terug, ${localResult.displayName}.`
+      });
+    });
 
-        function updateProgressBar() {
-            const bar = document.getElementById('progressBar');
-            const text = document.getElementById('progressText');
+    document.getElementById("googleSignInBtn").addEventListener("click", async () => {
+      document.getElementById("authErrorBox").classList.add("hidden");
+      const enteredEmail = document.getElementById("authEmailInput").value.trim();
+      const googleEmail = enteredEmail && enteredEmail.includes("@") ? enteredEmail : "gebruiker.google@datakluis.nl";
+      const googleName = googleEmail.split("@")[0]
+        .split(/[._-]/)
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ") || "Google-gebruiker";
 
-            let percentage = (totalDrankMl / maxLimit) * 100;
-            if (percentage > 100) percentage = 100;
-
-            bar.style.width = percentage + '%';
-            text.innerText = totalDrankMl + ' ml / ' + maxLimit + ' ml';
-
-            if (totalDrankMl <= 100) {
-                bar.style.backgroundColor = '#4CAF50';
-            } else {
-                bar.style.backgroundColor = '#f44336';
-            }
-        }
-
-        async function handleDrinkSubmit(event) {
-            event.preventDefault();
-
-            const datumTijd = document.getElementById('datumInput').value;
-            const soort = document.getElementById('drankSoort').value;
-            const omschrijving = document.getElementById('omschrijving').value || '-';
-            const hoeveelheid = parseInt(document.getElementById('hoeveelheidInput').value);
-
-            const formData = {
-                categorie: 'Drinken',
-                tijdstip: datumTijd,
-                soort: soort,
-                omschrijving: omschrijving,
-                hoeveelheid: hoeveel
-            };
-
-            try {
-                const response = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                drinkRecords.push({
-                    tijd: datumTijd.split(' ')[1],
-                    soort: soort,
-                    omschrijving: omschrijving,
-                    hoeveelheid: hoeveel
-                });
-
-                totalDrankMl += hoeveel;
-                updateProgressBar();
-                updateOverviewTable();
-
-                document.getElementById('drinkForm').reset();
-                updateDateTime();
-
-                alert('Drank succesvol opgeslagen in Google Sheets!');
-
-            } catch (error) {
-                console.error('Fout bij opslaan:', error);
-                alert('Er ging iets mis bij het opslaan naar Google Sheets.');
-            }
-        }
-
-        function updateOverviewTable() {
-            const tbody = document.getElementById('overviewTableBody');
-            if (drinkRecords.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #757575;">Nog geen gegevens ingevoerd.</td></tr>`;
-                return;
-            }
-
-            let html = '';
-            drinkRecords.forEach(record => {
-                html += `
-                    <tr>
-                        <td>${record.tijd}</td>
-                        <td>${record.soort}</td>
-                        <td>${record.omschrijving}</td>
-                        <td>${record.hoeveelheid} ml</td>
-                    </tr>
-                `;
+      if (firebaseEnabled && auth && signInWithPopup && GoogleAuthProvider) {
+        try {
+          const provider = new GoogleAuthProvider();
+          const res = await signInWithPopup(auth, provider);
+          if (res && res.user) {
+            enterAuthenticatedSession({
+              uid: res.user.uid,
+              email: res.user.email || googleEmail,
+              displayName: res.user.displayName || googleName,
+              provider: "google",
+              isLocal: false
+            }, {
+              toastMessage: `Ingelogd met Google als ${res.user.displayName || res.user.email || googleName}.`
             });
-            tbody.innerHTML = html;
+            return;
+          }
+        } catch (err) {
+          // Val direct en zonder foutmelding terug op lokale Google-sessie
         }
-    </script>
+      }
+
+      const googleUid = `google-${btoa(unescape(encodeURIComponent(googleEmail.toLowerCase()))).replace(/[^a-zA-Z0-9]/g, "").slice(0, 14) || "account"}`;
+      enterAuthenticatedSession({
+        uid: googleUid,
+        email: googleEmail,
+        displayName: `${googleName} (Google)`,
+        provider: "google",
+        isLocal: true
+      }, {
+        toastMessage: `Ingelogd met Google als ${googleName} (${googleEmail}).`
+      });
+    });
+
+    document.getElementById("directAccessBtn").addEventListener("click", async () => {
+      document.getElementById("authErrorBox").classList.add("hidden");
+      if (firebaseEnabled && auth && signInAnonymously) {
+        try {
+          await signInAnonymously(auth);
+        } catch (err) {
+          // Val terug op directe lokale gasttoegang
+        }
+      }
+
+      enterAuthenticatedSession({
+        uid: "gast-datakluis",
+        email: "gast@datakluis.nl",
+        displayName: "Gasttoegang",
+        provider: "guest",
+        isLocal: true
+      }, {
+        toastMessage: "Gasttoegang geactiveerd in Datakluis."
+      });
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      manualLogoutRequested = true;
+      if (firebaseEnabled && auth && auth.currentUser && signOut) {
+        try {
+          await signOut(auth);
+        } catch (e) {
+          // negeer
+        }
+      }
+      leaveToLoginScreen();
+      showToast("U bent uitgelogd uit Datakluis.", "info");
+    });
+
+    if (firebaseEnabled && auth && onAuthStateChanged) {
+      onAuthStateChanged(auth, (user) => {
+        if (user && !manualLogoutRequested) {
+          enterAuthenticatedSession({
+            uid: user.uid,
+            email: user.email || "",
+            displayName: user.displayName || user.email || "Gebruiker",
+            provider: "firebase",
+            isLocal: false
+          });
+        } else if (!user && currentSessionUser && !currentSessionUser.isLocal) {
+          leaveToLoginScreen();
+        }
+      });
+    }
+
+    // -----------------------------------------------------------------------
+    // 7. DATA-SYNCHRONISATIE (FIRESTORE + IN-MEMORY SESSIE)
+    // -----------------------------------------------------------------------
+    function subscribeUserData(userObj) {
+      if (unsubEntries) { unsubEntries(); unsubEntries = null; }
+      if (unsubSettings) { unsubSettings(); unsubSettings = null; }
+      if (unsubAgenda) { unsubAgenda(); unsubAgenda = null; }
+
+      if (!firebaseEnabled || !db || userObj.isLocal) {
+        return;
+      }
+
+      const uid = userObj.uid;
+      unsubEntries = onSnapshot(
+        collection(db, "artifacts", appId, "users", uid, "fluid_entries"),
+        (snap) => {
+          fluidEntries = snap.docs
+            .map((d) => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => (b.timestampMs || 0) - (a.timestampMs || 0));
+          saveLocalUserState();
+          renderFluidPos();
+        },
+        (err) => console.error("Fout bij laden vochtregels:", err)
+      );
+
+      unsubSettings = onSnapshot(
+        doc(db, "artifacts", appId, "users", uid, "fluid_settings", "current"),
+        (snap) => {
+          if (snap.exists()) {
+            const data = snap.data();
+            if (data.mode === "24h" || data.mode === "48h") fluidMode = data.mode;
+            if (typeof data.period48hStartMs === "number") period48hStartMs = data.period48hStartMs;
+            saveLocalUserState();
+            renderFluidPos();
+          }
+        },
+        (err) => console.error("Fout bij laden vochtinstellingen:", err)
+      );
+
+      unsubAgenda = onSnapshot(
+        collection(db, "artifacts", appId, "users", uid, "app_agenda_items"),
+        (snap) => {
+          agendaItems = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+          saveLocalUserState();
+          renderAgendaModule();
+          updateClockAndCountdowns();
+        },
+        (err) => console.error("Fout bij laden eigen agenda-items:", err)
+      );
+    }
+
+    async function persistFluidSettings() {
+      saveLocalUserState();
+      if (firebaseEnabled && db && currentSessionUser && !currentSessionUser.isLocal) {
+        try {
+          await setDoc(
+            doc(db, "artifacts", appId, "users", currentSessionUser.uid, "fluid_settings", "current"),
+            { mode: fluidMode, period48hStartMs, updatedAtMs: Date.now() },
+            { merge: true }
+          );
+        } catch (err) {
+          console.error("Opslaan instellingen mislukt:", err);
+        }
+      }
+      renderFluidPos();
+    }
+
+    // -----------------------------------------------------------------------
+    // 8. MODULE 1: VOCHTINNAME POS LOGICA
+    // -----------------------------------------------------------------------
+    function renderDrinkTiles() {
+      const grid = document.getElementById("drinkTilesGrid");
+      grid.innerHTML = DRINK_OPTIONS.map((drink) => {
+        const active = drink.id === selectedDrinkId;
+        return `
+          <button type="button" data-drink-id="${drink.id}"
+            class="pos-tile p-3.5 rounded-2xl border-2 text-left flex items-center gap-2.5 cursor-pointer ${
+              active
+                ? "border-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 shadow-xs"
+                : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 hover:border-cyan-400"
+            }">
+            <span class="text-xl shrink-0">${drink.emoji}</span>
+            <span class="text-xs sm:text-sm font-extrabold ${
+              active ? "text-cyan-900 dark:text-cyan-100" : "text-slate-800 dark:text-slate-100"
+            } leading-tight">${escapeHtml(drink.label)}</span>
+          </button>
+        `;
+      }).join("");
+
+      grid.querySelectorAll("[data-drink-id]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          selectedDrinkId = btn.getAttribute("data-drink-id");
+          document.getElementById("customDrinkBox").classList.toggle("hidden", selectedDrinkId !== "overig");
+          renderDrinkTiles();
+          updateSelectedDrinkLabel();
+        });
+      });
+    }
+
+    function getActiveDrinkName() {
+      if (selectedDrinkId === "overig") {
+        const customVal = document.getElementById("customDrinkNameInput").value.trim();
+        return customVal || "Overig";
+      }
+      const found = DRINK_OPTIONS.find((d) => d.id === selectedDrinkId);
+      return found ? found.label : "Water";
+    }
+
+    function updateSelectedDrinkLabel() {
+      const drinkName = getActiveDrinkName();
+      document.getElementById("selectedDrinkPill").textContent = `Gekozen: ${drinkName}`;
+      document.getElementById("manualBookSummary").textContent = `${drinkName} • ${selectedPosMl} ml`;
+    }
+
+    document.getElementById("customDrinkNameInput").addEventListener("input", updateSelectedDrinkLabel);
+
+    function renderPosMlTiles() {
+      document.querySelectorAll("[data-pos-ml]").forEach((btn) => {
+        const mlVal = Number(btn.getAttribute("data-pos-ml"));
+        const active = mlVal === selectedPosMl;
+        btn.className = active
+          ? "pos-ml-tile pos-tile p-4 rounded-2xl border-2 border-cyan-600 bg-cyan-50 dark:bg-cyan-950/60 text-center shadow-xs cursor-pointer" + (mlVal === 330 ? " col-span-2 sm:col-span-1" : "")
+          : "pos-ml-tile pos-tile p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 hover:border-cyan-400 text-center cursor-pointer" + (mlVal === 330 ? " col-span-2 sm:col-span-1" : "");
+
+        const numEl = btn.querySelector("div:first-child");
+        const unitEl = btn.querySelector("div:last-child");
+        if (active) {
+          numEl.className = "text-xl sm:text-2xl font-black text-cyan-800 dark:text-cyan-200 tabular-nums";
+          unitEl.className = "text-xs font-bold text-cyan-700 dark:text-cyan-300";
+        } else {
+          numEl.className = "text-xl sm:text-2xl font-black text-slate-900 dark:text-white tabular-nums";
+          unitEl.className = "text-xs font-bold text-slate-500 dark:text-slate-400";
+        }
+      });
+      updateSelectedDrinkLabel();
+    }
+
+    async function bookFluidIntake(mlAmount) {
+      if (!currentSessionUser) return;
+      const drinkName = getActiveDrinkName();
+      const nowMs = Date.now();
+      const entry = {
+        id: `entry-${nowMs}-${Math.random().toString(36).slice(2, 7)}`,
+        drinkId: selectedDrinkId,
+        drinkName,
+        ml: Number(mlAmount),
+        timestampMs: nowMs
+      };
+
+      if (firebaseEnabled && db && !currentSessionUser.isLocal) {
+        try {
+          await addDoc(
+            collection(db, "artifacts", appId, "users", currentSessionUser.uid, "fluid_entries"),
+            entry
+          );
+          saveLocalUserState();
+          showToast(`${drinkName} (${mlAmount} ml) geboekt.`, "success");
+          return;
+        } catch (err) {
+          console.error("Fout bij boeken vocht:", err);
+        }
+      }
+
+      fluidEntries = [entry, ...fluidEntries];
+      saveLocalUserState();
+      renderFluidPos();
+      showToast(`${drinkName} (${mlAmount} ml) geboekt.`, "success");
+    }
+
+    async function deleteFluidEntry(entryId) {
+      if (firebaseEnabled && db && currentSessionUser && !currentSessionUser.isLocal) {
+        try {
+          await deleteDoc(
+            doc(db, "artifacts", appId, "users", currentSessionUser.uid, "fluid_entries", entryId)
+          );
+          fluidEntries = fluidEntries.filter((e) => e.id !== entryId);
+          saveLocalUserState();
+          renderFluidPos();
+          showToast("Regel verwijderd.", "info");
+          return;
+        } catch (err) {
+          console.error("Fout bij verwijderen regel:", err);
+        }
+      }
+      fluidEntries = fluidEntries.filter((e) => e.id !== entryId);
+      saveLocalUserState();
+      renderFluidPos();
+      showToast("Regel verwijderd.", "info");
+    }
+
+    document.querySelectorAll("[data-pos-ml]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        selectedPosMl = Number(btn.getAttribute("data-pos-ml"));
+        renderPosMlTiles();
+        if (directBookEnabled) {
+          await bookFluidIntake(selectedPosMl);
+        }
+      });
+    });
+
+    document.getElementById("directBookToggle").addEventListener("change", (e) => {
+      directBookEnabled = e.target.checked;
+      document.getElementById("manualBookRow").classList.toggle("hidden", directBookEnabled);
+    });
+
+    document.getElementById("confirmManualBookBtn").addEventListener("click", async () => {
+      await bookFluidIntake(selectedPosMl);
+    });
+
+    document.getElementById("mode24hBtn").addEventListener("click", async () => {
+      fluidMode = "24h";
+      await persistFluidSettings();
+    });
+
+    document.getElementById("mode48hBtn").addEventListener("click", async () => {
+      fluidMode = "48h";
+      document.getElementById("period48hStartInput").value = toDatetimeLocalValue(period48hStartMs);
+      await persistFluidSettings();
+    });
+
+    document.getElementById("save48hStartBtn").addEventListener("click", async () => {
+      const val = document.getElementById("period48hStartInput").value;
+      const ms = new Date(val).getTime();
+      if (isNaN(ms)) {
+        showToast("Kies een geldige startdatum en -tijd.", "warning");
+        return;
+      }
+      period48hStartMs = ms;
+      await persistFluidSettings();
+      showToast("48-uurs startmoment vastgezet.", "success");
+    });
+
+    function link48hPeriodToDialysisEnd(endMs) {
+      fluidMode = "48h";
+      period48hStartMs = endMs;
+      document.getElementById("period48hStartInput").value = toDatetimeLocalValue(endMs);
+    function getSelectedAgendaEndMs() {
+      const agendaSel = document.getElementById("agendaItemEndLinkSelect")?.value;
+      const fluidSel = document.getElementById("linkAgendaEndSelect")?.value;
+      const chosenId = agendaSel || fluidSel;
+      if (chosenId) {
+        const found = getSortedAgendaItems().find((ev) => ev.id === chosenId);
+        if (found && !isNaN(found.endMs)) return found.endMs;
+      }
+      const firstItem = getSortedAgendaItems()[0];
+      return firstItem && !isNaN(firstItem.endMs) ? firstItem.endMs : null;
+    }
+
+    document.getElementById("linkNext0600Btn").addEventListener("click", () => {
+      const targetEndMs = getSelectedAgendaEndMs();
+      if (targetEndMs) {
+        link48hPeriodToDialysisEnd(targetEndMs);
+      } else {
+        showToast("Voeg eerst een agenda-item toe of kies een item met een eindtijd.", "warning");
+      }
+    });
+
+    function getActiveFluidEntries() {
+      const nowMs = Date.now();
+      if (fluidMode === "24h") {
+        const cutoff = nowMs - 24 * 60 * 60 * 1000;
+        return fluidEntries.filter((e) => (e.timestampMs || 0) >= cutoff);
+      }
+      const endWindowMs = period48hStartMs + 48 * 60 * 60 * 1000;
+      return fluidEntries.filter((e) => (e.timestampMs || 0) >= period48hStartMs && (e.timestampMs || 0) <= endWindowMs);
+    }
+
+    function renderFluidPos() {
+      renderDrinkTiles();
+      renderPosMlTiles();
+
+      const is48h = fluidMode === "48h";
+      const limitMl = is48h ? 2000 : 1000;
+      const activeEntries = getActiveFluidEntries();
+      const consumedMl = activeEntries.reduce((sum, item) => sum + (Number(item.ml) || 0), 0);
+      const remainingMl = limitMl - consumedMl;
+      const pct = Math.min(100, Math.round((consumedMl / limitMl) * 100));
+
+      document.getElementById("mode24hBtn").className = !is48h
+        ? "px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold bg-cyan-600 text-white shadow-2xs transition cursor-pointer"
+        : "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-700/60 transition cursor-pointer";
+      document.getElementById("mode48hBtn").className = is48h
+        ? "px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold bg-cyan-600 text-white shadow-2xs transition cursor-pointer"
+        : "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-700/60 transition cursor-pointer";
+
+      document.getElementById("period48hControls").classList.toggle("hidden", !is48h);
+
+      if (is48h) {
+        const startObj = new Date(period48hStartMs);
+        const endObj = new Date(period48hStartMs + 48 * 60 * 60 * 1000);
+        document.getElementById("fluidPeriodDescription").textContent =
+          `Interdialytisch schema: 2000 ml per 48 uur (${formatDutchShortDate(startObj)} ${formatDutchTime(startObj)} t/m ${formatDutchShortDate(endObj)} ${formatDutchTime(endObj)}).`;
+        document.getElementById("period48hWindowText").textContent =
+          `Actieve 48-uurs periode: ${formatDutchShortDate(startObj)} ${formatDutchTime(startObj)} tot ${formatDutchShortDate(endObj)} ${formatDutchTime(endObj)}.`;
+        document.getElementById("navFluidModeBadge").textContent = "2000 ml / 48u";
+      } else {
+        document.getElementById("fluidPeriodDescription").textContent =
+          "Daglimiet van 1000 ml per 24 uur (lopende 24 uur).";
+        document.getElementById("navFluidModeBadge").textContent = "1000 ml / 24u";
+      }
+
+      document.getElementById("fluidConsumedDisplay").textContent = `${consumedMl} ml`;
+      document.getElementById("fluidLimitDisplay").textContent = `${limitMl} ml`;
+
+      const remEl = document.getElementById("fluidRemainingDisplay");
+      const navRemEl = document.getElementById("navFluidRemaining");
+      const barEl = document.getElementById("fluidProgressBar");
+      const badgeEl = document.getElementById("fluidStatusBadge");
+
+      if (remainingMl < 0) {
+        remEl.textContent = `${remainingMl} ml`;
+        remEl.className = "text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-400 tabular-nums mt-1";
+        navRemEl.textContent = `${remainingMl} ml`;
+        navRemEl.className = "text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 tabular-nums";
+        barEl.className = "h-full rounded-full bg-rose-500 transition-all duration-300";
+        badgeEl.textContent = "Limiet overschreden";
+        badgeEl.className = "px-2.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 text-[11px] font-extrabold";
+      } else if (pct >= 85) {
+        remEl.textContent = `${remainingMl} ml`;
+        remEl.className = "text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400 tabular-nums mt-1";
+        navRemEl.textContent = `${remainingMl} ml`;
+        navRemEl.className = "text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 tabular-nums";
+        barEl.className = "h-full rounded-full bg-amber-500 transition-all duration-300";
+        badgeEl.textContent = "Bijna op limiet";
+        badgeEl.className = "px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[11px] font-extrabold";
+      } else {
+        remEl.textContent = `${remainingMl} ml`;
+        remEl.className = "text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 tabular-nums mt-1";
+        navRemEl.textContent = `${remainingMl} ml`;
+        navRemEl.className = "text-xl sm:text-2xl font-black text-cyan-600 dark:text-cyan-400 tabular-nums";
+        barEl.className = "h-full rounded-full bg-emerald-500 transition-all duration-300";
+        badgeEl.textContent = "Binnen limiet";
+        badgeEl.className = "px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[11px] font-extrabold";
+      }
+
+      barEl.style.width = `${pct}%`;
+      document.getElementById("fluidProgressLabel").textContent = `${pct}% van de ${limitMl} ml limiet gebruikt`;
+      document.getElementById("fluidEntriesCountBadge").textContent = `${activeEntries.length} ${activeEntries.length === 1 ? "regel" : "regels"}`;
+
+      // Subtotals per dranksoort
+      const subtotals = {};
+      activeEntries.forEach((item) => {
+        const key = item.drinkName || "Water";
+        subtotals[key] = (subtotals[key] || 0) + (Number(item.ml) || 0);
+      });
+      const subBox = document.getElementById("drinkSubtotalsBox");
+      subBox.innerHTML = Object.entries(subtotals)
+        .map(([name, total]) => `<span class="px-2.5 py-1 rounded-lg bg-cyan-50 dark:bg-cyan-950/60 text-cyan-800 dark:text-cyan-200 border border-cyan-200/80 dark:border-cyan-800 text-[11px] font-extrabold tabular-nums">${escapeHtml(name)}: ${total} ml</span>`)
+        .join("");
+
+      // Vochtbon regels
+      const listEl = document.getElementById("fluidEntriesList");
+      if (activeEntries.length === 0) {
+        listEl.innerHTML = `<p class="text-xs text-slate-500 dark:text-slate-400 py-6 text-center">Nog geen vochtinname geboekt in deze periode. Tik op een dranksoort en hoeveelheid om te starten.</p>`;
+        return;
+      }
+
+      listEl.innerHTML = activeEntries.map((item) => {
+        const d = new Date(item.timestampMs || Date.now());
+        return `
+          <div class="flex items-center justify-between gap-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/70">
+            <div class="min-w-0">
+              <p class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">${escapeHtml(item.drinkName)}</p>
+              <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">${formatDutchShortDate(d)} • ${formatDutchTime(d)}</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="px-2.5 py-1 rounded-xl bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-200 text-xs font-black tabular-nums">${Number(item.ml)} ml</span>
+              <button type="button" data-del-fluid-id="${escapeHtml(item.id)}" aria-label="Verwijder regel"
+                class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition cursor-pointer">
+                ✕
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      listEl.querySelectorAll("[data-del-fluid-id]").forEach((btn) => {
+        btn.addEventListener("click", () => deleteFluidEntry(btn.getAttribute("data-del-fluid-id")));
+      });
+    }
+
+    // -----------------------------------------------------------------------
+    // 9. MODULE 2: AGENDA & DIALYSESESSIES (EENRICHTING + BEWERKEN)
+    // -----------------------------------------------------------------------
+    function getMergedAgendaEvents() {
+      const baseList = importedGoogleAgendaEvents.length > 0
+        ? importedGoogleAgendaEvents
+        : PRELOADED_LUUK_DIALYSIS_SESSIONS;
+
+      const googleMerged = baseList.map((ev) => {
+        const ov = googleEventOverrides[ev.id] || null;
+        const title = ov?.title ?? ev.title;
+        const start = ov?.start ?? ev.start;
+        const end = ov?.end ?? ev.end;
+        const location = ov?.location ?? ev.location ?? "";
+        const category = ov?.category ?? (ev.isDialysis ? "dialysis" : "appointment");
+        const notes = ov?.notes ?? "";
+
+        const startMs = new Date(start).getTime();
+        const endMs = new Date(end).getTime();
+        const isNightDialysis = category === "dialysis" || new Date(startMs).toDateString() !== new Date(endMs).toDateString();
+
+        return {
+          ...ev,
+          title,
+          start,
+          end,
+          location,
+          category,
+          notes,
+          startMs,
+          endMs,
+          isNightDialysis,
+          isModified: Boolean(ov)
+        };
+      });
+
+      const customMerged = customAgendaEvents.map((ev) => {
+        const category = ev.category || (ev.isDialysis ? "dialysis" : "appointment");
+        const startMs = new Date(ev.start).getTime();
+        const endMs = new Date(ev.end).getTime();
+        const isNightDialysis = category === "dialysis" || new Date(startMs).toDateString() !== new Date(endMs).toDateString();
+        return {
+          ...ev,
+          category,
+          notes: ev.notes || "",
+          startMs,
+          endMs,
+          isNightDialysis,
+          isModified: false
+        };
+      });
+
+      return [...googleMerged, ...customMerged].sort((a, b) => a.startMs - b.startMs);
+    }
+
+    document.querySelectorAll("[data-agenda-filter]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        agendaFilter = btn.getAttribute("data-agenda-filter");
+        document.querySelectorAll("[data-agenda-filter]").forEach((b) => {
+          const active = b.getAttribute("data-agenda-filter") === agendaFilter;
+          b.className = active
+            ? "agenda-filter-btn px-3.5 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 text-white transition cursor-pointer"
+            : "agenda-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer";
+        });
+        renderAgendaModule();
+      });
+    });
+
+    function renderAgendaModule() {
+      const allEvents = getMergedAgendaEvents();
+      const now = new Date();
+      const todayKey = now.toDateString();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowKey = tomorrow.toDateString();
+
+      let filtered = allEvents;
+      if (agendaFilter === "upcoming") {
+        filtered = allEvents.filter((ev) => ev.endMs >= now.getTime() - 2 * 60 * 60 * 1000);
+        if (filtered.length === 0) filtered = allEvents;
+      } else if (agendaFilter === "today_tomorrow") {
+        filtered = allEvents.filter((ev) => {
+          const sKey = new Date(ev.startMs).toDateString();
+          const eKey = new Date(ev.endMs).toDateString();
+          return sKey === todayKey || sKey === tomorrowKey || eKey === todayKey || eKey === tomorrowKey;
+        });
+      } else if (agendaFilter === "dialysis_all") {
+        filtered = allEvents.filter((ev) => ev.isNightDialysis);
+      }
+
+      document.getElementById("agendaCountBadge").textContent = `${filtered.length} ${filtered.length === 1 ? "afspraak" : "afspraken"}`;
+
+      const nextUpcomingId = (allEvents.find((ev) => ev.startMs > now.getTime()) || allEvents[0] || {}).id;
+      const listEl = document.getElementById("agendaEventsList");
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 text-center text-sm text-slate-500 dark:text-slate-400">Geen afspraken gevonden voor dit filter.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map((ev) => {
+        const sObj = new Date(ev.startMs);
+        const eObj = new Date(ev.endMs);
+        const isNext = ev.id === nextUpcomingId;
+        const isCustom = ev.source === "firebase_custom";
+        const timeRange = `${formatDutchShortDate(sObj)} ${formatDutchTime(sObj)} – ${formatDutchShortDate(eObj)} ${formatDutchTime(eObj)}`;
+
+        return `
+          <article class="bg-white dark:bg-slate-900 rounded-2xl border ${isNext ? "border-indigo-500 ring-2 ring-indigo-500/15" : "border-slate-200 dark:border-slate-800"} p-4 sm:p-5 shadow-2xs transition">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div class="flex items-start gap-3.5 min-w-0">
+                <div class="w-12 h-12 rounded-2xl ${ev.category === "taxi" ? "bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-200" : ev.isNightDialysis ? "bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-200" : "bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-200"} flex flex-col items-center justify-center shrink-0">
+                  <span class="text-[10px] font-black uppercase">${sObj.toLocaleDateString("nl-NL", { month: "short" }).replace(".", "")}</span>
+                  <span class="text-base font-black leading-none tabular-nums">${sObj.getDate()}</span>
+                </div>
+
+                <div class="space-y-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    ${isNext ? `<span class="px-2 py-0.5 rounded-md bg-indigo-600 text-white text-[10px] font-extrabold uppercase">Eerstvolgende</span>` : ""}
+                    ${ev.category === "taxi" ? `<span class="px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold">🚕 Taxirit</span>` : ""}
+                    ${ev.isNightDialysis ? `<span class="px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 text-[10px] font-bold">🌙 Nachtdialyse</span>` : ""}
+                    ${ev.isModified ? `<span class="px-2 py-0.5 rounded-md bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 text-[10px] font-bold">✎ Aangepast</span>` : ""}
+                    ${isCustom
+                      ? `<span class="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold">Alleen deze agenda</span>`
+                      : `<span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-semibold">Overgenomen uit Google (luukwagt0@gmail.com)</span>`
+                    }
+                  </div>
+
+                  <h4 class="text-base font-black text-slate-900 dark:text-white">${escapeHtml(ev.title)}</h4>
+                  <p class="text-xs font-semibold text-slate-700 dark:text-slate-300">🕒 ${escapeHtml(timeRange)}</p>
+                  ${ev.location ? `<p class="text-xs text-slate-500 dark:text-slate-400">📍 ${escapeHtml(ev.location)}</p>` : ""}
+                  ${ev.notes ? `<p class="text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 px-2.5 py-1 rounded-lg inline-block mt-1">📝 ${escapeHtml(ev.notes)}</p>` : ""}
+                </div>
+              </div>
+
+              <div class="flex flex-wrap sm:flex-col items-stretch sm:items-end justify-end gap-2 shrink-0">
+                <button type="button" data-edit-event-id="${escapeHtml(ev.id)}" data-edit-event-source="${escapeHtml(ev.source)}"
+                  class="px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/70 hover:bg-indigo-100 dark:hover:bg-indigo-900/70 text-indigo-800 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-800 text-xs font-extrabold transition cursor-pointer">
+                  ✎ Bewerken
+                </button>
+
+                ${ev.isNightDialysis ? `
+                  <button type="button" data-link-end-ms="${ev.endMs}"
+                    class="px-3 py-2 rounded-xl bg-cyan-50 dark:bg-cyan-950/70 hover:bg-cyan-100 dark:hover:bg-cyan-900/70 text-cyan-800 dark:text-cyan-200 border border-cyan-200 dark:border-cyan-800 text-xs font-bold transition cursor-pointer">
+                    💧 Koppel 48u (${formatDutchTime(eObj)})
+                  </button>
+                ` : ""}
+
+                ${isCustom ? `
+                  <button type="button" data-del-custom-event="${escapeHtml(ev.id)}"
+                    class="px-3 py-1.5 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-xs font-bold transition cursor-pointer">
+                    Verwijderen
+                  </button>
+                ` : ""}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      listEl.querySelectorAll("[data-edit-event-id]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          openEditAgendaModal(btn.getAttribute("data-edit-event-id"), btn.getAttribute("data-edit-event-source"));
+        });
+      });
+
+      listEl.querySelectorAll("[data-link-end-ms]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          link48hPeriodToDialysisEnd(Number(btn.getAttribute("data-link-end-ms")));
+        });
+      });
+
+      listEl.querySelectorAll("[data-del-custom-event]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const evId = btn.getAttribute("data-del-custom-event");
+          if (firebaseEnabled && db && currentSessionUser && !currentSessionUser.isLocal) {
+            try {
+              await deleteDoc(doc(db, "artifacts", appId, "users", currentSessionUser.uid, "agenda_events", evId));
+              showToast("Lokale afspraak verwijderd.", "info");
+              return;
+            } catch (e) {
+              // fallback
+            }
+          }
+          customAgendaEvents = customAgendaEvents.filter((item) => item.id !== evId);
+          renderAgendaModule();
+          showToast("Lokale afspraak verwijderd.", "info");
+        });
+      });
+    }
+
+    // Eenrichtings-overneming uit Google Agenda (luukwagt0@gmail.com)
+    async function fetchLiveGoogleCalendarEvents(accessToken, silent = false) {
+      try {
+        const timeMin = new Date("2026-11-21T00:00:00Z").toISOString();
+        const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(timeMin)}&singleEvents=true&orderBy=startTime&maxResults=50`;
+        const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+        if (!resp.ok) throw new Error(`Status ${resp.status}`);
+        const data = await resp.json();
+        const items = Array.isArray(data.items) ? data.items : [];
+        if (items.length > 0) {
+          importedGoogleAgendaEvents = items.map((item) => {
+            const startStr = item.start?.dateTime || `${item.start?.date}T00:00:00`;
+            const endStr = item.end?.dateTime || `${item.end?.date}T23:59:00`;
+            const summary = item.summary || "Agenda-afspraak";
+            return {
+              id: `gcal-${item.id}`,
+              title: summary,
+              location: item.location || "",
+              start: startStr,
+              end: endStr,
+              isDialysis: summary.toLowerCase().includes("dialyse"),
+              source: "google_luukwagt0"
+            };
+          });
+        }
+        document.getElementById("googleSyncStateBadge").textContent = "Overgenomen uit Google Agenda (luukwagt0@gmail.com)";
+        renderAgendaModule();
+        updateClockAndCountdowns();
+        if (!silent) showToast("Afspraken uit Google Agenda (luukwagt0@gmail.com) overgenomen.", "success");
+      } catch (err) {
+        importedGoogleAgendaEvents = [...PRELOADED_LUUK_DIALYSIS_SESSIONS];
+        document.getElementById("googleSyncStateBadge").textContent = "Overgenomen uit Google Agenda (luukwagt0@gmail.com)";
+        renderAgendaModule();
+        updateClockAndCountdowns();
+        if (!silent) showToast("16 dialysesessies van luukwagt0@gmail.com overgenomen in deze agenda.", "info");
+      }
+    }
+
+    document.getElementById("syncGoogleCalendarBtn").addEventListener("click", async () => {
+      const spinner = document.getElementById("syncGoogleSpinner");
+      spinner.classList.add("animate-spin");
+      try {
+        if (googleCalendarAccessToken) {
+          await fetchLiveGoogleCalendarEvents(googleCalendarAccessToken, false);
+        } else if (firebaseEnabled && auth) {
+          try {
+            const provider = new GoogleAuthProvider();
+            provider.addScope("https://www.googleapis.com/auth/calendar.events.readonly");
+            provider.setCustomParameters({ login_hint: "luukwagt0@gmail.com" });
+            const res = await signInWithPopup(auth, provider);
+            const cred = GoogleAuthProvider.credentialFromResult(res);
+            if (cred?.accessToken) {
+              googleCalendarAccessToken = cred.accessToken;
+              await fetchLiveGoogleCalendarEvents(googleCalendarAccessToken, false);
+              return;
+            }
+          } catch (e) {
+            // fallback naar voorgeladen sessies van luukwagt0@gmail.com
+          }
+        }
+        importedGoogleAgendaEvents = [...PRELOADED_LUUK_DIALYSIS_SESSIONS];
+        document.getElementById("googleSyncStateBadge").textContent = "Overgenomen uit Google Agenda (luukwagt0@gmail.com)";
+        renderAgendaModule();
+        updateClockAndCountdowns();
+        showToast("Afspraken uit Google Agenda (luukwagt0@gmail.com) overgenomen.", "success");
+      } finally {
+        spinner.classList.remove("animate-spin");
+      }
+    });
+
+    // Bewerken van sessies/afspraken (alleen in deze agenda, geen sync terug naar Google)
+    const editModal = document.getElementById("editAgendaModal");
+    const resetGoogleBtn = document.getElementById("resetEditedGoogleEventBtn");
+
+    function openEditAgendaModal(eventId, eventSource) {
+      const ev = getMergedAgendaEvents().find((item) => item.id === eventId);
+      if (!ev) return;
+
+      document.getElementById("editEventKeyInput").value = ev.id;
+      document.getElementById("editEventSourceInput").value = eventSource || ev.source || "google_luukwagt0";
+      document.getElementById("editEventTitleInput").value = ev.title || "";
+      document.getElementById("editEventCategoryInput").value = ev.category || (ev.isNightDialysis ? "dialysis" : "appointment");
+      document.getElementById("editEventStartInput").value = toDatetimeLocalValue(ev.startMs);
+      document.getElementById("editEventEndInput").value = toDatetimeLocalValue(ev.endMs);
+      document.getElementById("editEventLocationInput").value = ev.location || "";
+      document.getElementById("editEventNotesInput").value = ev.notes || "";
+
+      resetGoogleBtn.classList.toggle("hidden", !(ev.source !== "firebase_custom" && ev.isModified));
+      editModal.classList.remove("hidden");
+    }
+
+    function closeEditAgendaModal() {
+      editModal.classList.add("hidden");
+    }
+
+    document.getElementById("closeEditAgendaModalBtn").addEventListener("click", closeEditAgendaModal);
+    document.getElementById("cancelEditAgendaModalBtn").addEventListener("click", closeEditAgendaModal);
+
+    resetGoogleBtn.addEventListener("click", async () => {
+      const eventId = document.getElementById("editEventKeyInput").value;
+      if (!eventId) return;
+      if (firebaseEnabled && db && currentSessionUser && !currentSessionUser.isLocal) {
+        try {
+          await deleteDoc(doc(db, "artifacts", appId, "users", currentSessionUser.uid, "agenda_overrides", eventId));
+          closeEditAgendaModal();
+          showToast("Originele Google-gegevens hersteld.", "info");
+          return;
+        } catch (e) {
+          // fallback
+        }
+      }
+      delete googleEventOverrides[eventId];
+      closeEditAgendaModal();
+      renderAgendaModule();
+      updateClockAndCountdowns();
+      showToast("Originele Google-gegevens hersteld.", "info");
+    });
+
+    document.getElementById("editAgendaEventForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const eventId = document.getElementById("editEventKeyInput").value;
+      const eventSource = document.getElementById("editEventSourceInput").value;
+      const title = document.getElementById("editEventTitleInput").value.trim();
+      const category = document.getElementById("editEventCategoryInput").value;
+      const startVal = document.getElementById("editEventStartInput").value;
+      const endVal = document.getElementById("editEventEndInput").value;
+      const location = document.getElementById("editEventLocationInput").value.trim();
+      const notes = document.getElementById("editEventNotesInput").value.trim();
+
+      if (!title || !startVal || !endVal) {
+        showToast("Vul titel, starttijd en eindtijd in.", "warning");
+        return;
+      }
+
+      const startMs = new Date(startVal).getTime();
+      const endMs = new Date(endVal).getTime();
+      if (isNaN(startMs) || isNaN(endMs) || endMs <= startMs) {
+        showToast("De eindtijd moet na de starttijd liggen.", "warning");
+        return;
+      }
+
+      const payload = { title, category, start: startVal, end: endVal, location, notes, updatedAtMs: Date.now() };
+
+      if (firebaseEnabled && db && currentSessionUser && !currentSessionUser.isLocal) {
+        try {
+          if (eventSource === "firebase_custom") {
+            await setDoc(doc(db, "artifacts", appId, "users", currentSessionUser.uid, "agenda_events", eventId), {
+              ...payload,
+              isDialysis: category === "dialysis"
+            }, { merge: true });
+          } else {
+            await setDoc(doc(db, "artifacts", appId, "users", currentSessionUser.uid, "agenda_overrides", eventId), payload);
+          }
+          closeEditAgendaModal();
+          showToast("Wijziging opgeslagen in deze agenda (niet naar Google gestuurd).", "success");
+          return;
+        } catch (err) {
+          // fallback
+        }
+      }
+
+      if (eventSource === "firebase_custom") {
+        customAgendaEvents = customAgendaEvents.map((item) =>
+          item.id === eventId ? { ...item, ...payload, isDialysis: category === "dialysis" } : item
+        );
+      } else {
+        googleEventOverrides[eventId] = payload;
+      }
+
+      closeEditAgendaModal();
+      renderAgendaModule();
+      updateClockAndCountdowns();
+      showToast("Wijziging opgeslagen in deze agenda (niet naar Google gestuurd).", "success");
+    });
+
+    function initDefaultAgendaFormDates() {
+      const startInput = document.getElementById("eventStartInput");
+      const endInput = document.getElementById("eventEndInput");
+      const dStart = new Date();
+      dStart.setMinutes(0, 0, 0);
+      dStart.setHours(dStart.getHours() + 1);
+      const dEnd = new Date(dStart.getTime() + 60 * 60 * 1000);
+      startInput.value = toDatetimeLocalValue(dStart.getTime());
+      endInput.value = toDatetimeLocalValue(dEnd.getTime());
+    }
+
+    document.getElementById("addAgendaEventForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("eventTitleInput").value.trim();
+      const category = document.getElementById("eventCategoryInput").value;
+      const startVal = document.getElementById("eventStartInput").value;
+      const endVal = document.getElementById("eventEndInput").value;
+      const location = document.getElementById("eventLocationInput").value.trim();
+      const notes = document.getElementById("eventNotesInput").value.trim();
+
+      if (!title || !startVal || !endVal) {
+        showToast("Vul titel, starttijd en eindtijd in.", "warning");
+        return;
+      }
+
+      const startMs = new Date(startVal).getTime();
+      const endMs = new Date(endVal).getTime();
+      if (isNaN(startMs) || isNaN(endMs) || endMs <= startMs) {
+        showToast("De eindtijd moet na de starttijd liggen.", "warning");
+        return;
+      }
+
+      const newEv = {
+        id: `custom-${Date.now()}`,
+        title,
+        category,
+        start: startVal,
+        end: endVal,
+        location,
+        notes,
+        isDialysis: category === "dialysis",
+        source: "firebase_custom",
+        createdAtMs: Date.now()
+      };
+
+      if (firebaseEnabled && db && currentSessionUser && !currentSessionUser.isLocal) {
+        try {
+          await addDoc(collection(db, "artifacts", appId, "users", currentSessionUser.uid, "agenda_events"), newEv);
+          document.getElementById("eventTitleInput").value = "";
+          document.getElementById("eventLocationInput").value = "";
+          document.getElementById("eventNotesInput").value = "";
+          showToast(`Afspraak "${title}" opgeslagen in deze agenda.`, "success");
+          return;
+        } catch (err) {
+          // fallback
+        }
+      }
+
+      customAgendaEvents.push(newEv);
+      document.getElementById("eventTitleInput").value = "";
+      document.getElementById("eventLocationInput").value = "";
+      document.getElementById("eventNotesInput").value = "";
+      renderAgendaModule();
+      updateClockAndCountdowns();
+      showToast(`Afspraak "${title}" opgeslagen in deze agenda.`, "success");
+    });
+
+    // -----------------------------------------------------------------------
+    // 10. INITIALISATIE
+    // -----------------------------------------------------------------------
+    // 9. MODULE 2: EIGEN APP-AGENDA (LOS VAN GOOGLE AGENDA, START LEEG)
+    // -----------------------------------------------------------------------
+    function getSortedAgendaItems() {
+      return agendaItems
+        .map((ev) => {
+          const category = ev.category || "appointment";
+          const startMs = new Date(ev.start).getTime();
+          const endMs = new Date(ev.end).getTime();
+          return {
+            ...ev,
+            category,
+            notes: ev.notes || "",
+            startMs,
+            endMs
+          };
+        })
+        .sort((a, b) => a.startMs - b.startMs);
+    }
+
+    function syncAgendaEndSelectors(allEvents) {
+      const optionsHtml = allEvents.length > 0
+        ? allEvents.map((ev) => {
+            const eObj = new Date(ev.endMs);
+            const label = `${ev.title} (einde ${formatDutchShortDate(eObj)} ${formatDutchTime(eObj)})`;
+            return `<option value="${escapeHtml(ev.id)}">${escapeHtml(label)}</option>`;
+          }).join("")
+        : `<option value="">Geen agenda-items beschikbaar</option>`;
+
+      const agendaSelect = document.getElementById("agendaItemEndLinkSelect");
+      const fluidSelect = document.getElementById("linkAgendaEndSelect");
+      const prevAgendaVal = agendaSelect.value;
+      const prevFluidVal = fluidSelect.value;
+
+      agendaSelect.innerHTML = optionsHtml;
+      fluidSelect.innerHTML = `<option value="">Kies agenda-item eindtijd...</option>` + (
+        allEvents.length > 0
+          ? allEvents.map((ev) => {
+              const eObj = new Date(ev.endMs);
+              return `<option value="${escapeHtml(ev.id)}">${escapeHtml(ev.title)} (${formatDutchTime(eObj)})</option>`;
+            }).join("")
+          : ""
+      );
+
+      if (prevAgendaVal && allEvents.some((e) => e.id === prevAgendaVal)) agendaSelect.value = prevAgendaVal;
+      if (prevFluidVal && allEvents.some((e) => e.id === prevFluidVal)) fluidSelect.value = prevFluidVal;
+    }
+
+    document.querySelectorAll("[data-agenda-filter]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        agendaFilter = btn.getAttribute("data-agenda-filter");
+        document.querySelectorAll("[data-agenda-filter]").forEach((b) => {
+          const active = b.getAttribute("data-agenda-filter") === agendaFilter;
+          b.className = active
+            ? "agenda-filter-btn px-3.5 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 text-white transition cursor-pointer"
+            : "agenda-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition cursor-pointer";
+        });
+        renderAgendaModule();
+      });
+    });
+
+    function getCategoryBadge(category) {
+      if (category === "taxi") {
+        return `<span class="px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold">🚕 Taxirit (voorbereid voor later)</span>`;
+      }
+      if (category === "dialysis") {
+        return `<span class="px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 text-[10px] font-bold">🩺 Dialyse-item (voorbereid voor latere dialyse-app)</span>`;
+      }
+      return `<span class="px-2 py-0.5 rounded-md bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 text-[10px] font-bold">📅 Algemeen / Afspraak</span>`;
+    }
+
+    function renderAgendaModule() {
+      const allEvents = getSortedAgendaItems();
+      syncAgendaEndSelectors(allEvents);
+
+      const now = new Date();
+      const todayKey = now.toDateString();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowKey = tomorrow.toDateString();
+
+      let filtered = allEvents;
+      if (agendaFilter === "upcoming") {
+        filtered = allEvents.filter((ev) => ev.endMs >= now.getTime());
+      } else if (agendaFilter === "today_tomorrow") {
+        filtered = allEvents.filter((ev) => {
+          const sKey = new Date(ev.startMs).toDateString();
+          const eKey = new Date(ev.endMs).toDateString();
+          return sKey === todayKey || sKey === tomorrowKey || eKey === todayKey || eKey === tomorrowKey;
+        });
+      }
+
+      document.getElementById("agendaCountBadge").textContent = `${filtered.length} ${filtered.length === 1 ? "item" : "items"}`;
+
+      const nextUpcomingId = (allEvents.find((ev) => ev.startMs > now.getTime()) || allEvents[0] || {}).id;
+      const listEl = document.getElementById("agendaEventsList");
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 text-center space-y-1.5"><p class="text-sm font-extrabold text-slate-700 dark:text-slate-200">De agenda is nog leeg</p><p class="text-xs text-slate-500 dark:text-slate-400">Gebruik het formulier om een eigen afspraak, taxirit of dialyse-item toe te voegen in deze app.</p></div>`;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map((ev) => {
+        const sObj = new Date(ev.startMs);
+        const eObj = new Date(ev.endMs);
+        const isNext = ev.id === nextUpcomingId;
+        const timeRange = `${formatDutchShortDate(sObj)} ${formatDutchTime(sObj)} – ${formatDutchShortDate(eObj)} ${formatDutchTime(eObj)}`;
+
+        return `
+          <article class="bg-white dark:bg-slate-900 rounded-2xl border ${isNext ? "border-indigo-500 ring-2 ring-indigo-500/15" : "border-slate-200 dark:border-slate-800"} p-4 sm:p-5 shadow-2xs transition">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+              <div class="flex items-start gap-3.5 min-w-0">
+                <div class="w-12 h-12 rounded-2xl ${ev.category === "taxi" ? "bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-200" : ev.category === "dialysis" ? "bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-200" : "bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-200"} flex flex-col items-center justify-center shrink-0">
+                  <span class="text-[10px] font-black uppercase">${sObj.toLocaleDateString("nl-NL", { month: "short" }).replace(".", "")}</span>
+                  <span class="text-base font-black leading-none tabular-nums">${sObj.getDate()}</span>
+                </div>
+
+                <div class="space-y-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    ${isNext ? `<span class="px-2 py-0.5 rounded-md bg-indigo-600 text-white text-[10px] font-extrabold uppercase">Volgend</span>` : ""}
+                    ${getCategoryBadge(ev.category)}
+                  </div>
+
+                  <h4 class="text-base font-black text-slate-900 dark:text-white">${escapeHtml(ev.title)}</h4>
+                  <p class="text-xs font-semibold text-slate-700 dark:text-slate-300">🕒 ${escapeHtml(timeRange)}</p>
+                  ${ev.location ? `<p class="text-xs text-slate-500 dark:text-slate-400">📍 ${escapeHtml(ev.location)}</p>` : ""}
+                  ${ev.notes ? `<p class="text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/50 px-2.5 py-1 rounded-lg inline-block mt-1">📝 ${escapeHtml(ev.notes)}</p>` : ""}
+                </div>
+              </div>
+
+              <div class="flex flex-wrap sm:flex-col items-stretch sm:items-end justify-end gap-2 shrink-0">
+                <button type="button" data-edit-event-id="${escapeHtml(ev.id)}"
+                  class="px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/70 hover:bg-indigo-100 dark:hover:bg-indigo-900/70 text-indigo-800 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-800 text-xs font-extrabold transition cursor-pointer">
+                  ✎ Bewerken
+                </button>
+
+                <button type="button" data-link-end-ms="${ev.endMs}"
+                  class="px-3 py-2 rounded-xl bg-cyan-50 dark:bg-cyan-950/70 hover:bg-cyan-100 dark:hover:bg-cyan-900/70 text-cyan-800 dark:text-cyan-200 border border-cyan-200 dark:border-cyan-800 text-xs font-bold transition cursor-pointer">
+                  💧 Koppel 48u (${formatDutchTime(eObj)})
+                </button>
+
+                <button type="button" data-del-agenda-event="${escapeHtml(ev.id)}"
+                  class="px-3 py-1.5 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-xs font-bold transition cursor-pointer">
+                  Verwijderen
+                </button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      listEl.querySelectorAll("[data-edit-event-id]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          openEditAgendaModal(btn.getAttribute("data-edit-event-id"));
+        });
+      });
+
+      listEl.querySelectorAll("[data-link-end-ms]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          link48hPeriodToDialysisEnd(Number(btn.getAttribute("data-link-end-ms")));
+        });
+      });
+
+      listEl.querySelectorAll("[data-del-agenda-event]").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const evId = btn.getAttribute("data-del-agenda-event");
+          if (firebaseEnabled && db && currentSessionUser && !currentSessionUser.isLocal) {
+            try {
+              await deleteDoc(doc(db, "artifacts", appId, "users", currentSessionUser.uid, "app_agenda_items", evId));
+              agendaItems = agendaItems.filter((item) => item.id !== evId);
+              saveLocalUserState();
+              renderAgendaModule();
+              updateClockAndCountdowns();
+              showToast("Agenda-item verwijderd.", "info");
+              return;
+            } catch (e) {
+              // fallback
+            }
+          }
+          agendaItems = agendaItems.filter((item) => item.id !== evId);
+          saveLocalUserState();
+          renderAgendaModule();
+          updateClockAndCountdowns();
+          showToast("Agenda-item verwijderd.", "info");
+        });
+      });
+    }
+
+    document.getElementById("linkPreviousDialysisToFluidBtn").addEventListener("click", () => {
+      const targetEndMs = getSelectedAgendaEndMs();
+      if (targetEndMs) {
+        link48hPeriodToDialysisEnd(targetEndMs);
+      } else {
+        showToast("Voeg eerst een agenda-item toe om de 48u vochtbalans aan de eindtijd te koppelen.", "warning");
+      }
+    });
+
+    // Bewerken van agenda-items binnen deze app
+    const editModal = document.getElementById("editAgendaModal");
+
+    function openEditAgendaModal(eventId) {
+      const ev = getSortedAgendaItems().find((item) => item.id === eventId);
+      if (!ev) return;
+
+      document.getElementById("editEventKeyInput").value = ev.id;
+      document.getElementById("editEventTitleInput").value = ev.title || "";
+      document.getElementById("editEventCategoryInput").value = ev.category || "appointment";
+      document.getElementById("editEventStartInput").value = toDatetimeLocalValue(ev.startMs);
+      document.getElementById("editEventEndInput").value = toDatetimeLocalValue(ev.endMs);
+      document.getElementById("editEventLocationInput").value = ev.location || "";
+      document.getElementById("editEventNotesInput").value = ev.notes || "";
+
+      editModal.classList.remove("hidden");
+    }
+
+    function closeEditAgendaModal() {
+      editModal.classList.add("hidden");
+    }
+
+    document.getElementById("closeEditAgendaModalBtn").addEventListener("click", closeEditAgendaModal);
+    document.getElementById("cancelEditAgendaModalBtn").addEventListener("click", closeEditAgendaModal);
+
+    document.getElementById("editAgendaEventForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const eventId = document.getElementById("editEventKeyInput").value;
+      const title = document.getElementById("editEventTitleInput").value.trim();
+      const category = document.getElementById("editEventCategoryInput").value;
+      const startVal = document.getElementById("editEventStartInput").value;
+      const endVal = document.getElementById("editEventEndInput").value;
+      const location = document.getElementById("editEventLocationInput").value.trim();
+      const notes = document.getElementById("editEventNotesInput").value.trim();
+
+      if (!title || !startVal || !endVal) {
+        showToast("Vul titel, starttijd en eindtijd in.", "warning");
+        return;
+      }
+
+      const startMs = new Date(startVal).getTime();
+      const endMs = new Date(endVal).getTime();
+      if (isNaN(startMs) || isNaN(endMs) || endMs <= startMs) {
+        showToast("De eindtijd moet na de starttijd liggen.", "warning");
+        return;
+      }
+
+      const payload = { title, category, start: startVal, end: endVal, location, notes, updatedAtMs: Date.now() };
+
+      if (firebaseEnabled && db && currentSessionUser && !currentSessionUser.isLocal) {
+        try {
+          await setDoc(
+            doc(db, "artifacts", appId, "users", currentSessionUser.uid, "app_agenda_items", eventId),
+            payload,
+            { merge: true }
+          );
+          agendaItems = agendaItems.map((item) => (item.id === eventId ? { ...item, ...payload } : item));
+          saveLocalUserState();
+          closeEditAgendaModal();
+          renderAgendaModule();
+          updateClockAndCountdowns();
+          showToast("Agenda-item bijgewerkt in deze app.", "success");
+          return;
+        } catch (err) {
+          // fallback
+        }
+      }
+
+      agendaItems = agendaItems.map((item) => (item.id === eventId ? { ...item, ...payload } : item));
+      saveLocalUserState();
+      closeEditAgendaModal();
+      renderAgendaModule();
+      updateClockAndCountdowns();
+      showToast("Agenda-item bijgewerkt in deze app.", "success");
+    });
+
+    function initDefaultAgendaFormDates() {
+      const startInput = document.getElementById("eventStartInput");
+      const endInput = document.getElementById("eventEndInput");
+      const dStart = new Date();
+      dStart.setMinutes(0, 0, 0);
+      dStart.setHours(dStart.getHours() + 1);
+      const dEnd = new Date(dStart.getTime() + 60 * 60 * 1000);
+      startInput.value = toDatetimeLocalValue(dStart.getTime());
+      endInput.value = toDatetimeLocalValue(dEnd.getTime());
+    }
+
+    document.getElementById("addAgendaEventForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("eventTitleInput").value.trim();
+      const category = document.getElementById("eventCategoryInput").value;
+      const startVal = document.getElementById("eventStartInput").value;
+      const endVal = document.getElementById("eventEndInput").value;
+      const location = document.getElementById("eventLocationInput").value.trim();
+      const notes = document.getElementById("eventNotesInput").value.trim();
+
+      if (!title || !startVal || !endVal) {
+        showToast("Vul titel, starttijd en eindtijd in.", "warning");
+        return;
+      }
+
+      const startMs = new Date(startVal).getTime();
+      const endMs = new Date(endVal).getTime();
+      if (isNaN(startMs) || isNaN(endMs) || endMs <= startMs) {
+        showToast("De eindtijd moet na de starttijd liggen.", "warning");
+        return;
+      }
+
+      const newEv = {
+        id: `item-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        title,
+        category,
+        start: startVal,
+        end: endVal,
+        location,
+        notes,
+        createdAtMs: Date.now()
+      };
+
+      if (firebaseEnabled && db && currentSessionUser && !currentSessionUser.isLocal) {
+        try {
+          await setDoc(
+            doc(db, "artifacts", appId, "users", currentSessionUser.uid, "app_agenda_items", newEv.id),
+            newEv
+          );
+          if (!agendaItems.some((item) => item.id === newEv.id)) {
+            agendaItems.push(newEv);
+          }
+          saveLocalUserState();
+          document.getElementById("eventTitleInput").value = "";
+          document.getElementById("eventLocationInput").value = "";
+          document.getElementById("eventNotesInput").value = "";
+          renderAgendaModule();
+          updateClockAndCountdowns();
+          showToast(`"${title}" toegevoegd aan de agenda.`, "success");
+          return;
+        } catch (err) {
+          // fallback
+        }
+      }
+
+      agendaItems.push(newEv);
+      saveLocalUserState();
+      document.getElementById("eventTitleInput").value = "";
+      document.getElementById("eventLocationInput").value = "";
+      document.getElementById("eventNotesInput").value = "";
+      renderAgendaModule();
+      updateClockAndCountdowns();
+      showToast(`"${title}" toegevoegd aan de agenda.`, "success");
+    });
+
+    // -----------------------------------------------------------------------
+    // 10. INITIALISATIE
+    // -----------------------------------------------------------------------
+    loadThemePreference();
+    updateClockAndCountdowns();
+    setInterval(updateClockAndCountdowns, 1000);
+    renderFluidPos();
+    renderAgendaModule();
+
+    const restoredSession = loadPersistedSession();
+    if (restoredSession && restoredSession.uid) {
+      enterAuthenticatedSession(restoredSession);
+    }
+  </script>
 </body>
 </html>
