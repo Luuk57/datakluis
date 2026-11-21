@@ -181,7 +181,7 @@
                   <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
                 </div>
                 <p id="tile-vocht-value" class="text-2xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 ml</p>
-                <p id="tile-vocht-48u" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 tabular-nums">48u: 0 ml</p>
+                <p id="tile-vocht-48u" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 tabular-nums">48u (om de dag): 0 ml</p>
               </div>
               <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
                 <button id="tile-vocht-plus150" type="button"
@@ -291,7 +291,6 @@
               </div>
 
               <div class="flex flex-wrap items-center gap-2">
-                <!-- Overzichtvormen: Lijst, Dag, Week, Maand -->
                 <div class="inline-flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-700">
                   <button type="button" data-agenda-mode="lijst"
                     class="agenda-mode-btn px-3 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white cursor-pointer">
@@ -311,7 +310,6 @@
                   </button>
                 </div>
 
-                <!-- Periode-navigatie -->
                 <div class="inline-flex items-center gap-1">
                   <button id="agenda-prev-btn" type="button" title="Vorige periode"
                     class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold cursor-pointer">
@@ -357,11 +355,12 @@
                 <div class="w-full h-3.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                   <div id="bar-24-fill" class="h-full bg-sky-500 transition-all duration-300 rounded-full" style="width: 0%"></div>
                 </div>
+                <p id="window-24-info" class="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">Laatste 24 uur</p>
               </div>
 
               <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-2.5">
                 <div class="flex items-center justify-between">
-                  <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">48-uurs Voortgang</span>
+                  <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">48-uurs Voortgang (Om de dag)</span>
                   <span id="bar-48-pct" class="text-xs font-extrabold tabular-nums">0%</span>
                 </div>
                 <div class="flex items-baseline justify-between">
@@ -371,6 +370,7 @@
                 <div class="w-full h-3.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                   <div id="bar-48-fill" class="h-full bg-indigo-500 transition-all duration-300 rounded-full" style="width: 0%"></div>
                 </div>
+                <p id="window-48-info" class="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">Cyclus wordt berekend...</p>
               </div>
             </div>
 
@@ -384,7 +384,7 @@
                   <div class="flex items-center gap-2">
                     <button type="button" data-open-tab="instellingen"
                       class="open-tab-link px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold cursor-pointer">
-                      Limieten in Instellingen
+                      48u Start &amp; Limieten
                     </button>
                     <button type="button" data-open-tab="start"
                       class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
@@ -423,7 +423,7 @@
               <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 flex flex-col justify-between">
                 <div>
                   <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
-                    <h4 class="font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">Intake Bon (48u)</h4>
+                    <h4 id="pos-receipt-heading" class="font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">Intake Bon (48u Cyclus)</h4>
                     <button id="pos-clear-btn" type="button" class="text-xs text-red-600 dark:text-red-400 hover:underline cursor-pointer">
                       Wis alles
                     </button>
@@ -445,7 +445,6 @@
           <!-- ===================================================== -->
           <div id="ritten-view" class="hidden space-y-5">
 
-            <!-- Punctualiteits-statistieken (% Op tijd / Te vroeg / Te laat) -->
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <div>
@@ -484,7 +483,6 @@
               </div>
             </div>
 
-            <!-- Formulier nieuwe rit / rit bewerken -->
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
               <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div>
@@ -504,14 +502,12 @@
               </div>
 
               <form id="rit-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                <!-- Afspraak datum/tijd -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Afspraak datum/tijd *</label>
                   <input id="rit-afspraak" type="datetime-local" required
                     class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold" />
                 </div>
 
-                <!-- Start tijd met knop -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Start tijd</label>
                   <div class="flex gap-1.5">
@@ -524,7 +520,6 @@
                   </div>
                 </div>
 
-                <!-- Eind tijd met knop -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Eind tijd (aankomst)</label>
                   <div class="flex gap-1.5">
@@ -537,14 +532,12 @@
                   </div>
                 </div>
 
-                <!-- Duur -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Duur (minuten)</label>
                   <input id="rit-duur" type="number" min="0" placeholder="Automatisch"
                     class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold tabular-nums" />
                 </div>
 
-                <!-- Van (dropdown) -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Van *</label>
                   <select id="rit-van" required
@@ -552,7 +545,6 @@
                   </select>
                 </div>
 
-                <!-- Naar (dropdown) -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Naar *</label>
                   <select id="rit-naar" required
@@ -560,7 +552,6 @@
                   </select>
                 </div>
 
-                <!-- Firma (dropdown) -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Firma</label>
                   <select id="rit-firma"
@@ -568,14 +559,12 @@
                   </select>
                 </div>
 
-                <!-- Opmerking -->
                 <div>
                   <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Opmerking</label>
                   <input id="rit-opmerking" type="text" placeholder="Opmerking..."
                     class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
                 </div>
 
-                <!-- Herhaling: 1Malig, Elkedag, Om de dag, Ma wo vrij, Di do za -->
                 <div id="rit-repeat-fields" class="sm:col-span-2 lg:col-span-4 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                   <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Herhaling</label>
@@ -623,7 +612,6 @@
               </form>
             </div>
 
-            <!-- Overzicht gereden ritten -->
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Overzicht ritten</h4>
@@ -645,7 +633,7 @@
               <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div>
                   <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Instellingen (Firebase)</span>
-                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">Limieten en dropdown-opties</h3>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">48u Vochtstart, limieten en dropdown-opties</h3>
                 </div>
                 <button type="button" data-open-tab="start"
                   class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
@@ -653,6 +641,42 @@
                 </button>
               </div>
 
+              <!-- Begin 48 uur vochtintake (om de dag) -->
+              <div class="space-y-3 p-4 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/70">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">Begin 48 uur vochtintake (om de dag)</h4>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                      Startdatum en starttijd (bijv. 22-11-2026 05:30), daarna telkens om de dag (elke 48 uur).
+                    </p>
+                  </div>
+                  <button id="inst-vocht48-sliding-btn" type="button"
+                    class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-indigo-300 dark:border-indigo-700 text-xs font-semibold text-indigo-700 dark:text-indigo-300 cursor-pointer">
+                    Gebruik lopende 48u
+                  </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Eerste startdatum</label>
+                    <input id="inst-vocht48-start-date" type="date" value="2026-11-22"
+                      class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Starttijd</label>
+                    <input id="inst-vocht48-start-time" type="time" value="05:30"
+                      class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold tabular-nums" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Ritme</label>
+                    <input type="text" readonly value="Om de dag (elke 48 uur)"
+                      class="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 text-xs font-bold text-indigo-700 dark:text-indigo-300" />
+                  </div>
+                </div>
+                <p id="inst-vocht48-cycle-preview" class="text-xs font-semibold text-indigo-800 dark:text-indigo-200 tabular-nums"></p>
+              </div>
+
+              <!-- Vochtintake limieten -->
               <div class="space-y-3">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">Vochtintake limieten</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -909,6 +933,9 @@
       vochtAmounts: [100, 150, 200, 250, 330, 500],
       vochtLimit24: 1500,
       vochtLimit48: 3000,
+      vocht48StartDate: '2026-11-22',
+      vocht48StartTime: '05:30',
+      vocht48Mode: 'every_other_day',
       firmaOptions: [],
       vanOptions: [],
       naarOptions: [],
@@ -1223,7 +1250,6 @@
         return;
       }
 
-      // Maandoverzicht
       const year = agendaCursorDate.getFullYear();
       const month = agendaCursorDate.getMonth();
       const monthName = agendaCursorDate.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' });
@@ -1291,6 +1317,20 @@
       const next = list.filter((x) => x !== val);
       pushSharedData({ [fieldKey]: next });
     }
+
+    document.getElementById('inst-vocht48-start-date').addEventListener('change', (e) => {
+      const val = e.target.value || '2026-11-22';
+      pushSharedData({ vocht48StartDate: val, vocht48Mode: 'every_other_day' });
+    });
+
+    document.getElementById('inst-vocht48-start-time').addEventListener('change', (e) => {
+      const val = e.target.value || '05:30';
+      pushSharedData({ vocht48StartTime: val, vocht48Mode: 'every_other_day' });
+    });
+
+    document.getElementById('inst-vocht48-sliding-btn').addEventListener('click', () => {
+      pushSharedData({ vocht48Mode: 'sliding' });
+    });
 
     document.getElementById('inst-limit-24').addEventListener('change', (e) => {
       pushSharedData({ vochtLimit24: Math.max(100, Number(e.target.value || 1500)) });
@@ -1456,6 +1496,16 @@
       const m = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
       return `${y}-${m}-${day}`;
+    }
+
+    function formatDateTimeNL(ms) {
+      const d = new Date(ms);
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const yyyy = d.getFullYear();
+      const hh = String(d.getHours()).padStart(2, '0');
+      const min = String(d.getMinutes()).padStart(2, '0');
+      return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
     }
 
     function getTodayISO() {
@@ -1742,36 +1792,81 @@
     });
 
     // ---------------------------------------------------------
-    // VOCHTINTAKE BEREKENINGEN + PRODUCT- & HOEVEELHEIDTEGELS
+    // VOCHTINTAKE BEREKENINGEN (24U + 48U VANAF STARTDATUM OM DE DAG)
     // ---------------------------------------------------------
-    function computeVochtStats(entries, limit24, limit48) {
+    function get48HourWindow(data, nowMs = Date.now()) {
+      const periodMs = 48 * 60 * 60 * 1000;
+      if (data.vocht48Mode === 'sliding') {
+        return {
+          startMs: nowMs - periodMs,
+          endMs: nowMs,
+          isFixedCycle: false,
+          label: `Lopende 48u (${formatDateTimeNL(nowMs - periodMs)} – nu)`
+        };
+      }
+
+      const dateStr = data.vocht48StartDate || '2026-11-22';
+      const timeStr = data.vocht48StartTime || '05:30';
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const [hh, mm] = timeStr.split(':').map(Number);
+      const anchorMs = new Date(
+        Number.isFinite(y) ? y : 2026,
+        Number.isFinite(m) ? m - 1 : 10,
+        Number.isFinite(d) ? d : 22,
+        Number.isFinite(hh) ? hh : 5,
+        Number.isFinite(mm) ? mm : 30,
+        0,
+        0
+      ).getTime();
+
+      let startMs = anchorMs;
+      if (nowMs >= anchorMs) {
+        const elapsed = nowMs - anchorMs;
+        const cycles = Math.floor(elapsed / periodMs);
+        startMs = anchorMs + cycles * periodMs;
+      }
+      const endMs = startMs + periodMs;
+
+      return {
+        startMs,
+        endMs,
+        isFixedCycle: true,
+        label: `Cyclus: ${formatDateTimeNL(startMs)} → ${formatDateTimeNL(endMs)}`
+      };
+    }
+
+    function computeVochtStats(entries, data) {
       const now = Date.now();
       const h24 = 24 * 60 * 60 * 1000;
-      const h48 = 48 * 60 * 60 * 1000;
       const list = Array.isArray(entries) ? entries : [];
+      const win48 = get48HourWindow(data, now);
 
       let total24 = 0;
       let total48 = 0;
-      const valid48 = [];
+      const in48 = [];
 
       list.forEach((item) => {
         const ts = Number(item.timestamp || 0);
         const ml = Number(item.ml || 0);
-        if (ts >= now - h48) {
-          total48 += ml;
-          valid48.push(item);
-        }
-        if (ts >= now - h24) {
+        if (ts >= now - h24 && ts <= now + 5000) {
           total24 += ml;
+        }
+        const match48 = win48.isFixedCycle
+          ? (ts >= win48.startMs && ts < win48.endMs)
+          : (ts >= win48.startMs && ts <= now + 5000);
+
+        if (match48) {
+          total48 += ml;
+          in48.push(item);
         }
       });
 
-      const lim24 = Math.max(100, Number(limit24 || 1500));
-      const lim48 = Math.max(200, Number(limit48 || 3000));
+      const lim24 = Math.max(100, Number(data.vochtLimit24 || 1500));
+      const lim48 = Math.max(200, Number(data.vochtLimit48 || 3000));
       const pct24 = Math.min(100, Math.round((total24 / lim24) * 100));
       const pct48 = Math.min(100, Math.round((total48 / lim48) * 100));
 
-      return { total24, total48, lim24, lim48, pct24, pct48, valid48 };
+      return { total24, total48, lim24, lim48, pct24, pct48, in48, win48 };
     }
 
     async function addVochtEntry(ml, drinkName) {
@@ -2342,7 +2437,7 @@
         ? sharedData.vochtAmounts
         : [150];
 
-      const vochtStats = computeVochtStats(sharedData.vochtEntries, sharedData.vochtLimit24, sharedData.vochtLimit48);
+      const vochtStats = computeVochtStats(sharedData.vochtEntries, sharedData);
       const ritten = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
       const sortedPlanning = sortRittenPlanning(ritten);
       const rittenStats = computeRittenStats(ritten);
@@ -2351,7 +2446,7 @@
       const dialyseSub = sharedData.dialyseSub || 'Klaar voor planning';
 
       document.getElementById('tile-vocht-value').textContent = `${vochtStats.total24} ml`;
-      document.getElementById('tile-vocht-48u').textContent = `48u: ${vochtStats.total48} ml`;
+      document.getElementById('tile-vocht-48u').textContent = `48u (om de dag): ${vochtStats.total48} ml`;
 
       document.getElementById('tile-ritten-count').textContent = `${ritten.length} ${ritten.length === 1 ? 'rit' : 'ritten'}`;
       document.getElementById('tile-ritten-ontime').textContent = `${rittenStats.pctOnTime}% op tijd`;
@@ -2426,6 +2521,11 @@
       document.getElementById('bar-48-label').textContent = `${vochtStats.total48} ml`;
       document.getElementById('bar-48-limit-label').textContent = `van ${vochtStats.lim48} ml`;
       document.getElementById('bar-48-pct').textContent = `${vochtStats.pct48}%`;
+      document.getElementById('window-48-info').textContent = vochtStats.win48.label;
+      document.getElementById('pos-receipt-heading').textContent = vochtStats.win48.isFixedCycle
+        ? 'Intake Bon (48u Om de dag)'
+        : 'Intake Bon (Lopende 48u)';
+
       const fill48 = document.getElementById('bar-48-fill');
       fill48.style.width = `${vochtStats.pct48}%`;
       fill48.className = vochtStats.total48 > vochtStats.lim48
@@ -2436,16 +2536,28 @@
 
       document.getElementById('pos-receipt-total24').textContent = `${vochtStats.total24} ml`;
 
+      const startDateInp = document.getElementById('inst-vocht48-start-date');
+      const startTimeInp = document.getElementById('inst-vocht48-start-time');
       const inst24 = document.getElementById('inst-limit-24');
       const inst48 = document.getElementById('inst-limit-48');
+      if (startDateInp && document.activeElement !== startDateInp) {
+        startDateInp.value = sharedData.vocht48StartDate || '2026-11-22';
+      }
+      if (startTimeInp && document.activeElement !== startTimeInp) {
+        startTimeInp.value = sharedData.vocht48StartTime || '05:30';
+      }
       if (inst24 && document.activeElement !== inst24) inst24.value = vochtStats.lim24;
       if (inst48 && document.activeElement !== inst48) inst48.value = vochtStats.lim48;
 
+      document.getElementById('inst-vocht48-cycle-preview').textContent = vochtStats.win48.isFixedCycle
+        ? `Actief 48-uurs venster (om de dag): ${vochtStats.win48.label}`
+        : 'Actief: lopende 48 uur (klik op een startdatum/tijd om over te schakelen op om de dag)';
+
       const receiptEl = document.getElementById('pos-receipt-list');
-      if (vochtStats.valid48.length === 0) {
-        receiptEl.innerHTML = `<p class="text-slate-400 text-center py-6">Nog geen vocht geregistreerd.</p>`;
+      if (vochtStats.in48.length === 0) {
+        receiptEl.innerHTML = `<p class="text-slate-400 text-center py-6">Nog geen vocht geregistreerd in dit 48-uurs venster.</p>`;
       } else {
-        receiptEl.innerHTML = [...vochtStats.valid48].reverse().map((item) => {
+        receiptEl.innerHTML = [...vochtStats.in48].reverse().map((item) => {
           const t = item.timestamp
             ? new Date(Number(item.timestamp)).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
             : '';
