@@ -2104,9 +2104,8 @@
       if (ritten.length === 0) {
         rittenContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen ritten opgeslagen.</p>`;
       } else {
-        rittenContainer.innerHTML = [...ritten].reverse().map((r, revIdx) => {
-          const origIdx = ritten.length - 1 - revIdx;
-          const ritId = String(r.id || origIdx);
+        rittenContainer.innerHTML = [...ritten].map((r, idx) => {
+          const ritId = String(r.id || idx);
           const punct = evaluateRitPunctuality(r);
 
           let badgeClass = 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
