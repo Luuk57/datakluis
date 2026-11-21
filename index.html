@@ -252,14 +252,14 @@
               <div>
                 <div class="flex items-center justify-between mb-1.5">
                   <span class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Brieven</span>
-                  <span class="text-[10px] text-slate-400 font-medium">Dossier</span>
+                  <span class="text-[10px] text-slate-400 font-medium">Dossier &amp; Mappen</span>
                 </div>
                 <p id="tile-brieven-count" class="text-xl font-extrabold text-slate-900 dark:text-white tabular-nums">0 brieven</p>
                 <p id="tile-brieven-last" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Geen brief</p>
               </div>
               <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-1.5">
-                <button id="tile-brief-quick" type="button"
-                  class="px-2 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold cursor-pointer">
+                <button type="button" data-open-tab="brieven"
+                  class="open-tab-link px-2 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold cursor-pointer">
                   + Brief
                 </button>
                 <button type="button" data-open-tab="brieven"
@@ -289,7 +289,7 @@
           </div>
 
           <!-- ===================================================== -->
-          <!-- DIALYSE-MODULE + BLOEDDRUK/HARTSLAG + GRAFIEK + 1 PDF -->
+          <!-- DIALYSE-MODULE + MEERDERE VERPLEGING + BD/HS + 1 PDF -->
           <!-- ===================================================== -->
           <div id="dialyse-view" class="hidden space-y-5">
 
@@ -468,18 +468,22 @@
                   </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <!-- ShuntFlow resultaat + Meerdere Verpleging selecteren -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
                   <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">ShuntFlow resultaat</label>
                     <input id="dialyse-shuntflow-resultaat" type="text" placeholder="Bijv. 1200 ml/min of normaal"
                       class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
                   </div>
 
-                  <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Verpleging</label>
-                    <select id="dialyse-verpleging"
-                      class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold">
-                    </select>
+                  <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                      <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">Verpleging (meerdere mogelijk)</label>
+                      <span id="dialyse-verpleging-selected-count" class="text-[11px] font-bold text-blue-600 dark:text-blue-400 tabular-nums">0 geselecteerd</span>
+                    </div>
+                    <div id="dialyse-verpleging-multi" class="flex flex-wrap gap-1.5">
+                      <span class="text-xs text-slate-400">Nog geen verpleegkundigen in Instellingen.</span>
+                    </div>
                   </div>
                 </div>
 
@@ -534,7 +538,6 @@
                     </div>
                   </div>
 
-                  <!-- Grafiek + Lijst metingen naast elkaar op desktop -->
                   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-1">
                     <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
                       <div class="flex flex-wrap items-center justify-between gap-2 mb-2 text-[11px] font-semibold">
@@ -598,6 +601,120 @@
               </div>
               <div id="dialyse-list-container" class="space-y-2.5">
                 <p class="text-xs text-slate-400 py-4 text-center">Nog geen dialysesessies opgeslagen.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================================================== -->
+          <!-- BRIEVEN-MODULE: MAPPEN (NEFROLOGIE) + PDF/SCAN + FOTO -->
+          <!-- ===================================================== -->
+          <div id="brieven-view" class="hidden space-y-5">
+
+            <!-- Mappenbeheer: aanmaken & verwijderen -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div>
+                  <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Mappenbeheer</span>
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">Mappen maken &amp; verwijderen (inclusief Nefrologie)</h3>
+                </div>
+                <button type="button" data-open-tab="start"
+                  class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
+                  ← Start
+                </button>
+              </div>
+
+              <form id="brief-folder-form" class="flex flex-wrap gap-2">
+                <input id="new-brief-folder-input" type="text" required placeholder="Nieuwe mapnaam (bijv. Cardiologie, Huisarts)..."
+                  class="flex-1 min-w-[220px] px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold" />
+                <button type="submit"
+                  class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer">
+                  + Map maken
+                </button>
+              </form>
+
+              <div id="brief-folders-chips" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <!-- Nieuwe brief / PDF / scan + foto van wie de brief is -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span id="brief-form-badge" class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Brief toevoegen</span>
+                  <h4 id="brief-form-title" class="text-base font-bold text-slate-900 dark:text-white">PDF / Scan en foto afzender opslaan</h4>
+                </div>
+                <button id="brief-cancel-edit-btn" type="button"
+                  class="hidden px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-xs font-bold cursor-pointer">
+                  Annuleren
+                </button>
+              </div>
+
+              <form id="brief-form" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Titel / Onderwerp brief *</label>
+                    <input id="brief-titel-input" type="text" required placeholder="Bijv. Brief Nefrologie controle"
+                      class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold" />
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Map *</label>
+                    <select id="brief-map-select"
+                      class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold">
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Afzender / Wie is de brief van?</label>
+                    <input id="brief-afzender-input" type="text" placeholder="Bijv. Dr. Jansen (Nefrologie)"
+                      class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-200">
+                      Brief als PDF en/of scan/foto (meerdere mogelijk)
+                    </label>
+                    <input id="brief-docs-file-input" type="file" accept="application/pdf,image/*" multiple
+                      class="w-full text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer" />
+                    <div id="brief-draft-docs-list" class="space-y-1 text-xs"></div>
+                  </div>
+
+                  <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-200">
+                      Foto van wie de brief is
+                    </label>
+                    <input id="brief-sender-photo-input" type="file" accept="image/*" capture="environment"
+                      class="w-full text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-amber-600 file:text-white hover:file:bg-amber-700 cursor-pointer" />
+                    <div id="brief-draft-sender-preview" class="flex items-center gap-2.5 pt-1"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Notitie / Samenvatting (optioneel)</label>
+                  <input id="brief-notitie-input" type="text" placeholder="Korte aantekening bij deze brief..."
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs" />
+                </div>
+
+                <div class="flex justify-end">
+                  <button id="brief-submit-btn" type="submit"
+                    class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer">
+                    Brief opslaan
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Overzicht per map -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h4 id="brieven-folder-heading" class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  Brieven in map: Nefrologie
+                </h4>
+                <span id="brieven-count-in-folder" class="text-xs font-bold text-amber-600 dark:text-amber-400 tabular-nums">0 brieven</span>
+              </div>
+              <div id="brieven-list-container" class="space-y-3">
+                <p class="text-xs text-slate-400 py-6 text-center">Nog geen brieven in deze map.</p>
               </div>
             </div>
           </div>
@@ -1274,23 +1391,6 @@
             </form>
           </div>
 
-          <!-- ===================================================== -->
-          <!-- OVERIGE MODULE-WEERGAVE                               -->
-          <!-- ===================================================== -->
-          <div id="module-box" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
-            <div class="flex items-center justify-between gap-4 pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
-              <div>
-                <h3 id="module-heading" class="text-lg font-bold text-slate-900 dark:text-white">Onderdeel</h3>
-                <p id="module-desc" class="text-sm text-slate-500 dark:text-slate-400 mt-0.5"></p>
-              </div>
-              <button type="button" data-open-tab="start"
-                class="open-tab-link px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold cursor-pointer">
-                ← Terug naar Start
-              </button>
-            </div>
-            <div id="module-content" class="text-sm text-slate-700 dark:text-slate-300"></div>
-          </div>
-
         </div>
       </main>
     </div>
@@ -1393,7 +1493,13 @@
     let selectedDrink = 'Water';
     let editingRitId = null;
     let editingDialyseId = null;
+    let selectedVerplegingList = [];
     let draftVitals = [];
+
+    let selectedBriefFolder = 'Nefrologie';
+    let editingBriefId = null;
+    let draftBriefDocs = [];
+    let draftBriefSenderPhoto = null;
 
     let agendaMode = 'lijst';
     let agendaCursorDate = new Date();
@@ -1419,6 +1525,7 @@
       ritten: [],
       dialyseStatus: 'Geen sessie',
       dialyseSub: 'Klaar voor planning',
+      briefFolders: ['Nefrologie'],
       brieven: [],
       pdfDocs: [],
       updatedAt: ''
@@ -1662,6 +1769,67 @@
     }
 
     // ---------------------------------------------------------
+    // MEERDERE SELECTIE VERPLEGING IN DIALYSE
+    // ---------------------------------------------------------
+    function normalizeVerplegingSelection(sessieOrArray) {
+      if (Array.isArray(sessieOrArray)) {
+        return sessieOrArray.map((s) => String(s || '').trim()).filter(Boolean);
+      }
+      if (sessieOrArray && Array.isArray(sessieOrArray.verplegingList)) {
+        return sessieOrArray.verplegingList.map((s) => String(s || '').trim()).filter(Boolean);
+      }
+      if (sessieOrArray && sessieOrArray.verpleging) {
+        return String(sessieOrArray.verpleging)
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+      return [];
+    }
+
+    function renderVerplegingMultiSelect() {
+      const container = document.getElementById('dialyse-verpleging-multi');
+      const countEl = document.getElementById('dialyse-verpleging-selected-count');
+      const options = Array.isArray(sharedData.verplegingOptions) ? sharedData.verplegingOptions : [];
+
+      selectedVerplegingList = selectedVerplegingList.filter(Boolean);
+      countEl.textContent = `${selectedVerplegingList.length} geselecteerd`;
+
+      const allChoices = [...new Set([...options, ...selectedVerplegingList])];
+      if (allChoices.length === 0) {
+        container.innerHTML = `<span class="text-xs text-slate-400">Voeg eerst namen toe bij Verpleging in Instellingen.</span>`;
+        return;
+      }
+
+      container.innerHTML = allChoices.map((name) => {
+        const active = selectedVerplegingList.includes(name);
+        return `
+          <button type="button" data-vpk="${escapeHtml(name)}"
+            class="toggle-vpk-btn px-3 py-1.5 rounded-xl text-xs font-bold border transition cursor-pointer ${
+              active
+                ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:border-blue-400'
+            }">
+            ${active ? '✓ ' : ''}${escapeHtml(name)}
+          </button>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('dialyse-verpleging-multi').addEventListener('click', (e) => {
+      const btn = e.target.closest('.toggle-vpk-btn');
+      if (!btn) return;
+      const name = btn.getAttribute('data-vpk');
+      if (!name) return;
+      if (selectedVerplegingList.includes(name)) {
+        selectedVerplegingList = selectedVerplegingList.filter((x) => x !== name);
+      } else {
+        selectedVerplegingList = [...selectedVerplegingList, name];
+      }
+      renderVerplegingMultiSelect();
+    });
+
+    // ---------------------------------------------------------
     // BLOEDDRUK & HARTSLAG METINGEN + GRAFIEK (SVG)
     // ---------------------------------------------------------
     function normalizeVitals(list) {
@@ -1807,6 +1975,383 @@
       draftVitals = draftVitals.filter((m) => m.id !== vid);
       renderDraftVitalsUI();
     });
+
+    // ---------------------------------------------------------
+    // BRIEVEN & MAPPEN (NEFROLOGIE + EIGEN MAPPEN + PDF/SCAN + FOTO)
+    // ---------------------------------------------------------
+    function getBriefFolders() {
+      const raw = Array.isArray(sharedData.briefFolders) ? sharedData.briefFolders : [];
+      const cleaned = raw.map((f) => String(f || '').trim()).filter(Boolean);
+      if (!cleaned.some((f) => f.toLowerCase() === 'nefrologie')) {
+        cleaned.unshift('Nefrologie');
+      }
+      return [...new Set(cleaned)];
+    }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderBriefDraftAttachments() {
+      const docsBox = document.getElementById('brief-draft-docs-list');
+      if (draftBriefDocs.length === 0) {
+        docsBox.innerHTML = `<p class="text-[11px] text-slate-400">Nog geen PDF of scan/foto geselecteerd.</p>`;
+      } else {
+        docsBox.innerHTML = draftBriefDocs.map((d, idx) => `
+          <div class="flex items-center justify-between py-1 px-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+            <span class="truncate font-medium">${escapeHtml(d.name || `Bestand ${idx + 1}`)}</span>
+            <button type="button" data-idx="${idx}" class="del-draft-doc-btn text-slate-400 hover:text-rose-600 font-bold ml-2 cursor-pointer">×</button>
+          </div>
+        `).join('');
+      }
+
+      const senderBox = document.getElementById('brief-draft-sender-preview');
+      if (!draftBriefSenderPhoto || !draftBriefSenderPhoto.dataUrl) {
+        senderBox.innerHTML = `<span class="text-[11px] text-slate-400">Geen foto van wie de brief is gekozen.</span>`;
+      } else {
+        senderBox.innerHTML = `
+          <img src="${draftBriefSenderPhoto.dataUrl}" alt="Foto afzender" class="w-12 h-12 rounded-xl object-cover border border-slate-300 dark:border-slate-700" />
+          <div class="min-w-0 flex-1">
+            <p class="text-xs font-semibold truncate">${escapeHtml(draftBriefSenderPhoto.name || 'Afzenderfoto')}</p>
+            <button type="button" id="clear-draft-sender-photo-btn" class="text-[11px] text-rose-600 hover:underline cursor-pointer">Verwijder foto</button>
+          </div>
+        `;
+      }
+    }
+
+    document.getElementById('brief-docs-file-input').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files || []);
+      for (const file of files) {
+        if (file.size > 4500000) {
+          showIncomingToast('Bestand', `"${file.name}" is groot (> 4,5 MB). Controleer opslaglimiet.`);
+        }
+        const dataUrl = await readFileAsDataUrl(file);
+        draftBriefDocs.push({
+          id: `doc_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+          name: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          dataUrl
+        });
+      }
+      e.target.value = '';
+      renderBriefDraftAttachments();
+    });
+
+    document.getElementById('brief-draft-docs-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.del-draft-doc-btn');
+      if (!btn) return;
+      const idx = Number(btn.getAttribute('data-idx'));
+      draftBriefDocs = draftBriefDocs.filter((_, i) => i !== idx);
+      renderBriefDraftAttachments();
+    });
+
+    document.getElementById('brief-sender-photo-input').addEventListener('change', async (e) => {
+      const file = (e.target.files || [])[0];
+      if (!file) return;
+      const dataUrl = await readFileAsDataUrl(file);
+      draftBriefSenderPhoto = {
+        name: file.name,
+        mimeType: file.type || 'image/jpeg',
+        dataUrl
+      };
+      e.target.value = '';
+      renderBriefDraftAttachments();
+    });
+
+    document.getElementById('brief-draft-sender-preview').addEventListener('click', (e) => {
+      if (e.target.closest('#clear-draft-sender-photo-btn')) {
+        draftBriefSenderPhoto = null;
+        renderBriefDraftAttachments();
+      }
+    });
+
+    function resetBriefForm() {
+      editingBriefId = null;
+      draftBriefDocs = [];
+      draftBriefSenderPhoto = null;
+      document.getElementById('brief-form').reset();
+      const folders = getBriefFolders();
+      const mapSel = document.getElementById('brief-map-select');
+      mapSel.innerHTML = folders.map((f) => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+      mapSel.value = folders.includes(selectedBriefFolder) ? selectedBriefFolder : 'Nefrologie';
+      document.getElementById('brief-form-badge').textContent = 'Brief toevoegen';
+      document.getElementById('brief-form-title').textContent = 'PDF / Scan en foto afzender opslaan';
+      document.getElementById('brief-submit-btn').textContent = 'Brief opslaan';
+      document.getElementById('brief-cancel-edit-btn').classList.add('hidden');
+      renderBriefDraftAttachments();
+    }
+
+    document.getElementById('brief-cancel-edit-btn').addEventListener('click', resetBriefForm);
+
+    document.getElementById('brief-folder-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const inp = document.getElementById('new-brief-folder-input');
+      const name = inp.value.trim();
+      if (!name) return;
+      const folders = getBriefFolders();
+      if (!folders.some((f) => f.toLowerCase() === name.toLowerCase())) {
+        folders.push(name);
+      }
+      selectedBriefFolder = name;
+      inp.value = '';
+      await pushSharedData({ briefFolders: folders });
+    });
+
+    document.getElementById('brief-folders-chips').addEventListener('click', async (e) => {
+      const delBtn = e.target.closest('.del-brief-folder-btn');
+      if (delBtn) {
+        const folderToDelete = delBtn.getAttribute('data-folder');
+        if (!folderToDelete || folderToDelete.toLowerCase() === 'nefrologie') return;
+        const nextFolders = getBriefFolders().filter((f) => f !== folderToDelete);
+        const movedBrieven = (sharedData.brieven || []).map((b) =>
+          b.folder === folderToDelete ? { ...b, folder: 'Nefrologie' } : b
+        );
+        if (selectedBriefFolder === folderToDelete) {
+          selectedBriefFolder = 'Nefrologie';
+        }
+        await pushSharedData({ briefFolders: nextFolders, brieven: movedBrieven });
+        return;
+      }
+
+      const pickBtn = e.target.closest('.pick-brief-folder-btn');
+      if (pickBtn) {
+        selectedBriefFolder = pickBtn.getAttribute('data-folder') || 'Nefrologie';
+        const mapSel = document.getElementById('brief-map-select');
+        if (mapSel && !editingBriefId) {
+          mapSel.value = selectedBriefFolder;
+        }
+        renderAll();
+      }
+    });
+
+    document.getElementById('brief-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const titel = document.getElementById('brief-titel-input').value.trim();
+      const folder = document.getElementById('brief-map-select').value || 'Nefrologie';
+      const afzender = document.getElementById('brief-afzender-input').value.trim();
+      const notitie = document.getElementById('brief-notitie-input').value.trim();
+
+      if (!titel) return;
+
+      const list = Array.isArray(sharedData.brieven) ? [...sharedData.brieven] : [];
+      let nextList;
+
+      if (editingBriefId) {
+        nextList = list.map((b, idx) => {
+          if (String(b.id || idx) !== editingBriefId) return b;
+          return {
+            ...b,
+            titel,
+            folder,
+            afzender,
+            notitie,
+            attachments: [...draftBriefDocs],
+            senderPhoto: draftBriefSenderPhoto ? { ...draftBriefSenderPhoto } : null
+          };
+        });
+      } else {
+        nextList = [
+          ...list,
+          {
+            id: `brief_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+            titel,
+            folder,
+            afzender,
+            notitie,
+            attachments: [...draftBriefDocs],
+            senderPhoto: draftBriefSenderPhoto ? { ...draftBriefSenderPhoto } : null,
+            createdAt: formatDateTimeNL(Date.now())
+          }
+        ];
+      }
+
+      selectedBriefFolder = folder;
+      resetBriefForm();
+      await pushSharedData({ brieven: nextList });
+    });
+
+    document.getElementById('brieven-list-container').addEventListener('click', (e) => {
+      const editBtn = e.target.closest('.edit-brief-btn');
+      if (editBtn) {
+        const bid = editBtn.getAttribute('data-id');
+        const found = (sharedData.brieven || []).find((b, idx) => String(b.id || idx) === bid);
+        if (!found) return;
+
+        editingBriefId = bid;
+        const folders = getBriefFolders();
+        const mapSel = document.getElementById('brief-map-select');
+        mapSel.innerHTML = folders.map((f) => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+        mapSel.value = folders.includes(found.folder) ? found.folder : 'Nefrologie';
+
+        document.getElementById('brief-titel-input').value = found.titel || '';
+        document.getElementById('brief-afzender-input').value = found.afzender || '';
+        document.getElementById('brief-notitie-input').value = found.notitie || '';
+        draftBriefDocs = Array.isArray(found.attachments) ? [...found.attachments] : [];
+        draftBriefSenderPhoto = found.senderPhoto ? { ...found.senderPhoto } : null;
+
+        document.getElementById('brief-form-badge').textContent = 'Brief bewerken';
+        document.getElementById('brief-form-title').textContent = 'Brief & map aanpassen';
+        document.getElementById('brief-submit-btn').textContent = 'Wijziging opslaan';
+        document.getElementById('brief-cancel-edit-btn').classList.remove('hidden');
+        renderBriefDraftAttachments();
+        document.getElementById('brief-form').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
+
+      const delBtn = e.target.closest('.del-brief-btn');
+      if (delBtn) {
+        const bid = delBtn.getAttribute('data-id');
+        if (editingBriefId === bid) resetBriefForm();
+        const next = (sharedData.brieven || []).filter((b, idx) => String(b.id || idx) !== bid);
+        pushSharedData({ brieven: next });
+      }
+    });
+
+    document.getElementById('brieven-list-container').addEventListener('change', (e) => {
+      const sel = e.target.closest('.move-brief-folder-select');
+      if (!sel) return;
+      const bid = sel.getAttribute('data-id');
+      const targetFolder = sel.value;
+      const next = (sharedData.brieven || []).map((b, idx) =>
+        String(b.id || idx) === bid ? { ...b, folder: targetFolder } : b
+      );
+      pushSharedData({ brieven: next });
+    });
+
+    function renderBrievenView(data) {
+      const folders = getBriefFolders();
+      if (!folders.includes(selectedBriefFolder)) {
+        selectedBriefFolder = 'Nefrologie';
+      }
+
+      const allBrieven = Array.isArray(data.brieven) ? data.brieven : [];
+
+      const mapSel = document.getElementById('brief-map-select');
+      if (mapSel) {
+        const curVal = editingBriefId ? mapSel.value : selectedBriefFolder;
+        mapSel.innerHTML = folders.map((f) => `<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+        mapSel.value = folders.includes(curVal) ? curVal : selectedBriefFolder;
+      }
+
+      const chipsEl = document.getElementById('brief-folders-chips');
+      chipsEl.innerHTML = folders.map((folder) => {
+        const active = folder === selectedBriefFolder;
+        const cnt = allBrieven.filter((b) => (b.folder || 'Nefrologie') === folder).length;
+        const isNefrologie = folder.toLowerCase() === 'nefrologie';
+
+        return `
+          <div class="inline-flex items-center rounded-xl border ${
+            active
+              ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
+              : 'bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700'
+          }">
+            <button type="button" data-folder="${escapeHtml(folder)}"
+              class="pick-brief-folder-btn px-3.5 py-2 text-xs font-bold cursor-pointer flex items-center gap-1.5">
+              <span>📁 ${escapeHtml(folder)}</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] tabular-nums ${
+                active ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200'
+              }">${cnt}</span>
+            </button>
+            ${
+              !isNefrologie
+                ? `<button type="button" data-folder="${escapeHtml(folder)}" title="Map verwijderen"
+                    class="del-brief-folder-btn pr-2.5 pl-1 py-2 text-xs font-bold opacity-80 hover:opacity-100 cursor-pointer">×</button>`
+                : ''
+            }
+          </div>
+        `;
+      }).join('');
+
+      const inFolder = allBrieven.filter((b) => (b.folder || 'Nefrologie') === selectedBriefFolder);
+      document.getElementById('brieven-folder-heading').textContent = `Brieven in map: ${selectedBriefFolder}`;
+      document.getElementById('brieven-count-in-folder').textContent = `${inFolder.length} ${inFolder.length === 1 ? 'brief' : 'brieven'}`;
+
+      const listContainer = document.getElementById('brieven-list-container');
+      if (inFolder.length === 0) {
+        listContainer.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">Geen brieven in map "${escapeHtml(selectedBriefFolder)}".</p>`;
+        return;
+      }
+
+      listContainer.innerHTML = [...inFolder].reverse().map((b, idx) => {
+        const bid = String(b.id || idx);
+        const docs = Array.isArray(b.attachments) ? b.attachments : [];
+        const senderPhoto = b.senderPhoto && b.senderPhoto.dataUrl ? b.senderPhoto : null;
+
+        const moveSelectHtml = `
+          <select data-id="${escapeHtml(bid)}" title="Verplaats naar map"
+            class="move-brief-folder-select px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-[11px] font-semibold">
+            ${folders.map((f) => `<option value="${escapeHtml(f)}" ${f === (b.folder || 'Nefrologie') ? 'selected' : ''}>${escapeHtml(f)}</option>`).join('')}
+          </select>
+        `;
+
+        const docsHtml = docs.length > 0
+          ? `<div class="flex flex-wrap gap-2 pt-2">
+              ${docs.map((doc) => {
+                const isImg = String(doc.mimeType || '').startsWith('image/') || String(doc.dataUrl || '').startsWith('data:image/');
+                if (isImg) {
+                  return `
+                    <a href="${doc.dataUrl}" target="_blank" rel="noopener noreferrer"
+                      class="inline-flex items-center gap-2 p-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-blue-400 text-xs font-semibold">
+                      <img src="${doc.dataUrl}" alt="${escapeHtml(doc.name || 'Scan')}" class="w-10 h-10 rounded-lg object-cover" />
+                      <span class="max-w-[160px] truncate">${escapeHtml(doc.name || 'Scan/Foto')}</span>
+                    </a>
+                  `;
+                }
+                return `
+                  <a href="${doc.dataUrl}" download="${escapeHtml(doc.name || 'brief.pdf')}" target="_blank" rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold hover:underline">
+                    📄 ${escapeHtml(doc.name || 'PDF-brief')}
+                  </a>
+                `;
+              }).join('')}
+            </div>`
+          : `<p class="text-[11px] text-slate-400 pt-1">Geen PDF of scan bijgevoegd.</p>`;
+
+        return `
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div class="flex items-start gap-3 min-w-0">
+                ${
+                  senderPhoto
+                    ? `<img src="${senderPhoto.dataUrl}" alt="${escapeHtml(b.afzender || 'Afzender')}" class="w-12 h-12 rounded-full object-cover border border-slate-300 dark:border-slate-600 shrink-0" />`
+                    : `<div class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 flex items-center justify-center text-xs font-extrabold shrink-0">BRIEF</div>`
+                }
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">
+                      ${escapeHtml(b.folder || 'Nefrologie')}
+                    </span>
+                    <h5 class="text-sm font-extrabold text-slate-900 dark:text-white truncate">${escapeHtml(b.titel || 'Brief')}</h5>
+                    ${b.createdAt ? `<span class="text-[11px] text-slate-400 tabular-nums">${escapeHtml(b.createdAt)}</span>` : ''}
+                  </div>
+                  ${b.afzender ? `<p class="text-xs font-semibold text-slate-700 dark:text-slate-300 mt-0.5">Van: ${escapeHtml(b.afzender)}</p>` : ''}
+                  ${b.notitie ? `<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${escapeHtml(b.notitie)}</p>` : ''}
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-1.5 shrink-0">
+                ${moveSelectHtml}
+                <button type="button" data-id="${escapeHtml(bid)}"
+                  class="edit-brief-btn px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold cursor-pointer">
+                  Bewerk
+                </button>
+                <button type="button" data-id="${escapeHtml(bid)}" title="Verwijder brief"
+                  class="del-brief-btn px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-red-600 hover:text-white text-xs font-bold cursor-pointer">
+                  ×
+                </button>
+              </div>
+            </div>
+
+            ${docsHtml}
+          </div>
+        `;
+      }).join('');
+    }
 
     // ---------------------------------------------------------
     // DIALYSE BEREKENINGEN, PLANNING & KLEURCODERING
@@ -2051,8 +2596,8 @@
     function resetDialyseForm() {
       editingDialyseId = null;
       draftVitals = [];
+      selectedVerplegingList = [];
       document.getElementById('dialyse-form').reset();
-      fillSelectOptions('dialyse-verpleging', sharedData.verplegingOptions, '');
       const startInp = document.getElementById('dialyse-start');
       const stopInp = document.getElementById('dialyse-stop');
       const duurInp = document.getElementById('dialyse-duur');
@@ -2066,6 +2611,7 @@
       document.getElementById('dialyse-form-title').textContent = 'Nieuwe dialysesessie(s)';
       document.getElementById('dialyse-submit-btn').textContent = 'Dialyse opslaan';
       document.getElementById('dialyse-cancel-edit-btn').classList.add('hidden');
+      renderVerplegingMultiSelect();
       renderDraftVitalsUI();
       updateDialyseRepeatUI();
       syncDialyseTimesFromAfspraak(true);
@@ -2080,8 +2626,9 @@
 
       editingDialyseId = sessieId;
       draftVitals = normalizeVitals(item.vitals || []);
+      selectedVerplegingList = normalizeVerplegingSelection(item);
       dialyseRepeatFieldsEl.classList.add('hidden');
-      fillSelectOptions('dialyse-verpleging', sharedData.verplegingOptions, item.verpleging || '');
+
       document.getElementById('dialyse-soort').value = item.soort === 'Nacht' ? 'Nacht' : 'Dag';
       document.getElementById('dialyse-afspraak').value = item.afspraak || '';
       const startInp = document.getElementById('dialyse-start');
@@ -2111,9 +2658,10 @@
       document.getElementById('dialyse-form-badge').textContent = 'Dialyse aanpassen';
       document.getElementById('dialyse-form-title').textContent = 'Dialysesessie bewerken';
       document.getElementById('dialyse-submit-btn').textContent = 'Wijziging opslaan';
-      dialyseRepeatHintEl.textContent = 'Pas deze sessie (inclusief bloeddruk/hartslag) aan en klik op Wijziging opslaan.';
+      dialyseRepeatHintEl.textContent = 'Pas deze sessie (inclusief verpleging & bloeddruk/hartslag) aan en klik op Wijziging opslaan.';
       document.getElementById('dialyse-cancel-edit-btn').classList.remove('hidden');
 
+      renderVerplegingMultiSelect();
       renderDraftVitalsUI();
       updateDialyseLiveCalculations();
       document.getElementById('dialyse-form').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -2147,6 +2695,8 @@
 
       const adviesUf = calcUfAdvice(preGewicht, soort, getDryWeight());
       const vitalsCopy = normalizeVitals(draftVitals);
+      const verplegingListCopy = [...selectedVerplegingList];
+      const verplegingLabel = verplegingListCopy.join(', ');
 
       const baseFields = {
         soort,
@@ -2161,7 +2711,8 @@
         fragmin5000: document.getElementById('dialyse-chk-fragmin5000').checked,
         shuntflowMeting: document.getElementById('dialyse-chk-shuntflow').checked,
         shuntflowResultaat: document.getElementById('dialyse-shuntflow-resultaat').value.trim(),
-        verpleging: document.getElementById('dialyse-verpleging').value.trim(),
+        verplegingList: verplegingListCopy,
+        verpleging: verplegingLabel,
         vitals: vitalsCopy
       };
 
@@ -2233,7 +2784,7 @@
         formatIsoDateTimeNL(afspraak),
         adviesUf !== null ? `UF advies ${adviesUf.toFixed(2).replace('.', ',')} L` : '',
         vitalsCopy.length > 0 ? `${vitalsCopy.length} BD/HS metingen` : '',
-        baseFields.verpleging ? `Vpk: ${baseFields.verpleging}` : ''
+        verplegingLabel ? `Vpk: ${verplegingLabel}` : ''
       ].filter(Boolean).join(' • ');
 
       resetDialyseForm();
@@ -2327,20 +2878,21 @@
         });
       });
 
-      dialyseSessies.forEach((s, idx) => {
+      dialyseSessies.forEach((s) => {
         const done = isDialyseDone(s, nowMs);
         if (overzichtFilter === 'done' && !done) return;
         const vCnt = normalizeVitals(s.vitals || []).length;
+        const vpk = normalizeVerplegingSelection(s).join(', ');
         items.push({
           sortKey: s.stopDatumTijd || s.afspraak || '9999-99-99T00:00',
           category: 'Dialyse',
           done,
-          title: `${s.soort || 'Dag'}dialyse${s.verpleging ? ` (${s.verpleging})` : ''}`,
+          title: `${s.soort || 'Dag'}dialyse${vpk ? ` (${vpk})` : ''}`,
           detail: `Afspraak ${formatIsoDateTimeNL(s.afspraak)} • Stop ${formatIsoDateTimeNL(s.stopDatumTijd)} • ${vCnt} BD/HS metingen${s.adviesUf !== null && s.adviesUf !== undefined ? ` • UF advies ${Number(s.adviesUf).toFixed(2).replace('.', ',')} L` : ''}`
         });
       });
 
-      (Array.isArray(data.vochtEntries) ? data.vochtEntries : []).forEach((v, idx) => {
+      (Array.isArray(data.vochtEntries) ? data.vochtEntries : []).forEach((v) => {
         if (overzichtFilter === 'done') return;
         const ts = Number(v.timestamp || nowMs);
         items.push({
@@ -2356,10 +2908,10 @@
         if (overzichtFilter === 'done') return;
         items.push({
           sortKey: `9999-99-99T${String(idx).padStart(2, '0')}:00`,
-          category: 'Brieven',
+          category: `Brief • ${b.folder || 'Nefrologie'}`,
           done: true,
           title: b.titel || `Brief #${idx + 1}`,
-          detail: 'Dossierbrief opgeslagen'
+          detail: b.afzender ? `Van: ${b.afzender}` : 'Dossierbrief opgeslagen'
         });
       });
 
@@ -2397,6 +2949,7 @@
     function buildDialyseCombinedPdfDoc(sessie, summaryText, autoKey = '') {
       const vitals = normalizeVitals(sessie.vitals || []);
       const chartSvg = buildVitalsSvgChart(vitals, 640, 210);
+      const vpkList = normalizeVerplegingSelection(sessie);
       const checks = [
         sessie.epo ? 'Epo' : '',
         sessie.ijzer ? 'IJzer' : '',
@@ -2412,7 +2965,7 @@
         title: `Dialyseverslag: ${sessie.soort || 'Dag'}dialyse (${formatIsoDateTimeNL(sessie.afspraak)})`,
         summaryText,
         lines: [
-          `Soort dialyse: ${sessie.soort || 'Dag'} • Verpleging: ${sessie.verpleging || '-'}`,
+          `Soort dialyse: ${sessie.soort || 'Dag'} • Verpleging: ${vpkList.length > 0 ? vpkList.join(', ') : '-'}`,
           `Afspraak: ${formatIsoDateTimeNL(sessie.afspraak)} • Start: ${formatIsoDateTimeNL(sessie.startDatumTijd)} • Stop: ${formatIsoDateTimeNL(sessie.stopDatumTijd)} • Duur: ${sessie.duur || '-'}`,
           `Gewicht: Pre ${sessie.preGewicht ?? '-'} kg → Post ${sessie.postGewicht ?? '-'} kg`,
           `UF advies: ${sessie.adviesUf ?? '-'} L • Gebruikte UF: ${sessie.gebruikteUf ?? '-'} • Werkelijke UF: ${sessie.werkelijkeUf ?? '-'}`,
@@ -2447,7 +3000,6 @@
       const oneHourMs = 60 * 60 * 1000;
       const newDocs = [];
 
-      // 1. Ritten: 1 uur na eindtijd automatisch PDF aanmaken
       (Array.isArray(data.ritten) ? data.ritten : []).forEach((r, idx) => {
         const { dateISO } = parseRitDateTimeParts(r);
         const endHHMM = (r.eindTijd || '').slice(0, 5);
@@ -2477,7 +3029,6 @@
         }
       });
 
-      // 2. Dialyse: 1 uur na stoptijd automatisch 1 gecombineerd PDF (sessie + bloeddruk/hartslag + grafiek) aanmaken
       (Array.isArray(data.dialyseSessies) ? data.dialyseSessies : []).forEach((s, idx) => {
         const stopStr = s.stopDatumTijd || '';
         if (!stopStr || !stopStr.includes('T')) return;
@@ -2605,7 +3156,7 @@
             adviesUf: '-',
             gebruikteUf: document.getElementById('dialyse-gebruikte-uf').value || '-',
             werkelijkeUf: document.getElementById('dialyse-werkelijke-uf').value || '-',
-            verpleging: document.getElementById('dialyse-verpleging').value || '-',
+            verplegingList: selectedVerplegingList,
             vitals: draftVitals
           };
 
@@ -2788,6 +3339,7 @@
           const ufText = s.adviesUf !== null && s.adviesUf !== undefined
             ? `UF advies ${Number(s.adviesUf).toFixed(2).replace('.', ',')} L`
             : '';
+          const vpkLabel = normalizeVerplegingSelection(s).join(', ');
           events.push({
             id: `dialyse_${s.id || idx}`,
             type: 'Dialyse',
@@ -2795,7 +3347,7 @@
             title: `${s.soort || 'Dag'}dialyse`,
             dateISO,
             timeHHMM,
-            meta: [ufText, s.verpleging ? `Vpk: ${s.verpleging}` : ''].filter(Boolean).join(' • ')
+            meta: [ufText, vpkLabel ? `Vpk: ${vpkLabel}` : ''].filter(Boolean).join(' • ')
           });
         });
       } else if (dialyseStatus && dialyseStatus !== 'Geen sessie') {
@@ -3415,603 +3967,462 @@
       const timeStr = data.vocht48StartTime || '05:30';
       const [y, m, d] = dateStr.split('-').map(Number);
       const [hh, mm] = timeStr.split(':').map(Number);
-      const anchorMs = new Date(
-        Number.isFinite(y) ? y : 2026,
-        Number.isFinite(m) ? m - 1 : 10,
-        Number.isFinite(d) ? d : 22,
+
+      let anchorMs = new Date(
+        y || 2026,
+        (m || 11) - 1,
+        d || 22,
         Number.isFinite(hh) ? hh : 5,
         Number.isFinite(mm) ? mm : 30,
         0,
         0
       ).getTime();
 
-      let startMs = anchorMs;
-      if (nowMs >= anchorMs) {
-        const elapsed = nowMs - anchorMs;
-        const cycles = Math.floor(elapsed / periodMs);
-        startMs = anchorMs + cycles * periodMs;
+      if (Number.isNaN(anchorMs)) {
+        return {
+          startMs: nowMs - periodMs,
+          endMs: nowMs,
+          isFixedCycle: false,
+          label: 'Laatste 48 uur'
+        };
       }
-      const endMs = startMs + periodMs;
 
+      if (nowMs >= anchorMs) {
+        const cyclesPassed = Math.floor((nowMs - anchorMs) / periodMs);
+        anchorMs += cyclesPassed * periodMs;
+      } else {
+        const cyclesBack = Math.ceil((anchorMs - nowMs) / periodMs);
+        anchorMs -= cyclesBack * periodMs;
+      }
+
+      const endMs = anchorMs + periodMs;
       return {
-        startMs,
+        startMs: anchorMs,
         endMs,
         isFixedCycle: true,
-        label: `Cyclus: ${formatDateTimeNL(startMs)} → ${formatDateTimeNL(endMs)}`
+        label: `Cyclus om de dag: ${formatDateTimeNL(anchorMs)} → ${formatDateTimeNL(endMs)}`
       };
     }
 
-    function computeVochtStats(entries, data) {
-      const now = Date.now();
-      const h24 = 24 * 60 * 60 * 1000;
+    function computeVochtStats(entries, data, nowMs = Date.now()) {
       const list = Array.isArray(entries) ? entries : [];
-      const win48 = get48HourWindow(data, now);
+      const cutoff24 = nowMs - 24 * 60 * 60 * 1000;
+      const win48 = get48HourWindow(data, nowMs);
 
-      let total24 = 0;
-      let total48 = 0;
-      const in48 = [];
-
-      list.forEach((item) => {
-        const ts = Number(item.timestamp || 0);
-        const ml = Number(item.ml || 0);
-        if (ts >= now - h24 && ts <= now + 5000) {
-          total24 += ml;
-        }
-        const match48 = win48.isFixedCycle
-          ? (ts >= win48.startMs && ts < win48.endMs)
-          : (ts >= win48.startMs && ts <= now + 5000);
-
-        if (match48) {
-          total48 += ml;
-          in48.push(item);
-        }
+      const in24 = list.filter((e) => Number(e.timestamp || 0) >= cutoff24);
+      const in48 = list.filter((e) => {
+        const ts = Number(e.timestamp || 0);
+        return ts >= win48.startMs && ts <= win48.endMs;
       });
 
-      const lim24 = Math.max(100, Number(data.vochtLimit24 || 1500));
-      const lim48 = Math.max(200, Number(data.vochtLimit48 || 3000));
-      const pct24 = Math.min(100, Math.round((total24 / lim24) * 100));
-      const pct48 = Math.min(100, Math.round((total48 / lim48) * 100));
+      const total24 = in24.reduce((sum, e) => sum + Number(e.ml || 0), 0);
+      const total48 = in48.reduce((sum, e) => sum + Number(e.ml || 0), 0);
 
-      return { total24, total48, lim24, lim48, pct24, pct48, in48, win48 };
+      const lim24 = Math.max(1, Number(data.vochtLimit24 || 1500));
+      const lim48 = Math.max(1, Number(data.vochtLimit48 || 3000));
+
+      const pct24 = Math.round((total24 / lim24) * 100);
+      const pct48 = Math.round((total48 / lim48) * 100);
+
+      return { total24, total48, lim24, lim48, pct24, pct48, in24, in48, win48 };
     }
 
-    async function addVochtEntry(ml, drinkName) {
-      const amount = Number(ml || 0);
-      if (amount <= 0) return;
-      const current = Array.isArray(sharedData.vochtEntries) ? [...sharedData.vochtEntries] : [];
-      current.push({
-        id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    function addVochtEntry(drinkName, mlVal) {
+      const ml = Number(mlVal);
+      if (!Number.isFinite(ml) || ml <= 0) return;
+      const entries = Array.isArray(sharedData.vochtEntries) ? [...sharedData.vochtEntries] : [];
+      entries.push({
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         drink: drinkName || selectedDrink || 'Water',
-        ml: amount,
+        ml,
         timestamp: Date.now()
       });
-      await pushSharedData({ vochtEntries: current });
+      pushSharedData({ vochtEntries: entries });
     }
+
+    document.getElementById('tile-vocht-plus150').addEventListener('click', () => {
+      addVochtEntry(selectedDrink || 'Water', 150);
+    });
 
     document.getElementById('add-drink-tile-form').addEventListener('submit', (e) => {
       e.preventDefault();
-      const input = document.getElementById('new-drink-tile-input');
-      const name = input.value.trim();
+      const inp = document.getElementById('new-drink-tile-input');
+      const name = inp.value.trim();
       if (!name) return;
-      const products = Array.isArray(sharedData.vochtProducts) ? [...sharedData.vochtProducts] : [];
-      if (!products.some((p) => p.toLowerCase() === name.toLowerCase())) {
-        products.push(name);
-      }
+      const prods = Array.isArray(sharedData.vochtProducts) ? [...sharedData.vochtProducts] : [];
+      if (!prods.includes(name)) prods.push(name);
       selectedDrink = name;
-      input.value = '';
-      pushSharedData({ vochtProducts: products });
-    });
-
-    document.getElementById('pos-drink-buttons').addEventListener('click', (e) => {
-      const delBtn = e.target.closest('.del-drink-btn');
-      if (delBtn) {
-        const name = delBtn.getAttribute('data-drink');
-        const next = (sharedData.vochtProducts || []).filter((p) => p !== name);
-        const safeNext = next.length > 0 ? next : ['Water'];
-        if (selectedDrink === name) {
-          selectedDrink = safeNext[0];
-        }
-        pushSharedData({ vochtProducts: safeNext });
-        return;
-      }
-      const selBtn = e.target.closest('.select-drink-btn');
-      if (selBtn) {
-        selectedDrink = selBtn.getAttribute('data-drink') || 'Water';
-        renderAll();
-      }
+      inp.value = '';
+      pushSharedData({ vochtProducts: prods });
     });
 
     document.getElementById('add-ml-tile-form').addEventListener('submit', (e) => {
       e.preventDefault();
-      const input = document.getElementById('new-ml-tile-input');
-      const ml = Math.round(Number(input.value || 0));
-      if (ml <= 0) return;
-      const amounts = Array.isArray(sharedData.vochtAmounts) ? [...sharedData.vochtAmounts] : [];
-      if (!amounts.includes(ml)) {
-        amounts.push(ml);
+      const inp = document.getElementById('new-ml-tile-input');
+      const ml = Number(inp.value);
+      if (!Number.isFinite(ml) || ml <= 0) return;
+      const amts = Array.isArray(sharedData.vochtAmounts) ? [...sharedData.vochtAmounts] : [];
+      if (!amts.includes(ml)) amts.push(ml);
+      amts.sort((a, b) => a - b);
+      inp.value = '';
+      pushSharedData({ vochtAmounts: amts });
+    });
+
+    document.getElementById('pos-drink-buttons').addEventListener('click', (e) => {
+      const delBtn = e.target.closest('.del-drink-tile-btn');
+      if (delBtn) {
+        const prod = delBtn.getAttribute('data-drink');
+        const next = (sharedData.vochtProducts || []).filter((p) => p !== prod);
+        if (selectedDrink === prod) selectedDrink = next[0] || 'Water';
+        pushSharedData({ vochtProducts: next });
+        return;
       }
-      input.value = '';
-      pushSharedData({ vochtAmounts: amounts });
+      const pickBtn = e.target.closest('.pick-drink-tile-btn');
+      if (pickBtn) {
+        selectedDrink = pickBtn.getAttribute('data-drink');
+        renderAll();
+      }
     });
 
     document.getElementById('pos-ml-buttons').addEventListener('click', (e) => {
-      const delBtn = e.target.closest('.del-ml-btn');
+      const delBtn = e.target.closest('.del-ml-tile-btn');
       if (delBtn) {
-        const ml = Number(delBtn.getAttribute('data-ml'));
-        const next = (sharedData.vochtAmounts || []).filter((a) => Number(a) !== ml);
-        const safeNext = next.length > 0 ? next : [150];
-        pushSharedData({ vochtAmounts: safeNext });
+        const mlVal = Number(delBtn.getAttribute('data-ml'));
+        const next = (sharedData.vochtAmounts || []).filter((m) => Number(m) !== mlVal);
+        pushSharedData({ vochtAmounts: next });
         return;
       }
-      const addBtn = e.target.closest('.add-ml-btn');
+      const addBtn = e.target.closest('.add-ml-tile-btn');
       if (addBtn) {
-        const ml = Number(addBtn.getAttribute('data-ml') || 0);
-        addVochtEntry(ml, selectedDrink);
+        const mlVal = Number(addBtn.getAttribute('data-ml'));
+        addVochtEntry(selectedDrink, mlVal);
       }
+    });
+
+    document.getElementById('pos-receipt-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.del-vocht-entry-btn');
+      if (!btn) return;
+      const id = btn.getAttribute('data-id');
+      const next = (sharedData.vochtEntries || []).filter((entry) => entry.id !== id);
+      pushSharedData({ vochtEntries: next });
     });
 
     document.getElementById('pos-clear-btn').addEventListener('click', () => {
       pushSharedData({ vochtEntries: [] });
     });
 
-    document.getElementById('pos-receipt-list').addEventListener('click', (e) => {
-      const delBtn = e.target.closest('.del-vocht-btn');
-      if (!delBtn) return;
-      const id = delBtn.getAttribute('data-id');
-      const next = (sharedData.vochtEntries || []).filter((item) => item.id !== id);
-      pushSharedData({ vochtEntries: next });
-    });
-
     // ---------------------------------------------------------
-    // CHAT + SPRAAKBERICHT + DICTEREN
+    // LIVE KLOK
     // ---------------------------------------------------------
-    const targetModeEl = document.getElementById('chat-target-mode');
-    const recipientWrapperEl = document.getElementById('chat-recipient-wrapper');
-    const selfInfoEl = document.getElementById('chat-self-info');
-
-    targetModeEl.addEventListener('change', () => {
-      const isOther = targetModeEl.value === 'user';
-      recipientWrapperEl.classList.toggle('hidden', !isOther);
-      selfInfoEl.classList.toggle('hidden', isOther);
-    });
-
-    function sanitizeKey(str) {
-      return String(str || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
-    }
-
-    function getThreadId() {
-      if (targetModeEl.value === 'user') {
-        const recRaw = document.getElementById('chat-recipient-input').value.trim().toLowerCase();
-        const me = (userEmail || uid || '').toLowerCase();
-        if (!recRaw || recRaw === me) {
-          return `self_${uid}`;
-        }
-        const pair = [sanitizeKey(me), sanitizeKey(recRaw)].sort();
-        return `dm_${pair[0]}__${pair[1]}`;
-      }
-      return `self_${uid}`;
-    }
-
-    async function sendChatPayload(payload) {
-      if (!uid) return;
-      const isOtherMode = targetModeEl.value === 'user';
-      const recRaw = document.getElementById('chat-recipient-input').value.trim();
-      const threadId = getThreadId();
-
-      try {
-        await push(ref(db, 'chats/messages'), {
-          threadId,
-          senderUid: uid,
-          senderEmail: userEmail || uid,
-          to: isOtherMode && recRaw ? recRaw.toLowerCase() : (userEmail || uid).toLowerCase(),
-          timestamp: Date.now(),
-          ...payload
-        });
-      } catch {
-        showIncomingToast('Systeem', 'Bericht versturen mislukt. Controleer de Realtime Database regels voor chats.');
-      }
-    }
-
-    let mediaRecorder = null;
-    let audioChunks = [];
-    let isRecording = false;
-    let cancelRecordingFlag = false;
-    let recordTimer = null;
-    let recordSeconds = 0;
-
-    const voiceBtn = document.getElementById('voice-record-btn');
-    const voiceLabel = document.getElementById('voice-record-label');
-    const voiceBar = document.getElementById('voice-status-bar');
-    const voiceStatusText = document.getElementById('voice-status-text');
-    const cancelRecordBtn = document.getElementById('cancel-record-btn');
-
-    function stopRecording(cancel = false) {
-      cancelRecordingFlag = cancel;
-      if (recordTimer) {
-        clearInterval(recordTimer);
-        recordTimer = null;
-      }
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-      }
-      isRecording = false;
-      voiceLabel.textContent = 'Spraakbericht';
-      voiceBtn.classList.remove('animate-pulse');
-      voiceBar.classList.add('hidden');
-    }
-
-    cancelRecordBtn.addEventListener('click', () => stopRecording(true));
-
-    voiceBtn.addEventListener('click', async () => {
-      if (isRecording) {
-        stopRecording(false);
-        return;
-      }
-
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showIncomingToast('Spraak', 'Je browser ondersteunt geen microfoon-opname op deze pagina.');
-        return;
-      }
-
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioChunks = [];
-        cancelRecordingFlag = false;
-
-        const mimeOptions = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4'];
-        const supportedMime = mimeOptions.find((m) => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || '';
-
-        mediaRecorder = supportedMime
-          ? new MediaRecorder(stream, { mimeType: supportedMime, audioBitsPerSecond: 24000 })
-          : new MediaRecorder(stream);
-
-        mediaRecorder.ondataavailable = (ev) => {
-          if (ev.data && ev.data.size > 0) {
-            audioChunks.push(ev.data);
-          }
-        };
-
-        mediaRecorder.onstop = () => {
-          stream.getTracks().forEach((t) => t.stop());
-          if (cancelRecordingFlag || audioChunks.length === 0) return;
-
-          const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
-          const reader = new FileReader();
-          reader.onloadend = async () => {
-            await sendChatPayload({
-              type: 'audio',
-              audioData: reader.result,
-              durationSec: recordSeconds,
-              text: `Spraakbericht (${recordSeconds}s)`
-            });
-          };
-          reader.readAsDataURL(blob);
-        };
-
-        mediaRecorder.start();
-        isRecording = true;
-        recordSeconds = 0;
-        voiceLabel.textContent = 'Stop & Verstuur';
-        voiceBtn.classList.add('animate-pulse');
-        voiceBar.classList.remove('hidden');
-        voiceStatusText.textContent = 'Bezig met opnemen... (0s / max 20s)';
-
-        recordTimer = setInterval(() => {
-          recordSeconds += 1;
-          voiceStatusText.textContent = `Bezig met opnemen... (${recordSeconds}s / max 20s)`;
-          if (recordSeconds >= 20) {
-            stopRecording(false);
-          }
-        }, 1000);
-      } catch {
-        showIncomingToast('Microfoon', 'Geen toegang tot microfoon. Controleer je browser-toestemming.');
-      }
-    });
-
-    const dictateBtn = document.getElementById('dictate-btn');
-    const dictateLabel = document.getElementById('dictate-label');
-    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    dictateBtn.addEventListener('click', () => {
-      if (!SpeechRec) {
-        showIncomingToast('Dicteren', 'Spraak-naar-tekst wordt in deze browser niet ondersteund. Gebruik Spraakbericht.');
-        return;
-      }
-      const recognition = new SpeechRec();
-      recognition.lang = 'nl-NL';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      dictateLabel.textContent = 'Luistert...';
-      recognition.onresult = (event) => {
-        const spoken = event.results[0][0].transcript;
-        const inp = document.getElementById('chat-message-input');
-        inp.value = inp.value ? `${inp.value} ${spoken}` : spoken;
-        inp.focus();
-      };
-      recognition.onerror = () => {
-        dictateLabel.textContent = 'Dicteer';
-      };
-      recognition.onend = () => {
-        dictateLabel.textContent = 'Dicteer';
-      };
-      recognition.start();
-    });
-
-    function startChatListener() {
-      if (chatUnsub) chatUnsub();
-      initialChatLoaded = false;
-      knownMessageIds.clear();
-
-      const messagesRef = ref(db, 'chats/messages');
-      chatUnsub = onValue(messagesRef, (snap) => {
-        const all = [];
-        if (snap.exists()) {
-          snap.forEach((child) => {
-            all.push({ id: child.key, ...child.val() });
-          });
-        }
-        all.sort((a, b) => Number(a.timestamp || 0) - Number(b.timestamp || 0));
-
-        let hasNewForMe = false;
-        let latestRelevant = null;
-
-        all.forEach((msg) => {
-          if (!knownMessageIds.has(msg.id)) {
-            knownMessageIds.add(msg.id);
-            const meLower = (userEmail || '').toLowerCase();
-            const toLower = (msg.to || '').toLowerCase();
-            const isForMe =
-              (msg.threadId === `self_${uid}`) ||
-              (meLower && toLower === meLower) ||
-              (msg.toUid === uid);
-
-            if (initialChatLoaded && isForMe) {
-              hasNewForMe = true;
-              latestRelevant = msg;
-            }
-          }
-        });
-
-        if (initialChatLoaded && hasNewForMe && latestRelevant) {
-          playNotificationSound();
-          const senderLabel = latestRelevant.senderEmail || 'Bericht';
-          const previewText = latestRelevant.type === 'audio'
-            ? `🎙️ ${latestRelevant.text || 'Nieuw spraakbericht'}`
-            : (latestRelevant.text || '');
-          showIncomingToast(senderLabel, previewText);
-          if (localActiveTab !== 'chat') {
-            unreadCount += 1;
-            updateUnreadBadge();
-          }
-        }
-
-        initialChatLoaded = true;
-        renderChatMessages(all);
-      });
-    }
-
-    function renderChatMessages(allMessages) {
-      const box = document.getElementById('chat-messages-box');
-      if (!box) return;
-
-      const isOtherMode = targetModeEl.value === 'user';
-      const recRaw = document.getElementById('chat-recipient-input').value.trim().toLowerCase();
-      const meLower = (userEmail || '').toLowerCase();
-
-      const filtered = allMessages.filter((msg) => {
-        if (!isOtherMode) {
-          return msg.threadId === `self_${uid}`;
-        }
-        if (!recRaw) {
-          return (msg.to || '').toLowerCase() === meLower || msg.senderEmail?.toLowerCase() === meLower;
-        }
-        const currentThread = getThreadId();
-        return msg.threadId === currentThread || (msg.to || '').toLowerCase() === recRaw;
-      });
-
-      if (filtered.length === 0) {
-        box.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">Nog geen berichten in dit gesprek.</p>`;
-        return;
-      }
-
-      box.innerHTML = filtered.map((m) => {
-        const mine = m.senderUid === uid;
-        const timeStr = m.timestamp
-          ? new Date(Number(m.timestamp)).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
-          : '';
-
-        const bodyHtml = m.type === 'audio' && m.audioData
-          ? `
-            <div class="space-y-1.5">
-              <span class="text-xs font-semibold block">🎙️ ${escapeHtml(m.text || 'Spraakbericht')}</span>
-              <audio controls preload="metadata" src="${m.audioData}" class="h-8 max-w-[230px]"></audio>
-            </div>
-          `
-          : `<p class="break-words">${escapeHtml(m.text || '')}</p>`;
-
-        return `
-          <div class="flex flex-col ${mine ? 'items-end' : 'items-start'}">
-            <div class="max-w-md px-4 py-2.5 rounded-2xl text-sm ${
-              mine
-                ? 'bg-blue-600 text-white rounded-br-sm'
-                : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-bl-sm'
-            }">
-              ${bodyHtml}
-            </div>
-            <span class="text-[10px] text-slate-400 mt-1 px-1">
-              ${escapeHtml(m.senderEmail || 'Gebruiker')} • ${escapeHtml(timeStr)}
-            </span>
-          </div>
-        `;
-      }).join('');
-      box.scrollTop = box.scrollHeight;
-    }
-
-    document.getElementById('chat-recipient-input').addEventListener('input', () => {
-      startChatListener();
-    });
-
-    document.getElementById('chat-send-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const input = document.getElementById('chat-message-input');
-      const text = input.value.trim();
-      if (!text) return;
-      input.value = '';
-      await sendChatPayload({ type: 'text', text });
-    });
-
-    function tickClock() {
+    function updateClock() {
       const now = new Date();
-      document.getElementById('clock-time').textContent = now.toLocaleTimeString('nl-NL');
-      document.getElementById('clock-date').textContent = now.toLocaleDateString('nl-NL', {
+      const timeStr = now.toLocaleTimeString('nl-NL', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+      const dateStr = now.toLocaleDateString('nl-NL', {
         weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
       });
-      if (uid) {
-        const { newDocs, allDocs } = syncAutoPdfReports(sharedData, now.getTime());
-        if (newDocs.length > 0) {
-          pushSharedData({ pdfDocs: allDocs });
-        }
-      }
+      document.getElementById('clock-time').textContent = timeStr;
+      document.getElementById('clock-date').textContent = dateStr;
     }
-    tickClock();
-    setInterval(tickClock, 15000);
-    setInterval(() => {
-      const now = new Date();
-      document.getElementById('clock-time').textContent = now.toLocaleTimeString('nl-NL');
-    }, 1000);
+    updateClock();
+    setInterval(updateClock, 1000);
 
+    // ---------------------------------------------------------
+    // VOLLEDIG BEELD
+    // ---------------------------------------------------------
     const fsBtn = document.getElementById('fullscreen-toggle');
     const fsText = document.getElementById('fullscreen-text');
-    fsBtn.addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else {
-        document.exitFullscreen().catch(() => {});
+    function updateFullscreenLabel() {
+      fsText.textContent = document.fullscreenElement ? 'Sluit volledig beeld' : 'Volledig beeld';
+    }
+    fsBtn.addEventListener('click', async () => {
+      try {
+        if (!document.fullscreenElement) {
+          await document.documentElement.requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      } catch {
+        fsText.textContent = 'Niet ondersteund';
       }
     });
-    document.addEventListener('fullscreenchange', () => {
-      fsText.textContent = document.fullscreenElement ? 'Normaal beeld' : 'Volledig beeld';
-    });
+    document.addEventListener('fullscreenchange', updateFullscreenLabel);
 
+    // ---------------------------------------------------------
+    // PINCODE VERGRENDELING (ALLEEN OP DIT TOESTEL)
+    // ---------------------------------------------------------
     const pinModal = document.getElementById('pin-modal');
     const pinHeading = document.getElementById('pin-heading');
     const pinSubtext = document.getElementById('pin-subtext');
+    const pinForm = document.getElementById('pin-form');
+    const pinCodeInput = document.getElementById('pin-code-input');
     const pinSubmit = document.getElementById('pin-submit');
-    const pinInput = document.getElementById('pin-code-input');
     const pinMsg = document.getElementById('pin-msg');
-    let creatingPin = false;
 
-    function openPin(forceNew = false) {
-      if (!uid) return;
+    let pinMode = 'unlock';
+    let isLockedLocal = false;
+
+    function getDevicePinKey() {
+      return uid ? `dp_device_pin_${uid}` : null;
+    }
+
+    function showPinMsg(text) {
+      pinMsg.textContent = text;
+      pinMsg.classList.remove('hidden');
+    }
+
+    function hidePinMsg() {
       pinMsg.classList.add('hidden');
-      pinInput.value = '';
-      const storedPin = localStorage.getItem(`dp_pin_${uid}`);
-      if (!storedPin || forceNew) {
-        creatingPin = true;
+    }
+
+    function openPinModal(mode, message = '') {
+      pinMode = mode;
+      pinCodeInput.value = '';
+      hidePinMsg();
+      if (message) showPinMsg(message);
+
+      if (mode === 'set') {
         pinHeading.textContent = 'Pincode instellen';
-        pinSubtext.textContent = 'Kies een 4-cijferige pincode.';
-        pinSubmit.textContent = 'Opslaan & vergrendelen';
+        pinSubtext.textContent = 'Kies een 4-cijferige pincode voor dit toestel.';
+        pinSubmit.textContent = 'Pincode opslaan';
       } else {
-        creatingPin = false;
         pinHeading.textContent = 'Scherm vergrendeld';
         pinSubtext.textContent = 'Voer je 4-cijferige pincode in.';
         pinSubmit.textContent = 'Ontgrendelen';
-        sessionStorage.setItem('dp_locked', '1');
       }
+
       pinModal.classList.remove('hidden');
-      setTimeout(() => pinInput.focus(), 40);
+      setTimeout(() => pinCodeInput.focus(), 50);
     }
 
-    document.getElementById('lock-trigger').addEventListener('click', () => openPin(false));
-    document.getElementById('pin-change-btn').addEventListener('click', () => {
-      localStorage.removeItem(`dp_pin_${uid}`);
-      openPin(true);
+    function closePinModal() {
+      isLockedLocal = false;
+      pinModal.classList.add('hidden');
+      hidePinMsg();
+    }
+
+    document.getElementById('lock-trigger').addEventListener('click', () => {
+      if (!uid) return;
+      isLockedLocal = true;
+      const savedPin = localStorage.getItem(getDevicePinKey());
+      if (!savedPin) {
+        openPinModal('set', 'Nog geen pincode op dit toestel. Stel er direct een in.');
+      } else {
+        openPinModal('unlock');
+      }
     });
 
-    document.getElementById('pin-form').addEventListener('submit', (e) => {
+    document.getElementById('pin-change-btn').addEventListener('click', () => {
+      if (!uid) return;
+      openPinModal('set', 'Nieuwe 4-cijferige pincode instellen voor dit toestel.');
+    });
+
+    pinForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const val = pinInput.value.trim();
-      if (!/^\d{4}$/.test(val)) {
-        pinMsg.textContent = 'Vul 4 cijfers in.';
-        pinMsg.classList.remove('hidden');
+      if (!uid) return;
+      const code = pinCodeInput.value.trim();
+      if (!/^\d{4}$/.test(code)) {
+        showPinMsg('Voer exact 4 cijfers in.');
         return;
       }
-      if (creatingPin) {
-        localStorage.setItem(`dp_pin_${uid}`, val);
-        sessionStorage.setItem('dp_locked', '1');
-        openPin(false);
-      } else if (val === localStorage.getItem(`dp_pin_${uid}`)) {
-        sessionStorage.removeItem('dp_locked');
-        pinModal.classList.add('hidden');
+
+      if (pinMode === 'set') {
+        localStorage.setItem(getDevicePinKey(), code);
+        closePinModal();
       } else {
-        pinMsg.textContent = 'Onjuiste pincode.';
-        pinMsg.classList.remove('hidden');
-        pinInput.value = '';
+        const savedPin = localStorage.getItem(getDevicePinKey());
+        if (!savedPin) {
+          localStorage.setItem(getDevicePinKey(), code);
+          closePinModal();
+        } else if (code === savedPin) {
+          closePinModal();
+        } else {
+          showPinMsg('Onjuiste pincode. Probeer opnieuw.');
+          pinCodeInput.value = '';
+          pinCodeInput.focus();
+        }
       }
     });
 
-    async function pushSharedData(patch) {
-      if (!uid) return;
-      sharedData = {
-        ...sharedData,
-        ...patch,
-        updatedAt: new Date().toLocaleTimeString('nl-NL')
-      };
+    document.getElementById('pin-logout-btn').addEventListener('click', async () => {
+      closePinModal();
+      await signOut(auth);
+    });
+
+    // ---------------------------------------------------------
+    // INLOGGEN & UITLOGGEN
+    // ---------------------------------------------------------
+    const loginScreen = document.getElementById('login-screen');
+    const appShell = document.getElementById('app-shell');
+    const authTitle = document.getElementById('auth-title');
+    const authError = document.getElementById('auth-error');
+    const emailForm = document.getElementById('email-form');
+    const emailInput = document.getElementById('email-input');
+    const passwordInput = document.getElementById('password-input');
+    const emailSubmitBtn = document.getElementById('email-submit-btn');
+    const toggleAuthModeBtn = document.getElementById('toggle-auth-mode');
+    const googleBtn = document.getElementById('google-btn');
+
+    let isRegisterMode = false;
+
+    function showAuthError(msg) {
+      authError.textContent = msg;
+      authError.classList.remove('hidden');
+    }
+
+    function clearAuthError() {
+      authError.classList.add('hidden');
+    }
+
+    toggleAuthModeBtn.addEventListener('click', () => {
+      isRegisterMode = !isRegisterMode;
+      clearAuthError();
+      if (isRegisterMode) {
+        authTitle.textContent = 'Account aanmaken';
+        emailSubmitBtn.textContent = 'Registreren met e-mail';
+        toggleAuthModeBtn.textContent = 'Heb je al een account? Log in';
+      } else {
+        authTitle.textContent = 'Inloggen';
+        emailSubmitBtn.textContent = 'Inloggen met e-mail';
+        toggleAuthModeBtn.textContent = 'Nog geen account? Maak er een aan';
+      }
+    });
+
+    emailForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearAuthError();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
       try {
-        await set(ref(db, `users/${uid}/data`), sharedData);
-        document.getElementById('rt-status-label').textContent = 'Realtime verbonden';
-      } catch {
-        document.getElementById('rt-status-label').textContent = 'Database regel blokkeert schrijven';
+        if (isRegisterMode) {
+          await createUserWithEmailAndPassword(auth, email, password);
+        } else {
+          await signInWithEmailAndPassword(auth, email, password);
+        }
+      } catch (err) {
+        showAuthError(err.message || 'Inloggen mislukt.');
+      }
+    });
+
+    googleBtn.addEventListener('click', async () => {
+      clearAuthError();
+      try {
+        await signInWithPopup(auth, googleProvider);
+      } catch (err) {
+        showAuthError(err.message || 'Google-inloggen mislukt.');
+      }
+    });
+
+    async function handleLogout() {
+      stopVoiceRecording(true);
+      stopDictation();
+      if (dbUnsub) { dbUnsub(); dbUnsub = null; }
+      if (chatUnsub) { chatUnsub(); chatUnsub = null; }
+      uid = null;
+      userEmail = '';
+      initialChatLoaded = false;
+      knownMessageIds.clear();
+      await signOut(auth);
+    }
+
+    document.getElementById('logout-sidebar').addEventListener('click', handleLogout);
+    document.getElementById('logout-header').addEventListener('click', handleLogout);
+
+    // ---------------------------------------------------------
+    // NAVIGATIE TUSSEN TABS
+    // ---------------------------------------------------------
+    document.querySelectorAll('.nav-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        switchLocalTab(btn.getAttribute('data-tab'));
+      });
+    });
+
+    document.querySelectorAll('.open-tab-link').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        switchLocalTab(btn.getAttribute('data-open-tab') || 'start');
+      });
+    });
+
+    // ---------------------------------------------------------
+    // REALTIME DATA-SYNC MET FIREBASE
+    // ---------------------------------------------------------
+    function setRtStatus(connected, text) {
+      const label = document.getElementById('rt-status-label');
+      label.textContent = text;
+      label.className = connected
+        ? 'text-[11px] text-emerald-400 font-medium'
+        : 'text-[11px] text-amber-400 font-medium';
+    }
+
+    async function pushSharedData(partialPatch) {
+      if (!uid) return;
+      const nowLabel = new Date().toLocaleTimeString('nl-NL', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+
+      const merged = {
+        ...sharedData,
+        ...partialPatch,
+        updatedAt: nowLabel
+      };
+
+      const autoSynced = syncAutoPdfReports(merged, Date.now());
+      if (autoSynced.newDocs.length > 0) {
+        merged.pdfDocs = autoSynced.allDocs;
+      }
+
+      sharedData = merged;
+      renderAll();
+
+      try {
+        await set(ref(db, `users/${uid}/sharedData`), merged);
+        setRtStatus(true, 'Realtime verbonden');
+      } catch (err) {
+        console.error('Firebase sync fout:', err);
+        setRtStatus(false, 'Sync fout — probeert opnieuw');
       }
     }
 
-    function formatAfspraakLabel(afspraakStr) {
-      if (!afspraakStr) return 'Geen tijd';
-      if (afspraakStr.includes('T')) {
-        const [d, t] = afspraakStr.split('T');
-        return `${d} ${t.slice(0, 5)}`;
-      }
-      return afspraakStr;
-    }
-
-    function fillSelectOptions(selectId, list, forceValue = null) {
+    function fillSelectOptions(selectId, list, currentValue) {
       const sel = document.getElementById(selectId);
       if (!sel) return;
-      const targetVal = forceValue !== null ? forceValue : sel.value;
-      const opts = Array.isArray(list) ? [...list] : [];
-      if (targetVal && !opts.includes(targetVal)) {
-        opts.unshift(targetVal);
-      }
-      sel.innerHTML = `<option value="">-- Kies --</option>` + opts.map((item) =>
-        `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`
-      ).join('');
-      if (targetVal) {
-        sel.value = targetVal;
+      const opts = Array.isArray(list) ? list : [];
+      const prev = currentValue !== undefined ? currentValue : sel.value;
+
+      const optionsHtml = [`<option value="">-- Kies --</option>`]
+        .concat(opts.map((item) => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`))
+        .join('');
+
+      sel.innerHTML = optionsHtml;
+      if (prev && opts.includes(prev)) {
+        sel.value = prev;
+      } else {
+        sel.value = '';
       }
     }
 
-    function renderOptionManagerList(containerId, list) {
+    function renderOptionList(containerId, list) {
       const el = document.getElementById(containerId);
       if (!el) return;
       const opts = Array.isArray(list) ? list : [];
       if (opts.length === 0) {
-        el.innerHTML = `<p class="text-slate-400 py-2">Nog geen items toegevoegd</p>`;
+        el.innerHTML = `<p class="text-slate-400 italic">Nog geen items.</p>`;
         return;
       }
       el.innerHTML = opts.map((item) => `
-        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+        <div class="flex items-center justify-between py-1 px-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
           <span class="font-medium truncate">${escapeHtml(item)}</span>
-          <button type="button" data-val="${escapeHtml(item)}" title="Verwijder"
-            class="del-opt-btn text-slate-400 hover:text-red-500 font-bold ml-2 cursor-pointer">×</button>
+          <button type="button" data-val="${escapeHtml(item)}"
+            class="del-opt-btn text-slate-400 hover:text-red-600 font-bold px-1.5 cursor-pointer">×</button>
         </div>
       `).join('');
     }
 
     function renderAll() {
-      const tabNames = {
+      const tabTitles = {
         start: 'Start',
-        vochtintake: 'Vochtintake',
+        vochtintake: 'Vochtintake (POS)',
         ritten: 'Ritten',
         dialyse: 'Dialyse',
         brieven: 'Brieven',
@@ -4021,294 +4432,257 @@
         chat: 'Chat',
         instellingen: 'Instellingen'
       };
-      const tab = localActiveTab;
-      if (tab === 'chat') {
-        unreadCount = 0;
-      }
-      updateUnreadBadge();
 
-      document.getElementById('active-tab-title').textContent = tabNames[tab] || 'Start';
+      document.getElementById('active-tab-title').textContent = tabTitles[localActiveTab] || 'Start';
+      document.getElementById('last-sync-time').textContent = sharedData.updatedAt || 'Nog geen wijziging';
 
       document.querySelectorAll('.nav-btn').forEach((btn) => {
-        const active = btn.getAttribute('data-tab') === tab;
-        btn.className = active
+        const isCurrent = btn.getAttribute('data-tab') === localActiveTab;
+        btn.className = isCurrent
           ? 'nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white cursor-pointer flex items-center justify-between'
           : 'nav-btn w-full text-left px-3.5 py-2 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 cursor-pointer flex items-center justify-between';
       });
 
-      fillSelectOptions('dialyse-verpleging', sharedData.verplegingOptions);
-      fillSelectOptions('rit-firma', sharedData.firmaOptions);
-      fillSelectOptions('rit-van', sharedData.vanOptions);
-      fillSelectOptions('rit-naar', sharedData.naarOptions);
+      document.getElementById('start-view').classList.toggle('hidden', localActiveTab !== 'start');
+      document.getElementById('vocht-view').classList.toggle('hidden', localActiveTab !== 'vochtintake');
+      document.getElementById('ritten-view').classList.toggle('hidden', localActiveTab !== 'ritten');
+      document.getElementById('dialyse-view').classList.toggle('hidden', localActiveTab !== 'dialyse');
+      document.getElementById('brieven-view').classList.toggle('hidden', localActiveTab !== 'brieven');
+      document.getElementById('agenda-view').classList.toggle('hidden', localActiveTab !== 'agenda');
+      document.getElementById('overzichten-view').classList.toggle('hidden', localActiveTab !== 'overzichten');
+      document.getElementById('pdf-view').classList.toggle('hidden', localActiveTab !== 'pdf');
+      document.getElementById('chat-view').classList.toggle('hidden', localActiveTab !== 'chat');
+      document.getElementById('instellingen-view').classList.toggle('hidden', localActiveTab !== 'instellingen');
 
-      renderOptionManagerList('inst-verpleging-list', sharedData.verplegingOptions);
-      renderOptionManagerList('inst-firma-list', sharedData.firmaOptions);
-      renderOptionManagerList('inst-van-list', sharedData.vanOptions);
-      renderOptionManagerList('inst-naar-list', sharedData.naarOptions);
-
-      const products = Array.isArray(sharedData.vochtProducts) && sharedData.vochtProducts.length > 0
-        ? sharedData.vochtProducts
-        : ['Water'];
-      if (!products.includes(selectedDrink)) {
-        selectedDrink = products[0];
+      if (localActiveTab === 'chat') {
+        updateUnreadBadge();
       }
 
-      const amounts = Array.isArray(sharedData.vochtAmounts) && sharedData.vochtAmounts.length > 0
-        ? sharedData.vochtAmounts
-        : [150];
+      const stats = computeVochtStats(sharedData.vochtEntries, sharedData);
+      const rittenList = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
+      const dialyseSessies = Array.isArray(sharedData.dialyseSessies) ? sharedData.dialyseSessies : [];
+      const brievenList = Array.isArray(sharedData.brieven) ? sharedData.brieven : [];
+      const pdfDocsList = Array.isArray(sharedData.pdfDocs) ? sharedData.pdfDocs : [];
+      const ritStats = computeRittenStats(rittenList);
 
       const nowMs = Date.now();
-      const vochtStats = computeVochtStats(sharedData.vochtEntries, sharedData);
-      const ritten = Array.isArray(sharedData.ritten) ? sharedData.ritten : [];
-      const sortedPlanning = sortRittenPlanning(ritten);
-      const rittenStats = computeRittenStats(ritten);
-      const dialyseSessies = Array.isArray(sharedData.dialyseSessies) ? sharedData.dialyseSessies : [];
-      const sortedDialysePlanning = sortDialysePlanning(dialyseSessies);
-      const brieven = Array.isArray(sharedData.brieven) ? sharedData.brieven : [];
-      const pdfDocs = Array.isArray(sharedData.pdfDocs) ? sharedData.pdfDocs : [];
-      const dialyseStatus = sharedData.dialyseStatus || 'Geen sessie';
-      const dialyseSub = sharedData.dialyseSub || 'Klaar voor planning';
-
-      const doneCount = ritten.filter((r) => isRitDone(r, nowMs)).length
-        + dialyseSessies.filter((s) => isDialyseDone(s, nowMs)).length;
+      const doneCount =
+        rittenList.filter((r) => isRitDone(r, nowMs)).length +
+        dialyseSessies.filter((s) => isDialyseDone(s, nowMs)).length;
       document.getElementById('overzichten-done-badge').textContent = String(doneCount);
 
       const pdfBadge = document.getElementById('pdf-count-badge');
-      if (pdfDocs.length > 0) {
-        pdfBadge.textContent = String(pdfDocs.length);
+      if (pdfDocsList.length > 0) {
+        pdfBadge.textContent = String(pdfDocsList.length);
         pdfBadge.classList.remove('hidden');
       } else {
         pdfBadge.classList.add('hidden');
       }
 
-      // Start-tegels
-      document.getElementById('tile-vocht-value').textContent = `${vochtStats.total24} ml`;
-      document.getElementById('tile-vocht-48u').textContent = `48u (om de dag): ${vochtStats.total48} ml`;
+      document.getElementById('tile-vocht-value').textContent = `${stats.total24} ml`;
+      document.getElementById('tile-vocht-48u').textContent = `48u (${stats.win48.isFixedCycle ? 'om de dag' : 'lopend'}): ${stats.total48} ml`;
 
-      document.getElementById('tile-ritten-count').textContent = `${ritten.length} ${ritten.length === 1 ? 'rit' : 'ritten'}`;
-      document.getElementById('tile-ritten-ontime').textContent = `${rittenStats.pctOnTime}% op tijd`;
-      const nextPlanned = sortedPlanning[0]?.rit;
-      document.getElementById('tile-ritten-last').textContent = nextPlanned
-        ? `${nextPlanned.van || ''} → ${nextPlanned.naar || nextPlanned.titel || ''}`
-        : 'Nog geen rit';
-
-      document.getElementById('tile-dialyse-count').textContent = `${dialyseSessies.length} ${dialyseSessies.length === 1 ? 'sessie' : 'sessies'}`;
-      const nextDialyse = sortedDialysePlanning[0]?.sessie;
-      document.getElementById('tile-dialyse-status').textContent = nextDialyse
-        ? `${nextDialyse.soort || 'Dag'}dialyse`
-        : dialyseStatus;
-      document.getElementById('tile-dialyse-sub').textContent = nextDialyse
-        ? formatIsoDateTimeNL(nextDialyse.afspraak)
-        : dialyseSub;
-
-      document.getElementById('tile-brieven-count').textContent = `${brieven.length} ${brieven.length === 1 ? 'brief' : 'brieven'}`;
-      document.getElementById('tile-brieven-last').textContent = brieven.length > 0
-        ? `Laatste: ${brieven[brieven.length - 1].titel}`
-        : 'Geen brief';
-
-      const agendaEvents = buildAgendaEventList(ritten, dialyseSessies, dialyseStatus, dialyseSub);
-      document.getElementById('tile-agenda-total').textContent = `${agendaEvents.length} ${agendaEvents.length === 1 ? 'item' : 'items'}`;
-      const agendaPreview = document.getElementById('tile-agenda-preview');
-      if (agendaEvents.length === 0) {
-        agendaPreview.innerHTML = `<p class="text-slate-400 dark:text-slate-500">Nog geen agenda-items uit Ritten of Dialyse.</p>`;
+      document.getElementById('tile-ritten-count').textContent = `${rittenList.length} ${rittenList.length === 1 ? 'rit' : 'ritten'}`;
+      document.getElementById('tile-ritten-ontime').textContent = ritStats.evaluated > 0 ? `${ritStats.pctOnTime}% op tijd` : '0% op tijd';
+      const sortedRitten = sortRittenPlanning(rittenList);
+      const firstRitObj = sortedRitten[0];
+      if (firstRitObj) {
+        const lr = firstRitObj.rit;
+        const route = lr.van && lr.naar ? `${lr.van} → ${lr.naar}` : (lr.titel || 'Rit');
+        document.getElementById('tile-ritten-last').textContent = `${firstRitObj.dayInfo.label}: ${route} (${firstRitObj.timeHHMM})`;
       } else {
-        agendaPreview.innerHTML = agendaEvents.slice(0, 3).map((item) => `
-          <div class="flex items-center justify-between py-1 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/70">
-            <span class="font-semibold text-slate-800 dark:text-slate-200 truncate">[${item.type}] ${escapeHtml(item.title)}</span>
-            <span class="text-[11px] text-slate-500 dark:text-slate-400 shrink-0 ml-2 tabular-nums">${escapeHtml(item.dateISO)} ${escapeHtml(item.timeHHMM)}</span>
+        document.getElementById('tile-ritten-last').textContent = 'Nog geen rit';
+      }
+
+      const sortedDialyse = sortDialysePlanning(dialyseSessies);
+      const firstDialyseObj = sortedDialyse[0];
+      document.getElementById('tile-dialyse-count').textContent = `${dialyseSessies.length} ${dialyseSessies.length === 1 ? 'sessie' : 'sessies'}`;
+      if (firstDialyseObj) {
+        const fd = firstDialyseObj.sessie;
+        document.getElementById('tile-dialyse-status').textContent = `${fd.soort || 'Dag'}dialyse (${firstDialyseObj.dayInfo.label})`;
+        document.getElementById('tile-dialyse-sub').textContent =
+          `${formatIsoDateTimeNL(fd.afspraak)}${fd.adviesUf !== null && fd.adviesUf !== undefined ? ` • UF advies ${Number(fd.adviesUf).toFixed(2).replace('.', ',')} L` : ''}`;
+      } else {
+        document.getElementById('tile-dialyse-status').textContent = sharedData.dialyseStatus || 'Geen sessie';
+        document.getElementById('tile-dialyse-sub').textContent = sharedData.dialyseSub || 'Klik om sessie te openen';
+      }
+
+      document.getElementById('tile-brieven-count').textContent = `${brievenList.length} ${brievenList.length === 1 ? 'brief' : 'brieven'}`;
+      const lastBrief = brievenList[brievenList.length - 1];
+      document.getElementById('tile-brieven-last').textContent = lastBrief
+        ? `[${lastBrief.folder || 'Nefrologie'}] ${lastBrief.titel}`
+        : 'Map Nefrologie gereed';
+
+      const agendaEvents = buildAgendaEventList(rittenList, dialyseSessies, sharedData.dialyseStatus, sharedData.dialyseSub);
+      document.getElementById('tile-agenda-total').textContent = `${agendaEvents.length} ${agendaEvents.length === 1 ? 'item' : 'items'}`;
+      const agendaPreviewEl = document.getElementById('tile-agenda-preview');
+      if (agendaEvents.length === 0) {
+        agendaPreviewEl.innerHTML = `<p class="text-slate-400 dark:text-slate-500">Nog geen agenda-items uit Ritten of Dialyse.</p>`;
+      } else {
+        agendaPreviewEl.innerHTML = agendaEvents.slice(0, 3).map((ev) => `
+          <div class="flex items-center justify-between gap-2 py-1 border-b border-slate-100 dark:border-slate-800 last:border-b-0">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${
+                ev.type === 'Rit'
+                  ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
+                  : 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
+              }">${escapeHtml(ev.type)}</span>
+              <span class="font-semibold text-slate-800 dark:text-slate-200 truncate">${escapeHtml(ev.title)}</span>
+            </div>
+            <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 tabular-nums shrink-0">${escapeHtml(ev.dateISO)} ${escapeHtml(ev.timeHHMM)}</span>
           </div>
         `).join('');
       }
 
-      // Instellingen velden
-      const dryWeightInp = document.getElementById('inst-dry-weight');
-      if (dryWeightInp && document.activeElement !== dryWeightInp) {
-        dryWeightInp.value = getDryWeight();
-      }
+      document.getElementById('bar-24-label').textContent = `${stats.total24} ml`;
+      document.getElementById('bar-24-limit-label').textContent = `van ${stats.lim24} ml`;
+      document.getElementById('bar-24-pct').textContent = `${stats.pct24}%`;
+      const bar24Fill = document.getElementById('bar-24-fill');
+      bar24Fill.style.width = `${Math.min(100, Math.max(0, stats.pct24))}%`;
+      bar24Fill.className = `h-full transition-all duration-300 rounded-full ${stats.pct24 > 100 ? 'bg-red-500' : 'bg-sky-500'}`;
 
-      const { orangeMin, redMin } = getUfColorThresholds();
-      const orangeInp = document.getElementById('inst-uf-orange-min');
-      const redInp = document.getElementById('inst-uf-red-min');
-      if (orangeInp && document.activeElement !== orangeInp) orangeInp.value = String(orangeMin);
-      if (redInp && document.activeElement !== redInp) redInp.value = String(redMin);
-      document.getElementById('inst-uf-green-preview').textContent = `Onder ${formatThresholdNL(orangeMin)} L`;
+      document.getElementById('bar-48-label').textContent = `${stats.total48} ml`;
+      document.getElementById('bar-48-limit-label').textContent = `van ${stats.lim48} ml`;
+      document.getElementById('bar-48-pct').textContent = `${stats.pct48}%`;
+      document.getElementById('window-48-info').textContent = stats.win48.label;
+      document.getElementById('pos-receipt-heading').textContent = stats.win48.isFixedCycle ? 'Intake Bon (48u Cyclus)' : 'Intake Bon (Laatste 48u)';
+      const bar48Fill = document.getElementById('bar-48-fill');
+      bar48Fill.style.width = `${Math.min(100, Math.max(0, stats.pct48))}%`;
+      bar48Fill.className = `h-full transition-all duration-300 rounded-full ${stats.pct48 > 100 ? 'bg-red-500' : 'bg-indigo-500'}`;
 
-      const startDateInp = document.getElementById('inst-vocht48-start-date');
-      const startTimeInp = document.getElementById('inst-vocht48-start-time');
-      if (startDateInp && document.activeElement !== startDateInp) {
-        startDateInp.value = sharedData.vocht48StartDate || '2026-11-22';
-      }
-      if (startTimeInp && document.activeElement !== startTimeInp) {
-        startTimeInp.value = sharedData.vocht48StartTime || '05:30';
-      }
-      document.getElementById('inst-vocht48-cycle-preview').textContent = vochtStats.win48.label;
+      document.getElementById('pos-receipt-total24').textContent = `${stats.total24} ml`;
 
-      const lim24Inp = document.getElementById('inst-limit-24');
-      const lim48Inp = document.getElementById('inst-limit-48');
-      if (lim24Inp && document.activeElement !== lim24Inp) lim24Inp.value = vochtStats.lim24;
-      if (lim48Inp && document.activeElement !== lim48Inp) lim48Inp.value = vochtStats.lim48;
+      const drinks = Array.isArray(sharedData.vochtProducts) && sharedData.vochtProducts.length > 0
+        ? sharedData.vochtProducts : ['Water'];
+      if (!drinks.includes(selectedDrink)) selectedDrink = drinks[0];
 
-      // Vochtintake balken & tegels
-      document.getElementById('bar-24-pct').textContent = `${vochtStats.pct24}%`;
-      document.getElementById('bar-24-label').textContent = `${vochtStats.total24} ml`;
-      document.getElementById('bar-24-limit-label').textContent = `van ${vochtStats.lim24} ml`;
-      document.getElementById('bar-24-fill').style.width = `${vochtStats.pct24}%`;
-      document.getElementById('window-24-info').textContent = `Laatste 24 uur (${formatDateTimeNL(nowMs - 86400000)} – nu)`;
-
-      document.getElementById('bar-48-pct').textContent = `${vochtStats.pct48}%`;
-      document.getElementById('bar-48-label').textContent = `${vochtStats.total48} ml`;
-      document.getElementById('bar-48-limit-label').textContent = `van ${vochtStats.lim48} ml`;
-      document.getElementById('bar-48-fill').style.width = `${vochtStats.pct48}%`;
-      document.getElementById('window-48-info').textContent = vochtStats.win48.label;
-
-      document.getElementById('pos-drink-buttons').innerHTML = products.map((p) => {
-        const active = p === selectedDrink;
+      document.getElementById('pos-drink-buttons').innerHTML = drinks.map((prod) => {
+        const active = prod === selectedDrink;
         return `
           <div class="inline-flex items-center rounded-xl border ${
             active
               ? 'bg-sky-600 text-white border-sky-600 shadow-sm'
               : 'bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700'
           }">
-            <button type="button" data-drink="${escapeHtml(p)}" class="select-drink-btn px-3.5 py-2 text-xs font-bold cursor-pointer">
-              ${escapeHtml(p)}
+            <button type="button" data-drink="${escapeHtml(prod)}"
+              class="pick-drink-tile-btn px-3.5 py-2 text-xs font-bold cursor-pointer">
+              ${escapeHtml(prod)}
             </button>
-            ${
-              products.length > 1
-                ? `<button type="button" data-drink="${escapeHtml(p)}" title="Verwijder tegel"
-                    class="del-drink-btn pr-2.5 pl-1 py-2 text-xs font-bold opacity-75 hover:opacity-100 cursor-pointer">×</button>`
-                : ''
-            }
+            <button type="button" data-drink="${escapeHtml(prod)}" title="Verwijder producttegel"
+              class="del-drink-tile-btn pr-2 pl-1 py-2 text-xs font-bold opacity-75 hover:opacity-100 cursor-pointer">
+              ×
+            </button>
           </div>
         `;
       }).join('');
 
+      const amounts = Array.isArray(sharedData.vochtAmounts) && sharedData.vochtAmounts.length > 0
+        ? sharedData.vochtAmounts : [150, 250];
+
       document.getElementById('pos-ml-buttons').innerHTML = amounts.map((ml) => `
-        <div class="relative group rounded-xl border border-sky-200 dark:border-sky-800/70 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition flex items-center justify-between overflow-hidden">
-          <button type="button" data-ml="${ml}"
-            class="add-ml-btn flex-1 py-2.5 px-3 text-left text-xs font-extrabold text-sky-900 dark:text-sky-200 tabular-nums cursor-pointer">
-            + ${ml} ml <span class="block text-[10px] font-semibold opacity-75">${escapeHtml(selectedDrink)}</span>
+        <div class="relative flex items-center justify-between rounded-xl border border-sky-200 dark:border-sky-800/70 bg-sky-50/70 dark:bg-sky-950/30 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition">
+          <button type="button" data-ml="${Number(ml)}"
+            class="add-ml-tile-btn flex-1 py-2.5 px-3 text-left text-xs font-extrabold text-sky-900 dark:text-sky-200 tabular-nums cursor-pointer">
+            + ${Number(ml)} ml
           </button>
-          ${
-            amounts.length > 1
-              ? `<button type="button" data-ml="${ml}" title="Verwijder ml-tegel"
-                  class="del-ml-btn px-2 py-2.5 text-xs font-bold text-sky-700/70 dark:text-sky-300/70 hover:text-rose-600 cursor-pointer">×</button>`
-              : ''
-          }
+          <button type="button" data-ml="${Number(ml)}" title="Verwijder ml-tegel"
+            class="del-ml-tile-btn px-2 py-2.5 text-xs font-bold text-slate-400 hover:text-red-600 cursor-pointer">
+            ×
+          </button>
         </div>
       `).join('');
 
-      document.getElementById('pos-receipt-heading').textContent = vochtStats.win48.isFixedCycle
-        ? 'Intake Bon (48u Cyclus)'
-        : 'Intake Bon (Laatste 48u)';
-
       const receiptList = document.getElementById('pos-receipt-list');
-      if (vochtStats.in48.length === 0) {
-        receiptList.innerHTML = `<p class="text-slate-400 text-center py-6">Geen vocht in de huidige 48-uurs periode.</p>`;
+      if (stats.in48.length === 0) {
+        receiptList.innerHTML = `<p class="text-slate-400 text-center py-6">Geen vocht in deze 48-uurs periode.</p>`;
       } else {
-        receiptList.innerHTML = [...vochtStats.in48].reverse().map((item) => `
-          <div class="flex items-center justify-between py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70">
-            <div>
-              <span class="font-bold text-slate-800 dark:text-slate-200">${escapeHtml(item.drink || 'Water')}</span>
-              <span class="block text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">${formatDateTimeNL(item.timestamp)}</span>
+        receiptList.innerHTML = [...stats.in48].reverse().map((entry) => `
+          <div class="flex items-center justify-between py-1.5 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+            <div class="min-w-0">
+              <span class="font-bold text-slate-800 dark:text-slate-100">${escapeHtml(entry.drink || 'Water')}</span>
+              <span class="text-sky-600 dark:text-sky-400 font-extrabold ml-1.5 tabular-nums">+${Number(entry.ml)} ml</span>
+              <span class="block text-[10px] text-slate-400 tabular-nums">${formatDateTimeNL(entry.timestamp)}</span>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="font-extrabold text-sky-600 dark:text-sky-400 tabular-nums">+${Number(item.ml)} ml</span>
-              <button type="button" data-id="${escapeHtml(item.id)}" title="Verwijder"
-                class="del-vocht-btn text-xs text-slate-400 hover:text-red-500 font-bold cursor-pointer">×</button>
-            </div>
+            <button type="button" data-id="${escapeHtml(entry.id)}"
+              class="del-vocht-entry-btn text-slate-400 hover:text-red-600 font-bold px-1.5 cursor-pointer">×</button>
           </div>
         `).join('');
       }
-      document.getElementById('pos-receipt-total24').textContent = `${vochtStats.total24} ml`;
 
-      // Ritten statistieken & lijst
       document.getElementById('ritten-stats-summary').textContent =
-        `${rittenStats.evaluated} van ${rittenStats.total} ritten met eindtijd beoordeeld`;
-      document.getElementById('stat-ontime-pct').textContent = `${rittenStats.pctOnTime}%`;
-      document.getElementById('stat-ontime-cnt').textContent = `(${rittenStats.onTime} ritten)`;
-      document.getElementById('stat-early-pct').textContent = `${rittenStats.pctEarly}%`;
-      document.getElementById('stat-early-cnt').textContent = `(${rittenStats.early} ritten)`;
-      document.getElementById('stat-late-pct').textContent = `${rittenStats.pctLate}%`;
-      document.getElementById('stat-late-cnt').textContent = `(${rittenStats.late} ritten)`;
+        ritStats.evaluated > 0
+          ? `${ritStats.evaluated} van ${ritStats.total} ritten beoordeeld op eindtijd`
+          : `0 van ${ritStats.total} ritten met eindtijd beoordeeld`;
 
-      document.getElementById('bar-rit-ontime').style.width = `${rittenStats.pctOnTime}%`;
-      document.getElementById('bar-rit-early').style.width = `${rittenStats.pctEarly}%`;
-      document.getElementById('bar-rit-late').style.width = `${rittenStats.pctLate}%`;
+      document.getElementById('stat-ontime-pct').textContent = `${ritStats.pctOnTime}%`;
+      document.getElementById('stat-ontime-cnt').textContent = `(${ritStats.onTime} ${ritStats.onTime === 1 ? 'rit' : 'ritten'})`;
+      document.getElementById('stat-early-pct').textContent = `${ritStats.pctEarly}%`;
+      document.getElementById('stat-early-cnt').textContent = `(${ritStats.early} ${ritStats.early === 1 ? 'rit' : 'ritten'})`;
+      document.getElementById('stat-late-pct').textContent = `${ritStats.pctLate}%`;
+      document.getElementById('stat-late-cnt').textContent = `(${ritStats.late} ${ritStats.late === 1 ? 'rit' : 'ritten'})`;
+
+      document.getElementById('bar-rit-ontime').style.width = `${ritStats.pctOnTime}%`;
+      document.getElementById('bar-rit-early').style.width = `${ritStats.pctEarly}%`;
+      document.getElementById('bar-rit-late').style.width = `${ritStats.pctLate}%`;
+
+      if (!editingRitId) {
+        fillSelectOptions('rit-firma', sharedData.firmaOptions);
+        fillSelectOptions('rit-van', sharedData.vanOptions);
+        fillSelectOptions('rit-naar', sharedData.naarOptions);
+      }
 
       const rittenContainer = document.getElementById('ritten-list-container');
-      if (sortedPlanning.length === 0) {
+      if (sortedRitten.length === 0) {
         rittenContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen ritten opgeslagen.</p>`;
       } else {
-        rittenContainer.innerHTML = sortedPlanning.map(({ rit, origIdx, dayInfo }) => {
+        rittenContainer.innerHTML = sortedRitten.map(({ rit, origIdx, dayInfo, timeHHMM }) => {
           const rid = String(rit.id || origIdx);
+          const route = rit.van && rit.naar ? `${rit.van} → ${rit.naar}` : (rit.titel || `Rit #${origIdx + 1}`);
           const punct = evaluateRitPunctuality(rit);
-          let badgeClass = 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
+
+          let badgeHtml = '';
           if (punct.status === 'optijd') {
-            badgeClass = 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800';
+            badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">Op tijd</span>`;
           } else if (punct.status === 'tevroeg') {
-            badgeClass = 'bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800';
+            badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300">${escapeHtml(punct.label)}</span>`;
           } else if (punct.status === 'telaat') {
-            badgeClass = 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800';
+            badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">${escapeHtml(punct.label)}</span>`;
+          } else {
+            badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Geen stoptijd</span>`;
           }
 
           const dayBadgeClass = dayInfo.bucket === 0
-            ? 'bg-amber-500 text-white'
+            ? 'bg-emerald-600 text-white'
             : dayInfo.bucket === 1
               ? 'bg-indigo-600 text-white'
               : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
 
-          const routeLabel = rit.van && rit.naar
-            ? `${rit.van} → ${rit.naar}`
-            : (rit.titel || 'Rit');
-
-          const isBeingEdited = editingRitId === rid;
-
           return `
-            <div class="p-3.5 rounded-xl border ${
-              isBeingEdited
-                ? 'bg-amber-50/70 dark:bg-amber-950/25 border-amber-400 dark:border-amber-600'
-                : 'bg-slate-50 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700'
-            } flex flex-wrap items-center justify-between gap-3">
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
               <div class="space-y-1 min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
-                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${dayBadgeClass}">
-                    ${escapeHtml(dayInfo.label)}
-                  </span>
-                  <span class="text-sm font-extrabold text-slate-900 dark:text-white">${escapeHtml(routeLabel)}</span>
-                  <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${badgeClass}">
-                    ${escapeHtml(punct.label)}
-                  </span>
-                  ${
-                    rit.firma
-                      ? `<span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">${escapeHtml(rit.firma)}</span>`
-                      : ''
-                  }
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${dayBadgeClass}">${escapeHtml(dayInfo.label)}</span>
+                  <span class="text-xs font-extrabold text-emerald-700 dark:text-emerald-300 tabular-nums">${escapeHtml(timeHHMM)}</span>
+                  <span class="text-sm font-bold text-slate-900 dark:text-white truncate">${escapeHtml(route)}</span>
+                  ${rit.firma ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">${escapeHtml(rit.firma)}</span>` : ''}
+                  ${badgeHtml}
                 </div>
-                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 dark:text-slate-300 tabular-nums">
-                  <span>Afspraak: <strong>${escapeHtml(formatAfspraakLabel(rit.afspraak))}</strong></span>
-                  <span>Start: <strong>${escapeHtml(rit.startTijd || '-')}</strong></span>
-                  <span>Eind: <strong>${escapeHtml(rit.eindTijd || '-')}</strong></span>
-                  ${
-                    rit.duurMin !== null && rit.duurMin !== undefined && rit.duurMin !== ''
-                      ? `<span>Duur: <strong>${escapeHtml(String(rit.duurMin))} min</strong></span>`
-                      : ''
-                  }
-                </div>
-                ${
-                  rit.opmerking
-                    ? `<p class="text-xs text-slate-500 dark:text-slate-400 italic">${escapeHtml(rit.opmerking)}</p>`
-                    : ''
-                }
+                <p class="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+                  Afspraak: ${escapeHtml(formatIsoDateTimeNL(rit.afspraak))}
+                  ${rit.startTijd ? ` • Start: ${escapeHtml(rit.startTijd)}` : ''}
+                  ${rit.eindTijd ? ` • Stop: ${escapeHtml(rit.eindTijd)}` : ''}
+                  ${rit.duurMin !== null && rit.duurMin !== undefined && rit.duurMin !== '' ? ` • Duur: ${escapeHtml(String(rit.duurMin))} min` : ''}
+                </p>
+                ${rit.opmerking ? `<p class="text-xs text-slate-600 dark:text-slate-300">${escapeHtml(rit.opmerking)}</p>` : ''}
               </div>
-
               <div class="flex flex-wrap items-center gap-1.5 shrink-0">
                 <button type="button" data-id="${escapeHtml(rid)}"
                   class="start-now-rit-btn px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer">
-                  Start Nu
+                  Start nu
                 </button>
                 <button type="button" data-id="${escapeHtml(rid)}"
                   class="stop-now-rit-btn px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold cursor-pointer">
-                  Stop Nu
+                  Stop nu
                 </button>
                 <button type="button" data-id="${escapeHtml(rid)}"
                   class="edit-rit-btn px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold cursor-pointer">
@@ -4324,377 +4698,508 @@
         }).join('');
       }
 
-      // Dialysesessies lijst + ingebouwde bloeddruk/hartslag & grafiek
+      renderVerplegingMultiSelect();
       updateDialyseLiveCalculations();
-      renderDraftVitalsUI();
-      const dialyseContainer = document.getElementById('dialyse-list-container');
-      if (sortedDialysePlanning.length === 0) {
-        dialyseContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen dialysesessies opgeslagen.</p>`;
+
+      const dialyseListContainer = document.getElementById('dialyse-list-container');
+      if (sortedDialyse.length === 0) {
+        dialyseListContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">Nog geen dialysesessies opgeslagen.</p>`;
       } else {
-        dialyseContainer.innerHTML = sortedDialysePlanning.map(({ sessie, origIdx, dayInfo }) => {
+        dialyseListContainer.innerHTML = sortedDialyse.map(({ sessie, origIdx, dayInfo, timeHHMM }) => {
           const sid = String(sessie.id || origIdx);
           const dayBadgeClass = dayInfo.bucket === 0
-            ? 'bg-amber-500 text-white'
+            ? 'bg-blue-600 text-white'
             : dayInfo.bucket === 1
               ? 'bg-indigo-600 text-white'
               : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
 
-          const soortBadgeClass = sessie.soort === 'Nacht'
-            ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800'
-            : 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-800';
+          const vpkList = normalizeVerplegingSelection(sessie);
+          const vpkText = vpkList.length > 0 ? vpkList.join(', ') : '';
 
-          const adviesNum = sessie.adviesUf !== null && sessie.adviesUf !== undefined && sessie.adviesUf !== ''
-            ? Number(sessie.adviesUf)
-            : null;
-          const adviesClasses = getUfColorClasses(adviesNum);
-
-          const vinkjes = [
+          const checks = [
             sessie.epo ? 'Epo' : '',
             sessie.ijzer ? 'IJzer' : '',
             sessie.fragmin2500 ? 'Fragmin 2500' : '',
             sessie.fragmin5000 ? 'Fragmin 5000' : '',
-            sessie.shuntflowMeting ? 'Shuntflow meting' : ''
+            sessie.shuntflowMeting ? 'Shuntflow' : ''
           ].filter(Boolean);
 
-          const sessieVitals = normalizeVitals(sessie.vitals || []);
+          const adviesNum = sessie.adviesUf !== null && sessie.adviesUf !== undefined ? Number(sessie.adviesUf) : null;
+          const adviesBadge = adviesNum !== null && !Number.isNaN(adviesNum)
+            ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold border tabular-nums ${getUfColorClasses(adviesNum)}">UF advies ${adviesNum.toFixed(2).replace('.', ',')} L</span>`
+            : '';
+
+          const vCount = normalizeVitals(sessie.vitals || []).length;
 
           return `
-            <div class="p-4 rounded-xl border ${
-              editingDialyseId === sid
-                ? 'bg-amber-50/70 dark:bg-amber-950/25 border-amber-400 dark:border-amber-600'
-                : 'bg-slate-50 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700'
-            } space-y-2.5">
-              <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1 min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
-                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${dayBadgeClass}">
-                    ${escapeHtml(dayInfo.label)}
-                  </span>
-                  <span class="px-2 py-0.5 rounded-md text-[11px] font-extrabold ${soortBadgeClass}">
-                    ${escapeHtml(sessie.soort || 'Dag')}dialyse
-                  </span>
-                  ${
-                    adviesNum !== null && !Number.isNaN(adviesNum)
-                      ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border tabular-nums ${adviesClasses}">
-                          UF advies: ${adviesNum.toFixed(2).replace('.', ',')} L
-                        </span>`
-                      : ''
-                  }
-                  ${
-                    sessieVitals.length > 0
-                      ? `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 tabular-nums">
-                          ${sessieVitals.length} BD/HS metingen
-                        </span>`
-                      : ''
-                  }
-                  ${
-                    sessie.verpleging
-                      ? `<span class="text-xs font-bold text-slate-700 dark:text-slate-200">Vpk: ${escapeHtml(sessie.verpleging)}</span>`
-                      : ''
-                  }
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${dayBadgeClass}">${escapeHtml(dayInfo.label)}</span>
+                  <span class="text-xs font-extrabold text-blue-700 dark:text-blue-300 tabular-nums">${escapeHtml(timeHHMM)}</span>
+                  <span class="text-sm font-bold text-slate-900 dark:text-white">${escapeHtml(sessie.soort || 'Dag')}dialyse</span>
+                  ${adviesBadge}
+                  ${vpkText ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">Vpk: ${escapeHtml(vpkText)}</span>` : ''}
+                  ${vCount > 0 ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 tabular-nums">${vCount} BD/HS metingen</span>` : ''}
                 </div>
-
-                <div class="flex items-center gap-1.5">
-                  <button type="button" data-id="${escapeHtml(sid)}"
-                    class="edit-dialyse-btn px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold cursor-pointer">
-                    Bewerk
-                  </button>
-                  <button type="button" data-id="${escapeHtml(sid)}" title="Verwijder sessie"
-                    class="del-dialyse-btn px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-red-600 hover:text-white text-xs font-bold cursor-pointer">
-                    ×
-                  </button>
-                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+                  Start: ${escapeHtml(formatIsoDateTimeNL(sessie.startDatumTijd || sessie.afspraak))}
+                  ${sessie.stopDatumTijd ? ` • Stop: ${escapeHtml(formatIsoDateTimeNL(sessie.stopDatumTijd))}` : ''}
+                  ${sessie.duur ? ` • Duur: ${escapeHtml(sessie.duur)}` : ''}
+                  ${sessie.preGewicht !== null && sessie.preGewicht !== undefined ? ` • Pre: ${sessie.preGewicht} kg` : ''}
+                  ${sessie.postGewicht !== null && sessie.postGewicht !== undefined ? ` • Post: ${sessie.postGewicht} kg` : ''}
+                  ${sessie.gebruikteUf !== null && sessie.gebruikteUf !== undefined ? ` • Gebr. UF: ${sessie.gebruikteUf}` : ''}
+                  ${sessie.werkelijkeUf !== null && sessie.werkelijkeUf !== undefined ? ` • Werk. UF: ${sessie.werkelijkeUf}` : ''}
+                </p>
+                ${checks.length > 0 || sessie.shuntflowResultaat ? `
+                  <p class="text-xs text-slate-600 dark:text-slate-300">
+                    ${checks.length > 0 ? `Vinkjes: ${escapeHtml(checks.join(', '))}` : ''}
+                    ${sessie.shuntflowResultaat ? `${checks.length > 0 ? ' • ' : ''}ShuntFlow: ${escapeHtml(sessie.shuntflowResultaat)}` : ''}
+                  </p>
+                ` : ''}
               </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-slate-600 dark:text-slate-300 tabular-nums">
-                <div>Afspraak: <strong>${escapeHtml(formatIsoDateTimeNL(sessie.afspraak))}</strong></div>
-                <div>Start: <strong>${escapeHtml(formatIsoDateTimeNL(sessie.startDatumTijd))}</strong></div>
-                <div>Stop: <strong>${escapeHtml(formatIsoDateTimeNL(sessie.stopDatumTijd))}</strong></div>
-                <div>Duur: <strong>${escapeHtml(sessie.duur || '-')}</strong></div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button type="button" data-id="${escapeHtml(sid)}"
+                  class="edit-dialyse-btn px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold cursor-pointer">
+                  Bewerk
+                </button>
+                <button type="button" data-id="${escapeHtml(sid)}" title="Verwijder dialysesessie"
+                  class="del-dialyse-btn px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-red-600 hover:text-white text-xs font-bold cursor-pointer">
+                  ×
+                </button>
               </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-slate-600 dark:text-slate-300 tabular-nums">
-                <div>Pre: <strong>${sessie.preGewicht ?? '-'} kg</strong> • Post: <strong>${sessie.postGewicht ?? '-'} kg</strong></div>
-                <div>Gebruikte UF: <strong>${sessie.gebruikteUf ?? '-'}</strong></div>
-                <div>Werkelijke UF: <strong>${sessie.werkelijkeUf ?? '-'}</strong></div>
-                <div>ShuntFlow: <strong>${escapeHtml(sessie.shuntflowResultaat || '-')}</strong></div>
-              </div>
-
-              ${
-                sessieVitals.length > 0
-                  ? `
-                    <div class="pt-2 border-t border-slate-200/80 dark:border-slate-700/80 grid grid-cols-1 md:grid-cols-2 gap-3 items-center">
-                      <div class="space-y-1 text-xs tabular-nums">
-                        <span class="block text-[10px] font-bold uppercase text-rose-600 dark:text-rose-400">Bloeddruk &amp; Hartslag momenten</span>
-                        ${sessieVitals.map((v) => `
-                          <div class="text-slate-700 dark:text-slate-200">
-                            <strong>${escapeHtml(v.tijd)}</strong> — BD ${v.systolisch}/${v.diastolisch} mmHg • HS ${v.hartslag} bpm
-                          </div>
-                        `).join('')}
-                      </div>
-                      <div class="bg-white dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
-                        ${buildVitalsSvgChart(sessieVitals, 420, 145)}
-                      </div>
-                    </div>
-                  `
-                  : ''
-              }
-
-              ${
-                vinkjes.length > 0
-                  ? `<div class="flex flex-wrap gap-1.5 pt-1">
-                      ${vinkjes.map((v) => `<span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200">✓ ${escapeHtml(v)}</span>`).join('')}
-                    </div>`
-                  : ''
-              }
             </div>
           `;
         }).join('');
       }
 
-      renderAgendaView(ritten, dialyseSessies, dialyseStatus, dialyseSub);
+      renderBrievenView(sharedData);
+      renderAgendaView(rittenList, dialyseSessies, sharedData.dialyseStatus, sharedData.dialyseSub);
       renderOverzichtenView(sharedData);
       renderPdfView(sharedData);
 
-      document.getElementById('last-sync-time').textContent = sharedData.updatedAt || 'Zojuist';
+      document.getElementById('inst-dry-weight').value = String(getDryWeight());
+      const { orangeMin, redMin } = getUfColorThresholds();
+      document.getElementById('inst-uf-orange-min').value = String(orangeMin);
+      document.getElementById('inst-uf-red-min').value = String(redMin);
+      document.getElementById('inst-uf-green-preview').textContent = `Onder ${formatThresholdNL(orangeMin)} L`;
 
-      const startView = document.getElementById('start-view');
-      const vochtView = document.getElementById('vocht-view');
-      const rittenView = document.getElementById('ritten-view');
-      const dialyseView = document.getElementById('dialyse-view');
-      const agendaView = document.getElementById('agenda-view');
-      const overzichtenView = document.getElementById('overzichten-view');
-      const pdfView = document.getElementById('pdf-view');
-      const instView = document.getElementById('instellingen-view');
-      const chatView = document.getElementById('chat-view');
-      const modBox = document.getElementById('module-box');
+      document.getElementById('inst-vocht48-start-date').value = sharedData.vocht48StartDate || '2026-11-22';
+      document.getElementById('inst-vocht48-start-time').value = sharedData.vocht48StartTime || '05:30';
+      document.getElementById('inst-vocht48-cycle-preview').textContent = stats.win48.label;
 
-      startView.classList.add('hidden');
-      vochtView.classList.add('hidden');
-      rittenView.classList.add('hidden');
-      dialyseView.classList.add('hidden');
-      agendaView.classList.add('hidden');
-      overzichtenView.classList.add('hidden');
-      pdfView.classList.add('hidden');
-      instView.classList.add('hidden');
-      chatView.classList.add('hidden');
-      modBox.classList.add('hidden');
+      document.getElementById('inst-limit-24').value = String(stats.lim24);
+      document.getElementById('inst-limit-48').value = String(stats.lim48);
+      renderOptionList('inst-verpleging-list', sharedData.verplegingOptions);
+      renderOptionList('inst-firma-list', sharedData.firmaOptions);
+      renderOptionList('inst-van-list', sharedData.vanOptions);
+      renderOptionList('inst-naar-list', sharedData.naarOptions);
+    }
 
-      if (tab === 'start') {
-        startView.classList.remove('hidden');
-      } else if (tab === 'vochtintake') {
-        vochtView.classList.remove('hidden');
-      } else if (tab === 'ritten') {
-        rittenView.classList.remove('hidden');
-      } else if (tab === 'dialyse') {
-        dialyseView.classList.remove('hidden');
-      } else if (tab === 'agenda') {
-        agendaView.classList.remove('hidden');
-      } else if (tab === 'overzichten') {
-        overzichtenView.classList.remove('hidden');
-      } else if (tab === 'pdf') {
-        pdfView.classList.remove('hidden');
-      } else if (tab === 'instellingen') {
-        instView.classList.remove('hidden');
-      } else if (tab === 'chat') {
-        chatView.classList.remove('hidden');
-        renderChatMessages([]);
-        startChatListener();
-      } else {
-        modBox.classList.remove('hidden');
-        document.getElementById('module-heading').textContent = tabNames[tab] || tab;
-        document.getElementById('module-desc').textContent = 'Realtime verbonden met jouw account.';
-        const modContent = document.getElementById('module-content');
-        if (tab === 'brieven') {
-          modContent.innerHTML = `
-            <form id="brief-form" class="flex gap-2 mb-4">
-              <input id="brief-input" type="text" required placeholder="Titel van nieuwe brief..."
-                class="flex-1 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm" />
-              <button type="submit" class="px-4 py-2 rounded-xl bg-amber-600 text-white text-sm font-semibold cursor-pointer">+ Brief</button>
-            </form>
-            <div class="space-y-2">
-              ${
-                brieven.length
-                  ? brieven.map((b, i) => `<div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium">${i + 1}. ${escapeHtml(b.titel)}</div>`).join('')
-                  : '<p class="text-slate-400 text-xs">Nog geen brieven.</p>'
+    setInterval(() => {
+      if (!uid) return;
+      const synced = syncAutoPdfReports(sharedData, Date.now());
+      if (synced.newDocs.length > 0) {
+        pushSharedData({ pdfDocs: synced.allDocs });
+      }
+    }, 60000);
+
+    function startSharedSync(currentUid) {
+      if (dbUnsub) dbUnsub();
+      const sharedRef = ref(db, `users/${currentUid}/sharedData`);
+      dbUnsub = onValue(sharedRef, (snap) => {
+        setRtStatus(true, 'Realtime verbonden');
+        const val = snap.val();
+        if (val && typeof val === 'object') {
+          sharedData = {
+            ...sharedData,
+            ...val,
+            vochtEntries: Array.isArray(val.vochtEntries) ? val.vochtEntries : [],
+            vochtProducts: Array.isArray(val.vochtProducts) && val.vochtProducts.length > 0
+              ? val.vochtProducts : ['Water', 'Koffie', 'Thee', 'Soep', 'Frisdrank'],
+            vochtAmounts: Array.isArray(val.vochtAmounts) && val.vochtAmounts.length > 0
+              ? val.vochtAmounts : [100, 150, 200, 250, 330, 500],
+            vochtLimit24: Number(val.vochtLimit24 || 1500),
+            vochtLimit48: Number(val.vochtLimit48 || 3000),
+            vocht48StartDate: val.vocht48StartDate || '2026-11-22',
+            vocht48StartTime: val.vocht48StartTime || '05:30',
+            vocht48Mode: val.vocht48Mode || 'every_other_day',
+            dialyseDryWeight: Number(val.dialyseDryWeight || 109),
+            dialyseUfOrangeMin: Number(val.dialyseUfOrangeMin ?? 4.0),
+            dialyseUfRedMin: Number(val.dialyseUfRedMin ?? 4.5),
+            dialyseSessies: Array.isArray(val.dialyseSessies) ? val.dialyseSessies : [],
+            verplegingOptions: Array.isArray(val.verplegingOptions) ? val.verplegingOptions : [],
+            firmaOptions: Array.isArray(val.firmaOptions) ? val.firmaOptions : [],
+            vanOptions: Array.isArray(val.vanOptions) ? val.vanOptions : [],
+            naarOptions: Array.isArray(val.naarOptions) ? val.naarOptions : [],
+            ritten: Array.isArray(val.ritten) ? val.ritten : [],
+            briefFolders: Array.isArray(val.briefFolders) && val.briefFolders.length > 0
+              ? val.briefFolders : ['Nefrologie'],
+            brieven: Array.isArray(val.brieven) ? val.brieven : [],
+            pdfDocs: Array.isArray(val.pdfDocs) ? val.pdfDocs : []
+          };
+
+          const synced = syncAutoPdfReports(sharedData, Date.now());
+          if (synced.newDocs.length > 0) {
+            sharedData.pdfDocs = synced.allDocs;
+            set(sharedRef, sharedData).catch(() => {});
+          }
+        }
+        renderAll();
+      }, (err) => {
+        console.error('Realtime leesfout:', err);
+        setRtStatus(false, 'Verbinding verbroken');
+      });
+    }
+
+    // ---------------------------------------------------------
+    // CHAT (TEKST + SPRAAKBERICHT + DICTEREN)
+    // ---------------------------------------------------------
+    const chatTargetMode = document.getElementById('chat-target-mode');
+    const chatRecipientWrapper = document.getElementById('chat-recipient-wrapper');
+    const chatRecipientInput = document.getElementById('chat-recipient-input');
+    const chatSelfInfo = document.getElementById('chat-self-info');
+    const chatMessagesBox = document.getElementById('chat-messages-box');
+    const chatSendForm = document.getElementById('chat-send-form');
+    const chatMessageInput = document.getElementById('chat-message-input');
+
+    chatTargetMode.addEventListener('change', () => {
+      const toUser = chatTargetMode.value === 'user';
+      chatRecipientWrapper.classList.toggle('hidden', !toUser);
+      chatSelfInfo.classList.toggle('hidden', toUser);
+    });
+
+    function getChatPath() {
+      if (!uid) return null;
+      if (chatTargetMode.value === 'user') {
+        const rawTarget = chatRecipientInput.value.trim().toLowerCase();
+        if (!rawTarget) return null;
+        const safeKey = encodeURIComponent(rawTarget).replace(/\./g, '%2E');
+        const pairKey = [uid, safeKey].sort().join('__');
+        return `chats/direct/${pairKey}`;
+      }
+      return `chats/self/${uid}`;
+    }
+
+    let activeChatPath = null;
+
+    function subscribeToChat() {
+      const nextPath = getChatPath();
+      if (nextPath === activeChatPath && chatUnsub) return;
+
+      if (chatUnsub) {
+        chatUnsub();
+        chatUnsub = null;
+      }
+
+      activeChatPath = nextPath;
+      initialChatLoaded = false;
+      knownMessageIds.clear();
+
+      if (!nextPath) {
+        chatMessagesBox.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">Vul een e-mailadres of gebruikersnaam in om dit gesprek te laden.</p>`;
+        return;
+      }
+
+      chatUnsub = onValue(ref(db, nextPath), (snap) => {
+        const raw = snap.val() || {};
+        const entries = Object.entries(raw).map(([id, msg]) => ({ id, ...msg }));
+        entries.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+
+        if (!initialChatLoaded) {
+          entries.forEach((m) => knownMessageIds.add(m.id));
+          initialChatLoaded = true;
+        } else {
+          entries.forEach((m) => {
+            if (!knownMessageIds.has(m.id)) {
+              knownMessageIds.add(m.id);
+              const isFromMe = m.senderUid === uid;
+              if (!isFromMe || chatTargetMode.value === 'self') {
+                playNotificationSound();
+                const previewText = m.type === 'audio'
+                  ? `Spraakbericht (${m.durationSec || 0}s)`
+                  : (m.text || '');
+                showIncomingToast(m.senderEmail || 'Bericht', previewText);
+                if (localActiveTab !== 'chat') {
+                  unreadCount += 1;
+                  updateUnreadBadge();
+                }
               }
-            </div>
-          `;
-          document.getElementById('brief-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const inp = document.getElementById('brief-input');
-            const titel = inp.value.trim();
-            if (!titel) return;
-            inp.value = '';
-            pushSharedData({ brieven: [...brieven, { titel }] });
+            }
           });
         }
+
+        renderChatMessages(entries);
+      });
+    }
+
+    chatRecipientInput.addEventListener('input', subscribeToChat);
+    chatTargetMode.addEventListener('change', subscribeToChat);
+
+    function renderChatMessages(entries) {
+      if (!entries.length) {
+        chatMessagesBox.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">Nog geen berichten in dit gesprek.</p>`;
+        return;
       }
+
+      chatMessagesBox.innerHTML = entries.map((m) => {
+        const mine = m.senderUid === uid;
+        const timeLabel = m.createdAt
+          ? new Date(m.createdAt).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
+          : '';
+
+        const contentHtml = m.type === 'audio' && m.audioData
+          ? `
+            <div class="space-y-1.5">
+              <span class="text-[11px] font-semibold opacity-80 block">Spraakbericht${m.durationSec ? ` (${m.durationSec}s)` : ''}</span>
+              <audio controls preload="metadata" src="${m.audioData}" class="max-w-full h-9"></audio>
+            </div>
+          `
+          : `<p class="text-sm break-words">${escapeHtml(m.text || '')}</p>`;
+
+        return `
+          <div class="flex flex-col ${mine ? 'items-end' : 'items-start'}">
+            <div class="max-w-[82%] rounded-2xl px-4 py-2.5 ${
+              mine
+                ? 'bg-blue-600 text-white rounded-br-sm'
+                : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-bl-sm'
+            }">
+              <div class="flex items-center justify-between gap-3 mb-1">
+                <span class="text-[10px] font-bold opacity-80">${escapeHtml(m.senderEmail || 'Gebruiker')}</span>
+                <span class="text-[10px] opacity-70 tabular-nums">${timeLabel}</span>
+              </div>
+              ${contentHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
     }
 
-    document.getElementById('tile-vocht-plus150').addEventListener('click', () => {
-      addVochtEntry(150, selectedDrink);
-    });
-
-    document.getElementById('tile-brief-quick').addEventListener('click', () => {
-      const titel = `Brief ${new Date().toLocaleDateString('nl-NL')}`;
-      pushSharedData({ brieven: [...(sharedData.brieven || []), { titel }] });
-    });
-
-    document.querySelectorAll('.nav-btn').forEach((btn) => {
-      btn.addEventListener('click', () => switchLocalTab(btn.getAttribute('data-tab')));
-    });
-    document.querySelectorAll('.open-tab-link').forEach((btn) => {
-      btn.addEventListener('click', () => switchLocalTab(btn.getAttribute('data-open-tab')));
-    });
-
-    const loginScreen = document.getElementById('login-screen');
-    const appShell = document.getElementById('app-shell');
-    const authError = document.getElementById('auth-error');
-    const authTitle = document.getElementById('auth-title');
-    const emailSubmitBtn = document.getElementById('email-submit-btn');
-    const toggleAuthMode = document.getElementById('toggle-auth-mode');
-    let registerMode = false;
-
-    function showAuthError(msg) {
-      authError.textContent = msg;
-      authError.classList.remove('hidden');
-    }
-
-    toggleAuthMode.addEventListener('click', () => {
-      registerMode = !registerMode;
-      authError.classList.add('hidden');
-      authTitle.textContent = registerMode ? 'Account aanmaken' : 'Inloggen';
-      emailSubmitBtn.textContent = registerMode ? 'Registreren met e-mail' : 'Inloggen met e-mail';
-      toggleAuthMode.textContent = registerMode
-        ? 'Heb je al een account? Log in'
-        : 'Nog geen account? Maak er een aan';
-    });
-
-    document.getElementById('email-form').addEventListener('submit', async (e) => {
+    chatSendForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      authError.classList.add('hidden');
-      const email = document.getElementById('email-input').value.trim();
-      const password = document.getElementById('password-input').value;
-      try {
-        if (registerMode) {
-          await createUserWithEmailAndPassword(auth, email, password);
-        } else {
-          await signInWithEmailAndPassword(auth, email, password);
-        }
-      } catch (err) {
-        showAuthError(err.message || 'Inloggen mislukt.');
+      if (!uid) return;
+      const text = chatMessageInput.value.trim();
+      if (!text) return;
+
+      const path = getChatPath();
+      if (!path) {
+        showIncomingToast('Let op', 'Vul eerst een ontvanger in.');
+        return;
       }
+
+      chatMessageInput.value = '';
+      await push(ref(db, path), {
+        type: 'text',
+        text,
+        senderUid: uid,
+        senderEmail: userEmail || 'Gebruiker',
+        createdAt: Date.now()
+      });
     });
 
-    document.getElementById('google-btn').addEventListener('click', async () => {
-      authError.classList.add('hidden');
-      try {
-        await signInWithPopup(auth, googleProvider);
-      } catch (err) {
-        showAuthError(err.message || 'Google-inloggen mislukt.');
-      }
-    });
+    const voiceRecordBtn = document.getElementById('voice-record-btn');
+    const voiceRecordLabel = document.getElementById('voice-record-label');
+    const voiceStatusBar = document.getElementById('voice-status-bar');
+    const voiceStatusText = document.getElementById('voice-status-text');
+    const cancelRecordBtn = document.getElementById('cancel-record-btn');
 
-    async function doLogout() {
-      stopRecording(true);
-      sessionStorage.removeItem('dp_locked');
-      pinModal.classList.add('hidden');
-      if (dbUnsub) { dbUnsub(); dbUnsub = null; }
-      if (chatUnsub) { chatUnsub(); chatUnsub = null; }
-      await signOut(auth);
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordStartMs = 0;
+    let recordTimerInterval = null;
+    let discardRecording = false;
+
+    function stopVoiceRecording(discard = false) {
+      discardRecording = discard;
+      if (recordTimerInterval) {
+        clearInterval(recordTimerInterval);
+        recordTimerInterval = null;
+      }
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+      if (mediaRecorder && mediaRecorder.stream) {
+        mediaRecorder.stream.getTracks().forEach((t) => t.stop());
+      }
+      voiceStatusBar.classList.add('hidden');
+      voiceRecordLabel.textContent = 'Spraakbericht';
+      voiceRecordBtn.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+      voiceRecordBtn.classList.add('bg-rose-600', 'hover:bg-rose-700');
     }
 
-    document.getElementById('logout-sidebar').addEventListener('click', doLogout);
-    document.getElementById('logout-header').addEventListener('click', doLogout);
-    document.getElementById('pin-logout-btn').addEventListener('click', doLogout);
+    cancelRecordBtn.addEventListener('click', () => stopVoiceRecording(true));
 
+    voiceRecordBtn.addEventListener('click', async () => {
+      if (!uid) return;
+      const path = getChatPath();
+      if (!path) {
+        showIncomingToast('Let op', 'Vul eerst een ontvanger in.');
+        return;
+      }
+
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        stopVoiceRecording(false);
+        return;
+      }
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showIncomingToast('Microfoon', 'Spraakopname wordt in deze browser niet ondersteund.');
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = [];
+        discardRecording = false;
+        recordStartMs = Date.now();
+
+        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+          ? 'audio/webm;codecs=opus'
+          : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '');
+
+        mediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = (ev) => {
+          if (ev.data && ev.data.size > 0) audioChunks.push(ev.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+          const durationSec = Math.max(1, Math.round((Date.now() - recordStartMs) / 1000));
+          if (discardRecording || audioChunks.length === 0) return;
+
+          const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+          const reader = new FileReader();
+          reader.onloadend = async () => {
+            const base64Audio = reader.result;
+            if (typeof base64Audio === 'string' && base64Audio.length < 7500000) {
+              await push(ref(db, path), {
+                type: 'audio',
+                audioData: base64Audio,
+                durationSec,
+                senderUid: uid,
+                senderEmail: userEmail || 'Gebruiker',
+                createdAt: Date.now()
+              });
+            } else {
+              showIncomingToast('Spraakbericht', 'Opname was te lang voor directe verzending. Houd het kort.');
+            }
+          };
+          reader.readAsDataURL(blob);
+        };
+
+        mediaRecorder.start();
+        voiceStatusBar.classList.remove('hidden');
+        voiceStatusText.textContent = 'Opnemen... (0s) — klik nogmaals op Spraakbericht om te versturen';
+        voiceRecordLabel.textContent = 'Stop & verstuur';
+        voiceRecordBtn.classList.remove('bg-rose-600', 'hover:bg-rose-700');
+        voiceRecordBtn.classList.add('bg-amber-600', 'hover:bg-amber-700');
+
+        recordTimerInterval = setInterval(() => {
+          const sec = Math.round((Date.now() - recordStartMs) / 1000);
+          voiceStatusText.textContent = `Opnemen... (${sec}s) — klik nogmaals op Spraakbericht om te versturen`;
+        }, 500);
+      } catch {
+        showIncomingToast('Microfoon', 'Geen toegang tot microfoon.');
+      }
+    });
+
+    const dictateBtn = document.getElementById('dictate-btn');
+    const dictateLabel = document.getElementById('dictate-label');
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let isDictating = false;
+
+    function stopDictation() {
+      isDictating = false;
+      if (recognition) {
+        try { recognition.stop(); } catch {}
+        recognition = null;
+      }
+      dictateLabel.textContent = 'Dicteer';
+    }
+
+    dictateBtn.addEventListener('click', () => {
+      if (!SpeechRecognition) {
+        showIncomingToast('Dicteren', 'Dicteren wordt niet ondersteund in deze browser.');
+        return;
+      }
+      if (isDictating) {
+        stopDictation();
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = 'nl-NL';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      isDictating = true;
+      dictateLabel.textContent = 'Luistert...';
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        chatMessageInput.value = chatMessageInput.value
+          ? `${chatMessageInput.value} ${transcript}`
+          : transcript;
+        chatMessageInput.focus();
+      };
+
+      recognition.onerror = () => stopDictation();
+      recognition.onend = () => stopDictation();
+
+      try {
+        recognition.start();
+      } catch {
+        stopDictation();
+      }
+    });
+
+    // ---------------------------------------------------------
+    // AUTHENTICATIE STATE LISTENER
+    // ---------------------------------------------------------
     onAuthStateChanged(auth, (user) => {
       if (user) {
         uid = user.uid;
-        userEmail = user.email || '';
-        localActiveTab = 'start';
-        editingRitId = null;
-        editingDialyseId = null;
-        draftVitals = [];
-        document.getElementById('user-email-label').textContent = user.email || user.uid;
+        userEmail = user.email || 'Ingelogde gebruiker';
+        document.getElementById('user-email-label').textContent = userEmail;
+
         loginScreen.classList.add('hidden');
         appShell.classList.remove('hidden');
 
-        if (sessionStorage.getItem('dp_locked') === '1' && localStorage.getItem(`dp_pin_${uid}`)) {
-          openPin(false);
+        startSharedSync(uid);
+        subscribeToChat();
+        renderAll();
+
+        const savedPin = localStorage.getItem(getDevicePinKey());
+        if (savedPin || isLockedLocal) {
+          isLockedLocal = true;
+          openPinModal('unlock');
         }
-
-        if (dbUnsub) dbUnsub();
-        const userDataRef = ref(db, `users/${uid}/data`);
-        dbUnsub = onValue(
-          userDataRef,
-          (snap) => {
-            document.getElementById('rt-status-label').textContent = 'Realtime verbonden';
-            if (snap.exists()) {
-              const remote = snap.val() || {};
-              sharedData = {
-                ...sharedData,
-                ...remote,
-                vochtEntries: Array.isArray(remote.vochtEntries) ? remote.vochtEntries : [],
-                vochtProducts: Array.isArray(remote.vochtProducts) && remote.vochtProducts.length > 0
-                  ? remote.vochtProducts
-                  : sharedData.vochtProducts,
-                vochtAmounts: Array.isArray(remote.vochtAmounts) && remote.vochtAmounts.length > 0
-                  ? remote.vochtAmounts
-                  : sharedData.vochtAmounts,
-                vocht48StartDate: remote.vocht48StartDate || '2026-11-22',
-                vocht48StartTime: remote.vocht48StartTime || '05:30',
-                vocht48Mode: remote.vocht48Mode || 'every_other_day',
-                dialyseDryWeight: Number(remote.dialyseDryWeight ?? 109),
-                dialyseUfOrangeMin: Number(remote.dialyseUfOrangeMin ?? 4.0),
-                dialyseUfRedMin: Number(remote.dialyseUfRedMin ?? 4.5),
-                dialyseSessies: Array.isArray(remote.dialyseSessies) ? remote.dialyseSessies : [],
-                verplegingOptions: Array.isArray(remote.verplegingOptions) ? remote.verplegingOptions : [],
-                firmaOptions: Array.isArray(remote.firmaOptions) ? remote.firmaOptions : [],
-                vanOptions: Array.isArray(remote.vanOptions) ? remote.vanOptions : [],
-                naarOptions: Array.isArray(remote.naarOptions) ? remote.naarOptions : [],
-                ritten: Array.isArray(remote.ritten) ? remote.ritten : [],
-                brieven: Array.isArray(remote.brieven) ? remote.brieven : [],
-                pdfDocs: Array.isArray(remote.pdfDocs) ? remote.pdfDocs : []
-              };
-
-              const autoResult = syncAutoPdfReports(sharedData, Date.now());
-              if (autoResult.newDocs.length > 0) {
-                pushSharedData({ pdfDocs: autoResult.allDocs });
-                return;
-              }
-            }
-            renderAll();
-          },
-          () => {
-            document.getElementById('rt-status-label').textContent = 'Realtime leesfout';
-            renderAll();
-          }
-        );
-
-        startChatListener();
       } else {
         uid = null;
         userEmail = '';
-        editingRitId = null;
-        editingDialyseId = null;
-        draftVitals = [];
-        stopRecording(true);
-        if (dbUnsub) { dbUnsub(); dbUnsub = null; }
-        if (chatUnsub) { chatUnsub(); chatUnsub = null; }
+        loginScreen.classList.remove('hidden');
         appShell.classList.add('hidden');
         pinModal.classList.add('hidden');
-        loginScreen.classList.remove('hidden');
       }
     });
 
     function escapeHtml(str) {
-      return String(str)
+      return String(str || '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
+
+    syncRitFormMode();
+    updateDialyseRepeatUI();
+    renderVerplegingMultiSelect();
+    renderDraftVitalsUI();
+    renderBriefDraftAttachments();
   </script>
 </body>
 </html>
